@@ -1,0 +1,20 @@
+# Codgic-api Configuration
+# Version 1.0.0
+
+# OJ Settings
+OJ:
+  NAME: Codgic
+  LANGUAGE: en
+  TIMEZONE: Asia/Shanghai
+
+# API Settings
+API:
+  PORT: 8080
+
+# Database
+DATABASE:
+  HOST: 192.168.1.73
+  NAME: codgic
+  USERNAME: codgic
+  PASSWORD: YOURPASSWORD
+  DIALECT: mysql
