@@ -1,14 +1,12 @@
-/* /api/routes/user.js */
+/* /api/routes/user.ts */
 
-'use strict';
-
-import router from 'koa-router';
+import * as Router from 'koa-router';
 
 import { getCurrentInfo, getUserInfo } from './../controllers/users';
 
-const users = router();
+const users = new Router();
 
 users.get('/user/', getCurrentInfo);
 users.get('/user/:username', getUserInfo);
 
-export default users;
+export { users };

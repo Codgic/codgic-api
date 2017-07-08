@@ -7,5 +7,6 @@ If you have any ideas or suggestions, feel free to create issues at https://gith
 
 # To-do list
 - [x] An initial RESTful API Framework.
-- [ ] Take advantage of TypeScript.
+- [x] Hello Typescript.
+- [ ] Hello TypeORM.
 - [ ] More...

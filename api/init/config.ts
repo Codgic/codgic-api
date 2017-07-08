@@ -1,21 +1,19 @@
-/* config.js
+/* config.ts
    Used to read configurations from config.yml. */
 
-'use strict';
-
-import yaml from 'js-yaml';
-import fs from 'fs';
+import * as fs from 'fs';
+import * as yaml from 'js-yaml';
 
 // Read yaml
-export default function getConfig() {
+export function getConfig() {
   let conf;
   try {
     conf = yaml.safeLoad(fs.readFileSync(`${__dirname}/../../config.yml`, 'utf8'));
   } catch (err) {
-    console.error(`[js-yaml] ${err}`);
+    console.error(err);
   }
   if (typeof (conf) === 'undefined') {
-    console.error('[codgic-api] Failed to read config.yml.');
+    console.error('Failed to read config.yml.');
     process.exit();
   }
   return conf;

@@ -1,8 +1,24 @@
 /* /api/models/users.js */
 
-'use strict';
+import { createConnection } from 'typeorm';
+import { connectionOptions } from './../init/typeorm';
 
-import rand from 'csprng';
+const users = createConnection(connectionOptions);
+
+export function usersFirstRun() {
+  // To be finished.
+}
+
+export function usersQuery() {
+  // To be finished.
+}
+
+users.catch((err) => {
+  console.error('Database operation failure.');
+  console.error(err);
+});
+
+/*
 import Sequelize from 'sequelize';
 import sequelize from './../init/sequelize';
 
@@ -59,3 +75,4 @@ export function usersFirstRun() {
 export function usersQuery(items) {
   Users.find({where:{name: USERNAME}})
 }
+*/
