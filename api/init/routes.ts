@@ -9,5 +9,5 @@ import { users } from './../routes/users';
 
 export function initRoutes(app: Koa) {
   app.use(mount('/', root.routes()));
-  app.use(mount('/users/', users.routes()));
+  app.use(mount('/user', users.routes()));
 }

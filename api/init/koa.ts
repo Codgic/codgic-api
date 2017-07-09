@@ -13,7 +13,7 @@ export function initKoa(app: Koa) {
 
   app.on('error', (err: string) => console.error(err));
 
-  app.use((ctx: Koa.Context, next) => {
+  app.use((ctx, next) => {
     ctx.body = ctx.request.body;
     return next();
   });

@@ -6,7 +6,7 @@ import { getCurrentInfo, getUserInfo } from './../controllers/users';
 
 const users = new Router();
 
-users.get('/user/', getCurrentInfo);
-users.get('/user/:username', getUserInfo);
+users.get('/', getCurrentInfo);
+users.get('/:username', getUserInfo);
 
 export { users };

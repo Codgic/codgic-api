@@ -2,6 +2,7 @@
    Where everything starts. */
 
 import * as Koa from 'koa';
+import 'reflect-metadata';
 import { getConfig } from './init/config';
 import { initKoa } from './init/koa';
 import { initRoutes } from './init/routes';
