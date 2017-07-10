@@ -1,7 +1,8 @@
 /* /api/init/typeorm.ts
    Let's set up our database connection. */
 
-import { ConnectionOptions, createConnection } from 'typeorm';
+import { ConnectionOptions } from 'typeorm';
+
 import { getConfig } from './config';
 
 const config = getConfig();

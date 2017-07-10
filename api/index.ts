@@ -1,8 +1,9 @@
 /* /api/index.ts
    Where everything starts. */
 
-import * as Koa from 'koa';
 import 'reflect-metadata';
+
+import * as Koa from 'koa';
 
 import { getConfig } from './init/config';
 import { initKoa } from './init/koa';

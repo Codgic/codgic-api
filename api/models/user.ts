@@ -1,7 +1,5 @@
 /* /api/models/user.ts */
 
-import 'reflect-metadata';
-
 import { getRepository } from 'typeorm';
 
 import { User } from './../entities/user';

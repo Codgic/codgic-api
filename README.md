@@ -8,5 +8,8 @@ If you have any ideas or suggestions, feel free to create issues at https://gith
 # To-do list
 - [x] An initial RESTful API Framework.
 - [x] Hello Typescript.
-- [ ] Hello TypeORM.
+- [x] Hello TypeORM.
+- [ ] Hello JWT.
+- [ ] Design database structure.
+- [ ] Design RESTful API.
 - [ ] More...
