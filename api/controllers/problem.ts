@@ -12,6 +12,6 @@ export async function getProblemList(ctx: Koa.Context, next: () => Promise<any>)
 
 export async function getProblemInfo(ctx: Koa.Context, next: () => Promise<any>) {
   ctx.status = 200;
-  ctx.body = await Problem.getProblemInfo(ctx.params.username);
+  ctx.body = await Problem.getProblemInfo(ctx.params.problemid);
   await next();
 }

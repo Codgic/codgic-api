@@ -3,26 +3,33 @@
 
 import * as Koa from 'koa';
 import 'reflect-metadata';
+
 import { getConfig } from './init/config';
 import { initKoa } from './init/koa';
 import { initRoutes } from './init/routes';
 
-const app = new Koa();
-const config = getConfig();
+import { createConnection } from 'typeorm';
+import { connectionOptions } from './init/typeorm';
 
-// Initialize everything.
-initKoa(app);
-initRoutes(app);
+createConnection(connectionOptions).then(async (connection) => {
+  const app = new Koa();
+  const config = getConfig();
 
-// Quit if port is invalid.
-if (typeof (config.API.PORT) !== 'number') {
-  console.error(`Invalid PORT: ${config.API.PORT}`);
-  process.exit();
-}
+  // Initialize everything.
+  initKoa(app);
+  initRoutes(app);
 
-// Start listening!
-app.listen(config.API.PORT, () => {
-    console.log(`Codgic-api listening at port ${config.API.PORT}`);
+  // Quit if port is invalid.
+  if (typeof (config.API.PORT) !== 'number') {
+    console.error(`Invalid PORT: ${config.API.PORT}`);
+    config.API.PORT = 8080;
+    console.log('Using default PORT: 8080');
+  }
+
+  // Start listening!
+  app.listen(config.API.PORT, () => {
+      console.log(`Codgic-api listening at port ${config.API.PORT}`);
+  });
+}).catch((err) => {
+  console.error('Database connection failed.');
 });
-
-export { app };

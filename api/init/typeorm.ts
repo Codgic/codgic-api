@@ -27,14 +27,4 @@ const connectionOptions: ConnectionOptions = {
   ] */
 };
 
-let Connection;
-
-createConnection(connectionOptions)
-  .then(async (connection) => {
-    Connection = connection;
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
-export { Connection };
+export {connectionOptions};

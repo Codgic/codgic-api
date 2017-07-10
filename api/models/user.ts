@@ -1,14 +1,13 @@
-/* /api/models/user.js */
+/* /api/models/user.ts */
 
 import 'reflect-metadata';
 
-import { createConnection } from 'typeorm';
-import { Connection } from './../init/typeorm';
+import { getRepository } from 'typeorm';
 
 import { User } from './../entities/user';
 
 export async function getUserInfo(username: string) {
-  const userRepository = Connection.getRepository(User);
+  const userRepository = await getRepository(User);
   const userInfo = await userRepository
                           .createQueryBuilder('user')
                           .select([
@@ -34,7 +33,7 @@ export async function getUserInfo(username: string) {
 }
 
 export async function getCurrentInfo() {
-  const userRepository = Connection.getRepository(User);
+  const userRepository = await getRepository(User);
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve('Coming Soon!');

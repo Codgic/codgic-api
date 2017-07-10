@@ -18,7 +18,7 @@ export class Problem {
   @Column('varchar', {
     unique: true,
   })
-  public problemId: number;
+  public problemid: number;
 
   @Column('varchar')
   public title: string;

@@ -1,13 +1,15 @@
-/* /api/models/problem.js */
+/* /api/models/problem.ts */
 
 import 'reflect-metadata';
 
-import { Connection } from './../init/typeorm';
+import { getRepository } from 'typeorm';
+// import { Connection } from './../init/typeorm';
 
 import { Problem } from './../entities/problem';
 
-export async function getProblemInfo(problemid: string) {
-  const problemRepository = Connection.getRepository(Problem);
+// Get problem info.
+export async function getProblemInfo(problemid: number) {
+  const problemRepository = await getRepository(Problem);
   const problemInfo = await problemRepository
                             .createQueryBuilder('problem')
                             .where(`problem.problemid = '${problemid}'`)
@@ -19,17 +21,23 @@ export async function getProblemInfo(problemid: string) {
   });
 }
 
+// Get problem list.
 export async function getProblemList(pageid: number) {
   if (typeof(pageid) === 'undefined') {
     pageid = 1;
   }
-  const problemRepository = Connection.getRepository(Problem);
+  const problemRepository = await getRepository(Problem);
   const firstResult = (pageid - 1) * 50;
   const maxResult = firstResult + 50;
   const problemList = await problemRepository
                             .createQueryBuilder('problem')
+                            /*.select([
+                              'problem.problemid',
+                              'problem.title',
+                            ])*/
                             .setFirstResult(firstResult)
-                            .setMaxResult(maxResult)
+                            .setMaxResults(maxResult)
+                            .orderBy('problem.problemid', 'ASC')
                             .getMany();
   return new Promise((resolve) => {
     setTimeout(() => {
