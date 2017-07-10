@@ -12,6 +12,8 @@ import { initRoutes } from './init/routes';
 import { createConnection } from 'typeorm';
 import { connectionOptions } from './init/typeorm';
 
+console.log('Establishing database connection.');
+
 createConnection(connectionOptions).then(async (connection) => {
   const app = new Koa();
   const config = getConfig();

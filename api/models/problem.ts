@@ -50,8 +50,8 @@ export async function searchProblem(query: string, page: number = 1, num: number
                                 'problem.problemid',
                                 'problem.title',
                               ])
-                              .having(`problem.title LIKE '%${query}%'`)
-                              // .orHaving(`problem.description LIKE '%${query}%'`)
+                              .where(`problem.title LIKE '%${query}%'`)
+                              .orWhere(`problem.description LIKE '%${query}%'`)
                               .setFirstResult(firstResult)
                               .setMaxResults(num)
                               .orderBy('problem.problemid', 'ASC')
