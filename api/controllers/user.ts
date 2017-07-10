@@ -1,22 +1,17 @@
-/* /api/controllers/users.js
+/* /api/controllers/user.ts
    We love our users! */
 
 import * as Koa from 'koa';
-import * as Users from './../models/users';
+import * as User from './../models/user';
 
-/* getCurrentInfo()
-   Get user info of current user.
-   Return: Username | Nickname
- */
 export async function getCurrentInfo(ctx: Koa.Context, next: () => Promise<any>) {
   ctx.status = 200;
-  ctx.body = '{ "msg": "Comming Soon!" }';
+  ctx.body = await User.getCurrentInfo();
   await next();
 }
 
-// Get user info of other users
 export async function getUserInfo(ctx: Koa.Context, next: () => Promise<any>) {
   ctx.status = 200;
-  ctx.body = await Users.getUserInfo();
+  ctx.body = await User.getUserInfo(ctx.params.username);
   await next();
 }

@@ -1,7 +1,7 @@
 /* /api/init/typeorm.ts
    Let's set up our database connection. */
 
-import { ConnectionOptions } from 'typeorm';
+import { ConnectionOptions, createConnection } from 'typeorm';
 import { getConfig } from './config';
 
 const config = getConfig();
@@ -27,4 +27,14 @@ const connectionOptions: ConnectionOptions = {
   ] */
 };
 
-export { connectionOptions };
+let Connection;
+
+createConnection(connectionOptions)
+  .then(async (connection) => {
+    Connection = connection;
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+export { Connection };

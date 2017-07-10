@@ -4,10 +4,12 @@
 import * as Koa from 'koa';
 import * as mount from 'koa-mount';
 
+import { problem } from './../routes/problem';
 import { root } from './../routes/root';
-import { users } from './../routes/users';
+import { user } from './../routes/user';
 
 export function initRoutes(app: Koa) {
   app.use(mount('/', root.routes()));
-  app.use(mount('/user', users.routes()));
+  app.use(mount('/problem', problem.routes()));
+  app.use(mount('/user', user.routes()));
 }

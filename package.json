@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "tsc -d -p . && node ./build/index.js",
     "build": "tsc -d -p .",
-    "build:watch": "tsc -w -d -p ."
+    "build:watch": "tsc -w -d -p .",
+    "clean:windows": "rd build /Q /S",
+    "clean:unix": "rm -rf ./build"
   },
   "repository": {
     "type": "git",

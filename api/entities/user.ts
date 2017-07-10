@@ -1,11 +1,11 @@
-/* /api/entities/problems.ts */
+/* /api/entities/user.ts */
 
 // UNFINISHED!!!
 
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Problems {
+export class User {
 
   @PrimaryGeneratedColumn()
   public id: number;
@@ -18,42 +18,42 @@ export class Problems {
   @Column('varchar', {
     unique: true,
   })
-  public problemId: number;
+  public email: string;
+
+  @Column('varchar', {
+    unique: true,
+    length: 30,
+  })
+  public username: string;
 
   @Column('varchar')
-  public title: string;
+  public password: string;
+
+  @Column('varchar', {
+    unique: true,
+  })
+  public salt: string;
+
+  @Column('varchar', {
+    length: 30,
+  })
+  public nickname: string;
+
+  @Column('tinyint')
+  public sex: number;
+
+  @Column('varchar', {
+    nullable: true,
+  })
+  public motto: string;
 
   @Column('text', {
     nullable: true,
   })
   public description: string;
 
-  @Column('varchar', {
-    nullable: true,
-  })
-  public inputFormat: string;
-
-  @Column('varchar')
-  public outputFormat: string;
-
-  @Column('varchar', {
-    nullable: true,
-  })
-  public sample: string;
-
-  @Column('varchar', {
-    nullable: true,
-  })
-  public additionalInfo: string;
-
-  @Column('int')
-  public timeLimit: number;
-
-  @Column('int')
-  public memoryLimit: number;
-
-  @Column('varchar')
-  public uploader: number;
+  @Column('tinyint')
+  public privilege: number;
 
   @Column('datetime')
   public createdAt: string;
