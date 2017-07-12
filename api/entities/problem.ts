@@ -13,11 +13,6 @@ export class Problem {
   @Column('varchar', {
     unique: true,
   })
-  public readonly uuid: string;
-
-  @Column('varchar', {
-    unique: true,
-  })
   public problemid: number;
 
   @Column('varchar')

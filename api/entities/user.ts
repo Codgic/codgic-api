@@ -13,11 +13,6 @@ export class User {
   @Column('varchar', {
     unique: true,
   })
-  public readonly uuid: string;
-
-  @Column('varchar', {
-    unique: true,
-  })
   public email: string;
 
   @Column('varchar', {

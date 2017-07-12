@@ -23,15 +23,15 @@ createConnection(connectionOptions).then(async (connection) => {
   initRoutes(app);
 
   // Quit if port is invalid.
-  if (typeof (config.API.PORT) !== 'number') {
+  if (typeof (config.api.port) !== 'number') {
     console.error(`Invalid PORT: ${config.API.PORT}`);
-    config.API.PORT = 8080;
+    config.api.port = 8080;
     console.log('Using default PORT: 8080');
   }
 
   // Start listening!
-  app.listen(config.API.PORT, () => {
-      console.log(`Codgic-api listening at port ${config.API.PORT}`);
+  app.listen(config.api.port, () => {
+      console.log(`Codgic-api listening at port ${config.api.port}`);
   });
 }).catch((err) => {
   console.error('Database connection failed.');

@@ -1,21 +1,24 @@
 # Codgic-api Configuration
 # Version 0.0.0 - Unreleased!
 
-# OJ Settings
-OJ:
-  NAME: Codgic
-  LANGUAGE: en
-  TIMEZONE: Asia/Shanghai
-
-# API Settings
-API:
-  PORT: 8080
+# OJ
+oj:
+  name: Codgic
+  language: en
+  timezone: Asia/Shanghai
+  page:
+    contest: 50
+    problem: 50
+    
+# API
+api:
+  port: 8080
 
 # Database
-DATABASE:
-  HOST: localhost
-  PORT: 3306
-  NAME: codgic
-  USERNAME: codgic
-  PASSWORD: YOURPASSWORD
-  TYPE: mysql
+database:
+  host: localhost
+  port: 3306
+  database: codgic
+  username: codgic
+  password: YOURPASSWORD
+  type: mysql

@@ -38,3 +38,27 @@ export async function getCurrentInfo() {
     });
   });
 }
+
+export async function searchUser(query: string, page: number = 1, num: number = 50) {
+  const firstResult = (page - 1) * num;
+  const userRepository = await getRepository(User);
+  const userInfo = await userRepository
+                          .createQueryBuilder('user')
+                          .select([
+                            'user.id',
+                            'user.email',
+                            'user.username',
+                            'user.nickname',
+                            'user.sex',
+                            'user.privilege',
+                            ])
+                          .where(`user.username LIKE ${query}`)
+                          .orWhere(`user.email LIKE ${query}`)
+                          .orWhere(`user.nickname LIKE ${query}`)
+                          .getOne();
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(userInfo);
+    });
+  });
+}

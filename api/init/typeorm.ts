@@ -8,12 +8,12 @@ import { getConfig } from './config';
 const config = getConfig();
 
 const connectionOptions: ConnectionOptions = {
-  type: config.DATABASE.TYPE,
-  host: config.DATABASE.HOST,
-  port: config.DATABASE.PORT,
-  database: config.DATABASE.NAME,
-  username: config.DATABASE.USERNAME,
-  password: config.DATABASE.PASSWORD,
+  type: config.database.type,
+  host: config.database.host,
+  port: config.database.port,
+  database: config.database.database,
+  username: config.database.username,
+  password: config.database.password,
   logging: {
     logQueries: true,
     logFailedQueryError: true,

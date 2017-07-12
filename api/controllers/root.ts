@@ -5,6 +5,6 @@ import { getConfig } from './../init/config';
 
 export async function hi(ctx: Koa.Context, next: () => Promise<any>) {
   const config = getConfig();
-  ctx.body = `{ "msg": "Hello ${config.OJ.NAME}" }`;
+  ctx.body = `{ "name": "${config.oj.name}" }`;
   await next();
 }

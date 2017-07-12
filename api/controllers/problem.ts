@@ -10,11 +10,11 @@ export async function getProblemList(ctx: Koa.Context, next: () => Promise<any>)
 }
 
 export async function getProblemInfo(ctx: Koa.Context, next: () => Promise<any>) {
-  ctx.body = await Problem.getProblemInfo(ctx.params.id);
+  ctx.body = await Problem.getProblemInfo(ctx.params.problemid);
   await next();
 }
 
 export async function searchProblem(ctx: Koa.Context, next: () => Promise<any>) {
-  ctx.body = await Problem.searchProblem(ctx.params.query, ctx.query.page, ctx.query.num);
+  ctx.body = await Problem.searchProblem(ctx.params.keyword, ctx.query.page, ctx.query.num);
   await next();
 }

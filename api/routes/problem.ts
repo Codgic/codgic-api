@@ -7,7 +7,7 @@ import * as Problem from './../controllers/problem';
 const problem = new Router();
 
 problem.get('/', Problem.getProblemList);
-problem.get('/:id', Problem.getProblemInfo);
-problem.get('/search/:query', Problem.searchProblem);
+problem.get('/:problemid', Problem.getProblemInfo);
+problem.get('/search/:keyword', Problem.searchProblem);
 
 export { problem };
