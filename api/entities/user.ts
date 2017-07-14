@@ -2,32 +2,39 @@
 
 // UNFINISHED!!!
 
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class User {
 
   @PrimaryGeneratedColumn()
+  @Index()
   public id: number;
 
   @Column('varchar', {
     unique: true,
   })
+  @Index()
   public email: string;
 
   @Column('varchar', {
     unique: true,
     length: 30,
   })
+  @Index()
   public username: string;
 
   @Column('varchar')
   public password: string;
 
+  @Column('varchar')
+  public salt: string;
+
   @Column('varchar', {
     unique: true,
   })
-  public salt: string;
+  @Index()
+  public token: string;
 
   @Column('varchar', {
     length: 30,
@@ -50,9 +57,9 @@ export class User {
   @Column('tinyint')
   public privilege: number;
 
-  @Column('datetime')
+  @CreateDateColumn()
   public createdAt: string;
 
-  @Column('datetime')
+  @UpdateDateColumn()
   public updatedAt: string;
 }

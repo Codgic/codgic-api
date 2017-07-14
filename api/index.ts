@@ -24,7 +24,7 @@ createConnection(connectionOptions).then(async (connection) => {
 
   // Quit if port is invalid.
   if (typeof (config.api.port) !== 'number') {
-    console.error(`Invalid PORT: ${config.API.PORT}`);
+    console.error(`Invalid PORT: ${config.api.port}`);
     config.api.port = 8080;
     console.log('Using default PORT: 8080');
   }
@@ -35,4 +35,5 @@ createConnection(connectionOptions).then(async (connection) => {
   });
 }).catch((err) => {
   console.error('Database connection failed.');
+  console.error(err);
 });

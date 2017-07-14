@@ -15,8 +15,8 @@ const connectionOptions: ConnectionOptions = {
   username: config.database.username,
   password: config.database.password,
   logging: {
-    logQueries: true,
-    logFailedQueryError: true,
+    logQueries: config.database.log.queries,
+    logFailedQueryError: config.database.log.failedqueryerror,
   },
   autoSchemaSync: true,
   entities: [

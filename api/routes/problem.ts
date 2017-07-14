@@ -10,4 +10,6 @@ problem.get('/', Problem.getProblemList);
 problem.get('/:problemid', Problem.getProblemInfo);
 problem.get('/search/:keyword', Problem.searchProblem);
 
+problem.post('/', Problem.postProblem);
+
 export { problem };

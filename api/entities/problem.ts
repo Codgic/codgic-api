@@ -2,17 +2,19 @@
 
 // UNFINISHED!!!
 
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class Problem {
 
   @PrimaryGeneratedColumn()
+  @Index()
   public id: number;
 
   @Column('varchar', {
     unique: true,
   })
+  @Index()
   public problemid: number;
 
   @Column('varchar')
@@ -28,7 +30,9 @@ export class Problem {
   })
   public inputFormat: string;
 
-  @Column('varchar')
+  @Column('varchar', {
+    nullable: true,
+  })
   public outputFormat: string;
 
   @Column('varchar', {
@@ -50,9 +54,9 @@ export class Problem {
   @Column('varchar')
   public uploader: number;
 
-  @Column('datetime')
+  @CreateDateColumn()
   public createdAt: string;
 
-  @Column('datetime')
+  @UpdateDateColumn()
   public updatedAt: string;
 }

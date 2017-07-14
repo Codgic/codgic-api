@@ -18,3 +18,8 @@ export async function searchProblem(ctx: Koa.Context, next: () => Promise<any>) 
   ctx.body = await Problem.searchProblem(ctx.params.keyword, ctx.query.page, ctx.query.num);
   await next();
 }
+
+export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
+  ctx.body = await Problem.postProblem(ctx.body);
+  await next();
+}

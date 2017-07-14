@@ -9,6 +9,7 @@ oj:
   page:
     contest: 50
     problem: 50
+    user: 50
     
 # API
 api:
@@ -22,3 +23,6 @@ database:
   username: codgic
   password: YOURPASSWORD
   type: mysql
+  log:
+    queries: true
+    failedqueryerror: true
