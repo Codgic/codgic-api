@@ -11,7 +11,7 @@ export class Problem {
   @Index()
   public id: number;
 
-  @Column('varchar', {
+  @Column('int', {
     unique: true,
   })
   @Index()
@@ -51,8 +51,15 @@ export class Problem {
   @Column('int')
   public memoryLimit: number;
 
-  @Column('varchar')
-  public uploader: number;
+  @Column('int', {
+    nullable: true,
+  })
+  public createdBy: number;
+
+  @Column('int', {
+    nullable: true,
+  })
+  public updatedBy: number;
 
   @CreateDateColumn()
   public createdAt: string;

@@ -11,5 +11,6 @@ problem.get('/:problemid', Problem.getProblemInfo);
 problem.get('/search/:keyword', Problem.searchProblem);
 
 problem.post('/', Problem.postProblem);
+problem.post('/:problemid', Problem.updateProblem);
 
 export { problem };

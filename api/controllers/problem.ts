@@ -23,3 +23,8 @@ export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
   ctx.body = await Problem.postProblem(ctx.body);
   await next();
 }
+
+export async function updateProblem(ctx: Koa.Context, next: () => Promise<any>) {
+  ctx.body = await Problem.updateProblem(ctx.params.problemid, ctx.body);
+  await next();
+}
