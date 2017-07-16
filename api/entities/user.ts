@@ -31,12 +31,6 @@ export class User {
   public salt: string;
 
   @Column('varchar', {
-    unique: true,
-  })
-  @Index()
-  public token: string;
-
-  @Column('varchar', {
     length: 30,
   })
   public nickname: string;

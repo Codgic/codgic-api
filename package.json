@@ -22,15 +22,16 @@
   },
   "homepage": "https://github.com/Codgic/codgic-api#readme",
   "dependencies": {
-    "@types/js-yaml": "^3.5.31",
+    "@types/js-yaml": "^3.9.0",
     "@types/koa": "^2.0.39",
     "@types/koa-bodyparser": "^3.0.23",
     "@types/koa-compress": "^2.0.6",
+    "@types/koa-jwt": "^3.2.0",
     "@types/koa-logger": "^2.0.2",
     "@types/koa-mount": "^2.0.18",
     "@types/koa-router": "^7.0.22",
-    "@types/node": "^8.0.9",
-    "js-yaml": "^3.8.4",
+    "@types/node": "^8.0.13",
+    "js-yaml": "^3.9.0",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
     "koa-compress": "^2.0.0",
@@ -45,12 +46,5 @@
   "devDependencies": {
     "tslint": "^5.5.0",
     "typescript": "^2.4.1"
-  },
-  "babel": {
-    "presets": [
-      "latest",
-      "stage-0"
-    ],
-    "plugins": []
   }
 }
