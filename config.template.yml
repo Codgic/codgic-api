@@ -6,14 +6,21 @@ oj:
   name: Codgic
   language: en
   timezone: Asia/Shanghai
-  page:
-    contest: 50
-    problem: 50
-    user: 50
+  default:
+    page:
+      contest: 50
+      problem: 50
+      user: 20
+    contest:
+      duration: 7200
+    problem:
+      memory_limit: 256
+      time_limit: 1000
     
 # API
 api:
   port: 8080
+  jwt_secret: FuckZh@ngKeW@terQueen
 
 # Database
 database:
@@ -25,4 +32,4 @@ database:
   type: mysql
   log:
     queries: true
-    failedqueryerror: true
+    failed_query_error: true

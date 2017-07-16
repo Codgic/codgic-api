@@ -43,7 +43,7 @@ export async function getProblemInfo(problemid: number) {
 }
 
 // Get problem list
-export async function getProblemList(page: number = 1, num: number = config.oj.page.problem) {
+export async function getProblemList(page: number = 1, num: number = config.oj.default.page.problem) {
   try {
     if (page < 1 || num < 1) {
       throw new Error ('Invalid request.');
@@ -84,7 +84,7 @@ export async function getProblemList(page: number = 1, num: number = config.oj.p
 }
 
 // Search problem
-export async function searchProblem(query: string, page: number = 1, num: number = config.oj.page.problem) {
+export async function searchProblem(query: string, page: number = 1, num: number = config.oj.default.page.problem) {
   try {
     if (page < 1 || num < 1) {
       throw new Error ('Invalid request.');

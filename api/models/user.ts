@@ -19,7 +19,6 @@ export async function getUserInfo(username: string) {
                             .createQueryBuilder('user')
                             .select([
                               'user.id',
-                              'user.uuid',
                               'user.email',
                               'user.username',
                               'user.nickname',
@@ -58,7 +57,7 @@ export async function getCurrentInfo() {
   });
 }
 
-export async function searchUser(query: string, page: number = 1, num: number = config.page.user) {
+export async function searchUser(query: string, page: number = 1, num: number = config.oj.default.page.user) {
   try {
     if (page < 1 || num < 1) {
       throw new Error('Invalid request.');

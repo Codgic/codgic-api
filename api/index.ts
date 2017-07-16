@@ -6,6 +6,7 @@ import 'reflect-metadata';
 import * as Koa from 'koa';
 
 import { getConfig } from './init/config';
+import { initJWT } from './init/jwt';
 import { initKoa } from './init/koa';
 import { initRoutes } from './init/routes';
 
@@ -20,6 +21,7 @@ createConnection(connectionOptions).then(async (connection) => {
 
   // Initialize everything.
   initKoa(app);
+  initJWT(app, config.api.jwt_secret);
   initRoutes(app);
 
   // Quit if port is invalid.
