@@ -49,7 +49,7 @@ export async function verifyAuthInfo(data: any) {
     const retrievedPassword: string = crypto
                                       .createHash('sha256')
                                       .update(data.password + user.salt, 'utf8')
-                                      .digest('hex');
+                                      .toString();
 
     if (retrievedPassword === user.password) {
       const accessToken = jwt.sign({

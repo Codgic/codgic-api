@@ -46,7 +46,7 @@ export async function getProblemInfo(problemid: number) {
 export async function getProblemList(page: number = 1, num: number = config.oj.default.page.problem) {
   try {
     if (page < 1 || num < 1) {
-      throw new Error ('Invalid request.');
+      throw new Error('Invalid request.');
     }
 
     const firstResult = (page - 1) * num;

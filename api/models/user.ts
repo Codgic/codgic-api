@@ -1,6 +1,7 @@
 /* /api/models/user.ts */
 
 import * as crypto from 'crypto';
+import * as emailValidator from 'email-validator';
 
 import { getRepository } from 'typeorm';
 
@@ -12,8 +13,8 @@ const config = getConfig();
 
 export async function getUserInfo(username: string) {
   try {
-    if (username === undefined) {
-      throw new Error('Invalid username.');
+    if (!username) {
+      throw new Error('Username can not be blank.');
     }
 
     const userRepository = await getRepository(User);
@@ -104,8 +105,54 @@ export async function searchUser(query: string, page: number = 1, num: number = 
 
 export async function signUp(data: any) {
   try {
-    // Verify data.
+    // Verify data
+    if (!data.email || !data.username || !data.password) {
+      throw new Error('Required fields can not be blank. ');
+    }
+    if (!emailValidator.validate("test@email.com")) {
+      throw new Error('Invalid email.');
+    }
+
+    const user = new User();
+
+    // Generate salt
+    crypto.randomBytes(256, (err, buf) => {
+      if (err) {
+        console.error(err);
+        throw new Error('Failed to generate salt.');
+      } else {
+        user.salt = buf.toString();
+      }
+    });
+
+    // Generate password
+    user.password = crypto
+                    .createHash('sha256')
+                    .update(data.password + user.salt)
+                    .toString();
     
+    user.email = data.email;
+    user.username = data.username;
+    user.nickname = data.nickname;
+    user.sex = data.sex;
+    user.motto = data.motto;
+    user.description = data.description;
+
+    const userRepository = await getRepository(User);
+
+    await userRepository
+          .persist(user)
+          .catch((err) => {
+            console.error(err);
+            throw new Error('Database operation failure.');
+          });
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(user);
+      });
+    });
+
   } catch (err) {
     return new Promise((resolve) => {
       setTimeout(() => {
