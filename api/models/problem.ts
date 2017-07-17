@@ -21,7 +21,7 @@ export async function getProblemInfo(problemid: number) {
                               .where(`problem.problemid = '${problemid}'`)
                               .getOne()
                               .catch((err) => {
-                                console.log(err);
+                                console.error(err);
                                 throw new Error('Database operation failed.');
                               });
 
@@ -63,7 +63,7 @@ export async function getProblemList(page: number = 1, num: number = config.oj.d
                               .orderBy('problem.problemid', 'ASC')
                               .getMany()
                               .catch((err) => {
-                                console.log(err);
+                                console.error(err);
                                 throw new Error('Database operation failed.');
                               });
 
@@ -109,7 +109,7 @@ export async function searchProblem(query: string, page: number = 1, num: number
                                 .orderBy('problem.problemid', 'ASC')
                                 .getMany()
                                 .catch((err) => {
-                                  console.log(err);
+                                  console.error(err);
                                   throw new Error('Database operation failed.');
                                 });
 
@@ -154,7 +154,7 @@ export async function postProblem(data: any) {
           .orderBy('problem.problemid', 'DESC')
           .getOne()
           .catch((err) => {
-            console.log(err);
+            console.error(err);
             throw new Error('Database operation failed.');
           });
 
@@ -221,7 +221,7 @@ export async function updateProblem(problemid: number, data: any) {
           .where(`problem.problemid = ${problemid}`)
           .getOne()
           .catch((err) => {
-            console.log(err);
+            console.error(err);
             throw new Error('Database operation failed.');
           });
 

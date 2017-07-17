@@ -6,6 +6,7 @@ import * as jwtKoa from 'koa-jwt';
 import { getRepository } from 'typeorm';
 
 import { getConfig } from './../init/config';
+
 import { User } from './../entities/user';
 
 const config = getConfig();
@@ -28,14 +29,18 @@ export async function verifyAuthInfo(data: any) {
                          'user.salt',
                          'user.privilege',
                        ])
-                       .where(`user.username = ${data.username}`)
-                       .getOne();
+                       .where(`user.username = '${data.username}'`)
+                       .getOne()
+                       .catch((err) => {
+                         console.error(err);
+                         throw new Error('Database operation failed.');
+                       });
 
-    if (!user) {
+    if (user === undefined) {
       // Account does not exist.
       throw new Error('Incorrect username or password.');
     }
-           
+
     if (user.privilege === 0) {
       throw new Error('Account has been disabled.');
     }
@@ -64,9 +69,9 @@ export async function verifyAuthInfo(data: any) {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
-          error: err,
+          error: err.message,
         });
       });
     });
-  } 
+  }
 }

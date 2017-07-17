@@ -20,6 +20,7 @@ export function initJWT(app: Koa, secret: string) {
   app.use(jwt({ secret: `${secret}` }).unless({
     path: [
       '/',
+      '/auth',
     ],
   }));
 
