@@ -18,3 +18,8 @@ export async function searchUser(ctx: Koa.Context, next: () => Promise<any>) {
   ctx.body = await User.searchUser(ctx.params.keyword, ctx.query.page, ctx.query.num);
   await next();
 }
+
+export async function signUp(ctx: Koa.Context, next: () => Promise<any>) {
+  ctx.body = await User.signUp(ctx.body);
+  await next();
+}

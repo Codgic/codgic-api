@@ -1,5 +1,7 @@
 /* /api/models/user.ts */
 
+import * as crypto from 'crypto';
+
 import { getRepository } from 'typeorm';
 
 import { getConfig } from './../init/config';
@@ -89,6 +91,21 @@ export async function searchUser(query: string, page: number = 1, num: number = 
         resolve(userInfo);
       });
     });
+  } catch (err) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
+        });
+      });
+    });
+  }
+}
+
+export async function signUp(data: any) {
+  try {
+    // Verify data.
+    
   } catch (err) {
     return new Promise((resolve) => {
       setTimeout(() => {

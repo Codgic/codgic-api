@@ -1,5 +1,6 @@
 /* /api/models/auth.ts */
 
+import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import * as jwtKoa from 'koa-jwt';
 
@@ -45,7 +46,12 @@ export async function verifyAuthInfo(data: any) {
       throw new Error('Account has been disabled.');
     }
 
-    if (1 === 1) {
+    const retrievedPassword: string = crypto
+                                      .createHash('sha256')
+                                      .update(data.password + user.salt, 'utf8')
+                                      .digest('hex');
+
+    if (retrievedPassword === user.password) {
       const accessToken = jwt.sign({
         id: user.id,
         username: user.username,

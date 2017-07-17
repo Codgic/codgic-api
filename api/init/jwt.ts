@@ -8,7 +8,7 @@ export function initJWT(app: Koa, secret: string) {
       if (401 === err.status) {
         ctx.status = 401;
         ctx.body = {
-          err: 'Protected resource, use Authorization header to get access.',
+          error: 'Protected resource, use Authorization header to get access.',
         };
       } else {
         throw err;
