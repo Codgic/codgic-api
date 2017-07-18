@@ -33,7 +33,11 @@ export async function getUserInfo(username: string) {
                               'user.updatedAt',
                               ])
                             .where(`user.username = '${username}'`)
-                            .getOne();
+                            .getOne()
+                            .catch((err) => {
+                              console.error(err);
+                              throw new Error('Database operation failed.');
+                            });
 
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -85,7 +89,11 @@ export async function searchUser(query: string, page: number = 1, num: number = 
                             .where(`user.username LIKE ${query}`)
                             .orWhere(`user.email LIKE ${query}`)
                             .orWhere(`user.nickname LIKE ${query}`)
-                            .getOne();
+                            .getOne()
+                            .catch((err) => {
+                              console.error(err);
+                              throw new Error('Database operation failed.');
+                            });
 
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -109,28 +117,26 @@ export async function signUp(data: any) {
     if (!data.email || !data.username || !data.password) {
       throw new Error('Required fields can not be blank. ');
     }
-    if (!emailValidator.validate("test@email.com")) {
+    if (!emailValidator.validate(data.email)) {
       throw new Error('Invalid email.');
     }
 
     const user = new User();
 
     // Generate salt
-    crypto.randomBytes(256, (err, buf) => {
+    crypto.randomBytes(32, (err, buf) => {
       if (err) {
         console.error(err);
         throw new Error('Failed to generate salt.');
       } else {
-        user.salt = buf.toString();
+        user.salt = buf.toString('hex');
+        user.password = crypto
+                        .createHash('sha512')
+                        .update(data.password.toString() + user.salt)
+                        .digest('hex');
       }
     });
 
-    // Generate password
-    user.password = crypto
-                    .createHash('sha256')
-                    .update(data.password + user.salt)
-                    .toString();
-    
     user.email = data.email;
     user.username = data.username;
     user.nickname = data.nickname;
@@ -138,14 +144,28 @@ export async function signUp(data: any) {
     user.motto = data.motto;
     user.description = data.description;
 
+    // **Magic Number: To be rewritten
+    user.privilege = 1;
+
+    if (config.oj.policy.signup_need_confirmation) {
+      user.privilege = 0;
+    }
+
     const userRepository = await getRepository(User);
 
     await userRepository
           .persist(user)
           .catch((err) => {
             console.error(err);
-            throw new Error('Database operation failure.');
+            if (err.errno === 1062) {
+              throw new Error('Username or email taken.');
+            }
+            throw new Error('Database operation failed.');
           });
+
+    // Do not return sensitive information.
+    delete(user.password);
+    delete(user.salt);
 
     return new Promise((resolve) => {
       setTimeout(() => {

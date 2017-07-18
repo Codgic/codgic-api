@@ -21,6 +21,7 @@ export function initJWT(app: Koa, secret: string) {
     path: [
       '/',
       '/auth',
+      '/user',
     ],
   }));
 

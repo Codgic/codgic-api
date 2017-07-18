@@ -6,6 +6,14 @@ oj:
   name: Codgic
   language: en
   timezone: Asia/Shanghai
+  policy:
+    access_need_login: false
+    signup_need_confirmation: false
+  privilege:
+    count: 3
+    1: Source
+    2: Problem
+    3: System
   default:
     page:
       contest: 50
@@ -20,7 +28,9 @@ oj:
 # API
 api:
   port: 8080
-  jwt_secret: FuckZh@ngKeW@terQueen
+  jwt:
+    secret: FuckZh@ngKeW@terQueen
+    expire_time: 3600h
 
 # Database
 database:

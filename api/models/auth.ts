@@ -31,31 +31,33 @@ export async function verifyAuthInfo(data: any) {
                          'user.privilege',
                        ])
                        .where(`user.username = '${data.username}'`)
+                       .orWhere(`user.email = '${data.username}'`)
                        .getOne()
                        .catch((err) => {
                          console.error(err);
                          throw new Error('Database operation failed.');
                        });
 
-    if (user === undefined) {
+    if (!user) {
       // Account does not exist.
       throw new Error('Incorrect username or password.');
     }
 
-    if (user.privilege === 0) {
+    // **Magic Number: to be rewritten.
+    if (!(user.privilege & 1)) {
       throw new Error('Account has been disabled.');
     }
 
-    const retrievedPassword: string = crypto
-                                      .createHash('sha256')
-                                      .update(data.password + user.salt, 'utf8')
-                                      .toString();
+    const retrievedPassword = crypto
+                              .createHash('sha512')
+                              .update(data.password.toString() + user.salt)
+                              .digest('hex');
 
     if (retrievedPassword === user.password) {
       const accessToken = jwt.sign({
         id: user.id,
-        username: user.username,
         email: user.email,
+        username: user.username,
         privilege: user.privilege,
       }, config.api.jwt.secret, {
         expiresIn: config.api.jwt.expire_time,
