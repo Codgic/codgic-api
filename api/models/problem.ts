@@ -11,7 +11,7 @@ const config = getConfig();
 // Get problem info
 export async function getProblemInfo(problemid: number) {
   try {
-    if (problemid === undefined) {
+    if (!problemid) {
       throw new Error('Invalid problem id.');
     }
 
@@ -43,10 +43,14 @@ export async function getProblemInfo(problemid: number) {
 }
 
 // Get problem list
-export async function getProblemList(page: number = 1, num: number = config.oj.default.page.problem) {
+export async function getProblemList(keyword: string, page: number = 1, num: number = config.oj.default.page.problem) {
   try {
     if (page < 1 || num < 1) {
       throw new Error('Invalid request.');
+    }
+
+    if (!keyword) {
+      keyword = '';
     }
 
     const firstResult = (page - 1) * num;
@@ -61,6 +65,8 @@ export async function getProblemList(page: number = 1, num: number = config.oj.d
                               .setFirstResult(firstResult)
                               .setMaxResults(num)
                               .orderBy('problem.problemid', 'ASC')
+                              .where(`problem.title LIKE '%${keyword}%'`)
+                              .orWhere(`problem.description LIKE '%${keyword}%'`)
                               .getMany()
                               .catch((err) => {
                                 console.error(err);
@@ -70,52 +76,6 @@ export async function getProblemList(page: number = 1, num: number = config.oj.d
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(problemList);
-      });
-    });
-  } catch (err) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          error: err.message,
-        });
-      });
-    });
-  }
-}
-
-// Search problem
-export async function searchProblem(query: string, page: number = 1, num: number = config.oj.default.page.problem) {
-  try {
-    if (page < 1 || num < 1) {
-      throw new Error ('Invalid request.');
-    }
-    if (!query) {
-      throw new Error ('Keyword can not be blank.');
-    }
-
-    const firstResult = (page - 1) * num;
-    const problemRepository = await getRepository(Problem);
-    const searchResult = await problemRepository
-                                .createQueryBuilder('problem')
-                                .select([
-                                  'problem.id',
-                                  'problem.problemid',
-                                  'problem.title',
-                                ])
-                                .where(`problem.title LIKE '%${query}%'`)
-                                .orWhere(`problem.description LIKE '%${query}%'`)
-                                .setFirstResult(firstResult)
-                                .setMaxResults(num)
-                                .orderBy('problem.problemid', 'ASC')
-                                .getMany()
-                                .catch((err) => {
-                                  console.error(err);
-                                  throw new Error('Database operation failed.');
-                                });
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(searchResult);
       });
     });
   } catch (err) {
@@ -225,7 +185,7 @@ export async function updateProblem(problemid: number, data: any) {
             throw new Error('Database operation failed.');
           });
 
-    if (thisProblem === undefined || thisProblem.id === undefined) {
+    if (!thisProblem) {
       throw new Error('Problem does not exist.');
     }
 

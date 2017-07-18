@@ -12,4 +12,9 @@ user.get('/search/:keyword', User.searchUser);
 
 user.post('/', User.signUp);
 
+// Unimplemented:
+
+// user.put('/', User.updateProfile);
+// user.delete('/', User.deleteProfile);
+
 export { user };

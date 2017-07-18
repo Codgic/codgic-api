@@ -14,8 +14,7 @@ const config = getConfig();
 
 export async function verifyAuthInfo(data: any) {
   try {
-  // To be finished!
-    if (data.username === undefined || data.password === undefined) {
+    if (!data.username || !data.password) {
       throw new Error('Invalid username or password.');
     }
 

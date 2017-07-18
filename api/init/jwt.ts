@@ -22,6 +22,7 @@ export function initJWT(app: Koa, secret: string) {
       '/',
       '/auth',
       '/user',
+      '/problem',
     ],
   }));
 

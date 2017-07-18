@@ -9,6 +9,7 @@ oj:
   policy:
     access_need_login: false
     signup_need_confirmation: false
+    signup_need_verify_email: false
   privilege:
     count: 3
     1: Source
