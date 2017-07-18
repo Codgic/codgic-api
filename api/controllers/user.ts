@@ -25,7 +25,13 @@ export async function getUserInfo(ctx: Koa.Context, next: () => Promise<any>) {
 }
 
 export async function searchUser(ctx: Koa.Context, next: () => Promise<any>) {
-  ctx.body = await User.searchUser(ctx.params.keyword, ctx.query.page, ctx.query.num);
+  ctx.body = await User.searchUser(
+    ctx.query.sort,
+    ctx.query.order,
+    ctx.query.keyword,
+    ctx.query.page,
+    ctx.query.num,
+  );
   if (ctx.body.error) {
     ctx.status = 404;
   } else {

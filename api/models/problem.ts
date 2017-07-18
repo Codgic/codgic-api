@@ -43,14 +43,14 @@ export async function getProblemInfo(problemid: number) {
 }
 
 // Get problem list
-export async function getProblemList(keyword: string, page: number = 1, num: number = config.oj.default.page.problem) {
+export async function getProblemList(
+  sort: string = 'problemid',
+  order: string = 'ASC',
+  page: number = 1,
+  num: number = config.oj.default.page.problem) {
   try {
     if (page < 1 || num < 1) {
       throw new Error('Invalid request.');
-    }
-
-    if (!keyword) {
-      keyword = '';
     }
 
     const firstResult = (page - 1) * num;
@@ -65,8 +65,6 @@ export async function getProblemList(keyword: string, page: number = 1, num: num
                               .setFirstResult(firstResult)
                               .setMaxResults(num)
                               .orderBy('problem.problemid', 'ASC')
-                              .where(`problem.title LIKE '%${keyword}%'`)
-                              .orWhere(`problem.description LIKE '%${keyword}%'`)
                               .getMany()
                               .catch((err) => {
                                 console.error(err);
@@ -76,6 +74,64 @@ export async function getProblemList(keyword: string, page: number = 1, num: num
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(problemList);
+      });
+    });
+  } catch (err) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
+        });
+      });
+    });
+  }
+}
+
+// Search problem
+export async function searchProblem(
+  sort: string = 'problemid',
+  order: 'ASC' | 'DESC'  = 'ASC',
+  keyword: string,
+  page: number = 1,
+  num: number = config.oj.default.page.problem) {
+  try {
+    if (page < 1 || num < 1) {
+      throw new Error('Invalid request.');
+    }
+    if (!keyword) {
+      throw new Error('Keyword can not be blank.');
+    }
+    if (!order) {
+      throw new Error('Invalid order.');
+    }
+    // **To be extended.
+    if (sort !== 'problemid' && sort !== 'title' && sort !== 'createdAt' && sort !== 'updatedAt') {
+      throw new Error('Invalid sort.');
+    }
+
+    const firstResult = (page - 1) * num;
+    const problemRepository = await getRepository(Problem);
+    const searchResult = await problemRepository
+                                .createQueryBuilder('problem')
+                                .select([
+                                  'problem.id',
+                                  'problem.problemid',
+                                  'problem.title',
+                                ])
+                                .where(`problem.title LIKE '%${keyword}%'`)
+                                .orWhere(`problem.description LIKE '%${keyword}%'`)
+                                .setFirstResult(firstResult)
+                                .setMaxResults(num)
+                                .orderBy(`problem.${sort}`, order)
+                                .getMany()
+                                .catch((err) => {
+                                  console.error(err);
+                                  throw new Error('Database operation failed.');
+                                });
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(searchResult);
       });
     });
   } catch (err) {

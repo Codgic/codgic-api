@@ -14,7 +14,7 @@ export function initKoa(app: Koa) {
   app.on('error', (err: string) => console.error(err));
 
   app.use((ctx, next) => {
-    ctx.body = ctx.request.body;
+    ctx.status = 404;
     return next();
   });
 }

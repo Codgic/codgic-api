@@ -52,8 +52,10 @@ export class User {
   public privilege: number;
 
   @CreateDateColumn()
+  @Index()
   public createdAt: string;
 
   @UpdateDateColumn()
+  @Index()
   public updatedAt: string;
 }

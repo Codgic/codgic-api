@@ -64,14 +64,25 @@ export async function getCurrentInfo() {
   });
 }
 
-export async function searchUser(query: string, page: number = 1, num: number = config.oj.default.page.user) {
+export async function searchUser(
+  sort: string = 'id',
+  order: 'ASC' | 'DESC'  = 'ASC',
+  keyword: string,
+  page: number = 1,
+  num: number = config.oj.default.page.user) {
   try {
     if (page < 1 || num < 1) {
       throw new Error('Invalid request.');
     }
-
-    if (!query) {
+    if (!keyword) {
       throw new Error('Keyword can not be blank.');
+    }
+    if (!order) {
+      throw new Error('Invalid order.');
+    }
+    // **To be extended.
+    if (sort !== 'id' && sort !== 'username' && sort !== 'createdAt') {
+      throw new Error('Invalid sort.');
     }
 
     const firstResult = (page - 1) * num;
@@ -86,10 +97,13 @@ export async function searchUser(query: string, page: number = 1, num: number = 
                               'user.sex',
                               'user.privilege',
                               ])
-                            .where(`user.username LIKE ${query}`)
-                            .orWhere(`user.email LIKE ${query}`)
-                            .orWhere(`user.nickname LIKE ${query}`)
-                            .getOne()
+                            .where(`user.username LIKE '%${keyword}%'`)
+                            .orWhere(`user.email LIKE '%${keyword}%'`)
+                            .orWhere(`user.nickname LIKE '%${keyword}%'`)
+                            .setFirstResult(firstResult)
+                            .setMaxResults(num)
+                            .orderBy(`user.${sort}`, order)
+                            .getMany()
                             .catch((err) => {
                               console.error(err);
                               throw new Error('Database operation failed.');
