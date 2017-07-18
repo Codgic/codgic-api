@@ -15,6 +15,7 @@ export function initKoa(app: Koa) {
 
   app.use((ctx, next) => {
     return next().catch((err) => {
+      // Common error handler
       switch (err) {
         case 401:
           ctx.status = 401;

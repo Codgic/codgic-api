@@ -12,7 +12,7 @@ export function getConfig() {
   } catch (err) {
     console.error(err);
   }
-  if (typeof (conf) === 'undefined') {
+  if (!conf) {
     console.error('Failed to read config.yml.');
     process.exit();
   }
