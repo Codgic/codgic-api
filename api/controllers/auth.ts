@@ -5,7 +5,7 @@ import * as Koa from 'koa';
 import * as Auth from './../models/auth';
 
 export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>) {
-  ctx.body = await Auth.verifyAuthInfo(ctx.body);
+  ctx.body = await Auth.verifyAuthInfo(ctx.request.body);
   if (ctx.body.error) {
     ctx.status = 400;
   } else {

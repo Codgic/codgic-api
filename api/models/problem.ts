@@ -1,5 +1,7 @@
 /* /api/models/problem.ts */
 
+import * as Koa from 'koa';
+
 import { getRepository } from 'typeorm';
 
 import { getConfig } from './../init/config';
@@ -146,12 +148,9 @@ export async function searchProblem(
 }
 
 // Post problem.
-export async function postProblem(data: any) {
-
-  // **Should verify token first.
-
+export async function postProblem(data: any, userid: number) {
   try {
-    if (!data.title || !data.memoryLimit || !data.timeLimit) {
+    if (!data.title || !data.memoryLimit || !data.timeLimit || !userid) {
       throw new Error('Required information not provided.');
     }
 
@@ -190,8 +189,7 @@ export async function postProblem(data: any) {
     problem.additionalInfo = data.additionalInfo;
     problem.timeLimit = data.timeLimit;
     problem.memoryLimit = data.memoryLimit;
-
-    problem.createdBy = 1; // **Should be obtained automatically!
+    problem.createdBy = userid;
 
     await problemRepository
       .persist(problem)
@@ -218,10 +216,7 @@ export async function postProblem(data: any) {
 }
 
 // Update Problem
-export async function updateProblem(problemid: number, data: any) {
-
-  // **Should verify token first!
-
+export async function updateProblem(problemid: number, data: any, userid: number) {
   try {
     if (!data.problemid || !data.title || !data.memoryLimit || !data.timeLimit) {
       throw new Error('Required information not provided.');
@@ -256,8 +251,7 @@ export async function updateProblem(problemid: number, data: any) {
     problem.additionalInfo = data.additionalInfo;
     problem.timeLimit = data.timeLimit;
     problem.memoryLimit = data.memoryLimit;
-
-    problem.updatedBy = 1; // **Should be obtained automatically.
+    problem.updatedBy = userid;
 
     await problemRepository
       .persist(problem)

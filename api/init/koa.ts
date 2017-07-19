@@ -16,23 +16,23 @@ export function initKoa(app: Koa) {
   app.use((ctx, next) => {
     return next().catch((err) => {
       // Common error handler
-      switch (err) {
+      switch (err.status) {
         case 401:
           ctx.status = 401;
           ctx.body = {
-            error: 'Unauthorized.',
+            error: 'Unauthorized',
           };
           break;
         case 404:
           ctx.status = 404;
           ctx.body = {
-            error: 'Not found.',
+            error: 'Not found',
           };
           break;
         case 500:
           ctx.status = 500;
           ctx.body = {
-            error: 'Internal Server Error.',
+            error: 'Internal Server Error',
           };
           break;
       }

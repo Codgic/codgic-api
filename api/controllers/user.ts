@@ -41,7 +41,7 @@ export async function searchUser(ctx: Koa.Context, next: () => Promise<any>) {
 }
 
 export async function signUp(ctx: Koa.Context, next: () => Promise<any>) {
-  ctx.body = await User.signUp(ctx.body);
+  ctx.body = await User.signUp(ctx.request.body);
   if (ctx.body.error) {
     ctx.status = 400;
   } else {

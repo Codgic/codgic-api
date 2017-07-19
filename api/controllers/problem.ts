@@ -40,7 +40,8 @@ export async function searchProblem(ctx: Koa.Context, next: () => Promise<any>) 
 }
 
 export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
-  ctx.body = await Problem.postProblem(ctx.body);
+  console.log(ctx.state.user);
+  ctx.body = await Problem.postProblem(ctx.request.body, ctx.state.user.id);
   if (ctx.body.error) {
     ctx.status = 400;
   } else {
@@ -50,7 +51,7 @@ export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
 }
 
 export async function updateProblem(ctx: Koa.Context, next: () => Promise<any>) {
-  ctx.body = await Problem.updateProblem(ctx.params.problemid, ctx.body);
+  ctx.body = await Problem.updateProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
   if (ctx.body.error) {
     ctx.status = 400;
   } else {
