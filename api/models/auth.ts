@@ -49,7 +49,7 @@ export async function verifyAuthInfo(data: any) {
 
     const retrievedPassword = crypto
                               .createHash('sha512')
-                              .update(data.password.toString() + user.salt)
+                              .update(data.password + user.salt)
                               .digest('hex');
 
     if (retrievedPassword === user.password) {
@@ -60,6 +60,9 @@ export async function verifyAuthInfo(data: any) {
         privilege: user.privilege,
       }, config.api.jwt.secret, {
         expiresIn: config.api.jwt.expire_time,
+      }, (err) => {
+        console.error(err);
+        throw new Error('Failed to generate token.');
       });
 
       return new Promise((resolve) => {

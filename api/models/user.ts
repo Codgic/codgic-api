@@ -146,7 +146,7 @@ export async function signUp(data: any) {
         user.salt = buf.toString('hex');
         user.password = crypto
                         .createHash('sha512')
-                        .update(data.password.toString() + user.salt)
+                        .update(data.password + user.salt)
                         .digest('hex');
       }
     });

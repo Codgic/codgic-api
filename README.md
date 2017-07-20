@@ -9,7 +9,7 @@ If you have any ideas or suggestions, feel free to create issues at https://gith
 - [x] An initial RESTful API Framework.
 - [x] Hello Typescript.
 - [x] Hello TypeORM.
-- [ ] Hello JWT.
+- [x] Hello JWT.
 - [ ] Design database structure.
 - [ ] Design RESTful API.
 - [ ] User login.

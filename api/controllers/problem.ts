@@ -40,7 +40,6 @@ export async function searchProblem(ctx: Koa.Context, next: () => Promise<any>) 
 }
 
 export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
-  console.log(ctx.state.user);
   ctx.body = await Problem.postProblem(ctx.request.body, ctx.state.user.id);
   if (ctx.body.error) {
     ctx.status = 400;

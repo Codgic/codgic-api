@@ -21,7 +21,7 @@ createConnection(connectionOptions).then(async (connection) => {
 
   // Initialize everything.
   initKoa(app);
-  initJWT(app, config.api.jwt_secret);
+  initJWT(app);
   initRoutes(app);
 
   // Quit if port is invalid.
