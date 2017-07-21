@@ -7,7 +7,9 @@ import * as User from './../models/user';
 export async function getCurrentInfo(ctx: Koa.Context, next: () => Promise<any>) {
   ctx.body = await User.getCurrentInfo();
   if (ctx.body.error) {
-    ctx.status = 404;
+    ctx.throw(404, {
+      error: ctx.body.error,
+    });
   } else {
     ctx.status = 200;
   }
@@ -17,7 +19,9 @@ export async function getCurrentInfo(ctx: Koa.Context, next: () => Promise<any>)
 export async function getUserInfo(ctx: Koa.Context, next: () => Promise<any>) {
   ctx.body = await User.getUserInfo(ctx.params.username);
   if (ctx.body.error) {
-    ctx.status = 404;
+    ctx.throw(404, {
+      error: ctx.body.error,
+    });
   } else {
     ctx.status = 200;
   }
@@ -33,7 +37,9 @@ export async function searchUser(ctx: Koa.Context, next: () => Promise<any>) {
     ctx.query.num,
   );
   if (ctx.body.error) {
-    ctx.status = 404;
+    ctx.throw(404, {
+      error: ctx.body.error,
+    });
   } else {
     ctx.status = 200;
   }
@@ -43,7 +49,9 @@ export async function searchUser(ctx: Koa.Context, next: () => Promise<any>) {
 export async function signUp(ctx: Koa.Context, next: () => Promise<any>) {
   ctx.body = await User.signUp(ctx.request.body);
   if (ctx.body.error) {
-    ctx.status = 400;
+    ctx.throw(400, {
+      error: ctx.body.error,
+    });
   } else {
     ctx.status = 201;
   }

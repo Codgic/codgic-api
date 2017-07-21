@@ -10,7 +10,11 @@ If you have any ideas or suggestions, feel free to create issues at https://gith
 - [x] Hello Typescript.
 - [x] Hello TypeORM.
 - [x] Hello JWT.
+- [ ] Write tests.
 - [ ] Design database structure.
 - [ ] Design RESTful API.
-- [ ] User login.
+- [x] User login.
 - [ ] More...
+
+# ETA?
+tan90°.

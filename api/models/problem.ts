@@ -148,7 +148,7 @@ export async function searchProblem(
 }
 
 // Post problem.
-export async function postProblem(data: any, userid: number) {
+export async function postProblemAdmin(data: any, userid: number) {
   try {
     if (!data.title || !data.memoryLimit || !data.timeLimit || !userid) {
       throw new Error('Required information not provided.');
@@ -216,7 +216,7 @@ export async function postProblem(data: any, userid: number) {
 }
 
 // Update Problem
-export async function updateProblem(problemid: number, data: any, userid: number) {
+export async function updateProblemAdmin(problemid: number, data: any, userid: number) {
   try {
     if (!data.problemid || !data.title || !data.memoryLimit || !data.timeLimit) {
       throw new Error('Required information not provided.');
