@@ -55,15 +55,6 @@ export async function getUserInfo(username: string) {
   }
 }
 
-export async function getCurrentInfo() {
-  const userRepository = await getRepository(User);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve('Coming Soon!');
-    });
-  });
-}
-
 export async function searchUser(
   sort: string = 'id',
   order: 'ASC' | 'DESC'  = 'ASC',

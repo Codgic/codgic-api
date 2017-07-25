@@ -1,7 +1,8 @@
 # codgic-api
 API handler of Codgic Online Judge.
 
-**EARLY DEVELOPMENT STAGE. Literally speaking nothing has been implemented.**
+**EARLY DEVELOPMENT STAGE.**  
+**Literally speaking nothing has been implemented.**
 
 If you have any ideas or suggestions, feel free to create issues at https://github.com/Codgic/codgic-api/issues.
 
@@ -14,6 +15,7 @@ If you have any ideas or suggestions, feel free to create issues at https://gith
 - [ ] Design database structure.
 - [ ] Design RESTful API.
 - [x] User login.
+- [x] Trip to Sanya to grab some typhoon.
 - [ ] More...
 
 # ETA?

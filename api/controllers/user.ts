@@ -5,7 +5,12 @@ import * as Koa from 'koa';
 import * as User from './../models/user';
 
 export async function getCurrentInfo(ctx: Koa.Context, next: () => Promise<any>) {
-  ctx.body = await User.getCurrentInfo();
+  // Verify login.
+  if (!ctx.state.user) {
+    ctx.throw(400);
+  }
+
+  ctx.body = await User.getUserInfo(ctx.state.user.id);
   if (ctx.body.error) {
     ctx.throw(404, {
       error: ctx.body.error,

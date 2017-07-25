@@ -190,6 +190,7 @@ export async function postProblemAdmin(data: any, userid: number) {
     problem.timeLimit = data.timeLimit;
     problem.memoryLimit = data.memoryLimit;
     problem.createdBy = userid;
+    problem.owner = userid;
 
     await problemRepository
       .persist(problem)
