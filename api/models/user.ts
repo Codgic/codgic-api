@@ -7,6 +7,8 @@ import { getRepository } from 'typeorm';
 
 import { getConfig } from './../init/config';
 
+import { UserPrivilege } from './../init/privilege';
+
 import { User } from './../entities/user';
 
 const config = getConfig();
@@ -149,8 +151,8 @@ export async function signUp(data: any) {
     user.motto = data.motto;
     user.description = data.description;
 
-    // **Magic Number: To be rewritten
-    user.privilege = 1;
+    // Default privilege is 1.
+    user.privilege = UserPrivilege.enabled;
 
     if (config.oj.policy.signup_need_confirmation) {
       user.privilege = 0;

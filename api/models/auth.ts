@@ -8,6 +8,8 @@ import { getRepository } from 'typeorm';
 
 import { getConfig } from './../init/config';
 
+import { UserPrivilege } from './../init/privilege';
+
 import { User } from './../entities/user';
 
 const config = getConfig();
@@ -42,8 +44,7 @@ export async function verifyAuthInfo(data: any) {
       throw new Error('Incorrect username or password.');
     }
 
-    // **Magic Number: to be rewritten.
-    if (!(user.privilege & 1)) {
+    if (!(user.privilege & UserPrivilege.enabled)) {
       throw new Error('Account has been disabled.');
     }
 

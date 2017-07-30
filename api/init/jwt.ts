@@ -8,7 +8,6 @@ import { getConfig } from './config';
 const config = getConfig();
 
 export function initJWT(app: Koa) {
-
   // Initialize JWT secret.
   app.use(jwt({
     secret: config.api.jwt.secret,
@@ -21,10 +20,4 @@ export function initJWT(app: Koa) {
     ],
   }));
 
-  // Forbade disabled user.
-  app.use((ctx, next) => {
-    if (ctx.state.user && !(ctx.state.user.privilege & UserPrivilege.enabled)) {
-      ctx.throw(401);
-    }
-  });
 }
