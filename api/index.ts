@@ -26,9 +26,7 @@ createConnection(connectionOptions).then(async (connection) => {
 
   // Quit if port is invalid.
   if (typeof (config.api.port) !== 'number') {
-    console.error(`Invalid PORT: ${config.api.port}`);
-    config.api.port = 8080;
-    console.log('Using default PORT: 8080');
+    throw new Error(`Invalid PORT: ${config.api.port}`);
   }
 
   // Start listening!

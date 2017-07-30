@@ -11,7 +11,9 @@ export function initKoa(app: Koa) {
   app.use(logger());
   app.use(bodyParser());
 
-  app.on('error', (err: string) => console.error(err));
+  app.on('error', (err: string) => {
+    console.error(err);
+  });
 
   app.use((ctx, next) => {
     return next().catch((err) => {

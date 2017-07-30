@@ -1,6 +1,8 @@
 import * as Koa from 'koa';
 import * as jwt from 'koa-jwt';
 
+import { UserPrivilege } from './privilege';
+
 import { getConfig } from './config';
 
 const config = getConfig();
@@ -18,4 +20,11 @@ export function initJWT(app: Koa) {
       '/auth',
     ],
   }));
+
+  // Forbade disabled user.
+  app.use((ctx, next) => {
+    if (ctx.state.user && !(ctx.state.user.privilege & UserPrivilege.enabled)) {
+      ctx.throw(401);
+    }
+  });
 }

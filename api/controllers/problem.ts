@@ -3,6 +3,8 @@
 import * as Koa from 'koa';
 import * as Problem from './../models/problem';
 
+import { UserPrivilege } from './../init/privilege';
+
 export async function getProblemList(ctx: Koa.Context, next: () => Promise<any>) {
   ctx.body = await Problem.getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num);
   if (ctx.body.error) {
@@ -51,7 +53,12 @@ export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
     ctx.throw(401);
   }
 
-  ctx.body = await Problem.postProblemAdmin(ctx.request.body, ctx.state.user.id);
+  if (ctx.state.user.privilege & UserPrivilege.content) {
+    ctx.body = await Problem.postProblemAdmin(ctx.request.body, ctx.state.user.id);
+  } else {
+    ctx.body = await Problem.postProblemCommon(ctx.request.body, ctx.state.user.id);
+  }
+
   if (ctx.body.error) {
     ctx.throw(400, {
       error: ctx.body.error,
@@ -63,7 +70,17 @@ export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
 }
 
 export async function updateProblem(ctx: Koa.Context, next: () => Promise<any>) {
-  ctx.body = await Problem.updateProblemAdmin(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
+  // Verify login.
+  if (!ctx.state.user) {
+    ctx.throw(401);
+  }
+
+  if (ctx.state.user.privilege & UserPrivilege.content) {
+    ctx.body = await Problem.updateProblemAdmin(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
+  } else {
+    ctx.body = await Problem.updateProblemCommon(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
+  }
+
   if (ctx.body.error) {
     ctx.throw(400, {
       error: ctx.body.error,

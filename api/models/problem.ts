@@ -147,7 +147,31 @@ export async function searchProblem(
   }
 }
 
-// Post problem.
+// Post problem (Common user).
+export async function postProblemCommon(data: any, userid: number) {
+  try {
+    if (!data.title || !data.memoryLimit || !data.timeLimit || !userid) {
+      throw new Error('Required information not provided.');
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('Coming Soon...');
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
+        });
+      });
+    });
+  }
+}
+
+// Post problem (Admin).
 export async function postProblemAdmin(data: any, userid: number) {
   try {
     if (!data.title || !data.memoryLimit || !data.timeLimit || !userid) {
@@ -216,7 +240,31 @@ export async function postProblemAdmin(data: any, userid: number) {
   }
 }
 
-// Update Problem
+// Update Problem (Common user).
+export async function updateProblemCommon(problemid: number, data: any, userid: number) {
+  try {
+    if (!data.problemid || !data.title || !data.memoryLimit || !data.timeLimit) {
+      throw new Error('Required information not provided.');
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('Comming Soon...');
+      });
+    });
+
+  } catch (err) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
+        });
+      });
+    });
+  }
+}
+
+// Update Problem (Admin).
 export async function updateProblemAdmin(problemid: number, data: any, userid: number) {
   try {
     if (!data.problemid || !data.title || !data.memoryLimit || !data.timeLimit) {
