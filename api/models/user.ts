@@ -154,7 +154,7 @@ export async function signUp(data: any) {
     // Default privilege is 1.
     user.privilege = UserPrivilege.enabled;
 
-    if (config.oj.policy.signup_need_confirmation) {
+    if (config.oj.policy.signup.need_confirmation) {
       user.privilege = 0;
     }
 

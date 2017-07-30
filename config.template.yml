@@ -7,9 +7,13 @@ oj:
   language: en
   timezone: Asia/Shanghai
   policy:
-    access_need_login: false
-    signup_need_confirmation: false
-    signup_need_verify_email: false
+    access:
+      need_login: false
+    signup:
+      need_confirmation: false
+      need_verify_email: false
+    content:
+      need_confirmation: false
   default:
     page:
       contest: 50
