@@ -10,6 +10,41 @@ import { Problem } from './../entities/problem';
 
 const config = getConfig();
 
+// Verify problem privilege.
+export async function verifyProblemPrivilege(operation: number, userid: number, problemid: number) {
+  const problemRepository = await getRepository(Problem);
+  const privilegeInfo = await problemRepository
+                              .createQueryBuilder('problem')
+                              .select([
+                                'problem.owner',
+                                'problem.group',
+                                'problem.ownerPrivilege',
+                                'problem.groupPrivilege',
+                                'problem.othersPrivilege',
+                              ])
+                              .where(`problem.problemid = '${problemid}'`)
+                              .getOne()
+                              .catch((err) => {
+                                console.error(err);
+                                throw new Error('Failed to verify privilege.');
+                              });
+
+  if (!privilegeInfo) {
+    throw new Error('Invalid problem id.');
+  }
+
+  if (userid) {
+    if (userid === privilegeInfo.owner) {
+      return privilegeInfo.ownerPrivilege & operation;
+    }
+    // If user is in group: to be finished.
+    // ...
+    // ...
+  }
+
+  return privilegeInfo.othersPrivilege & operation;
+}
+
 // Get problem info
 export async function getProblemInfo(problemid: number) {
   try {
