@@ -17,12 +17,11 @@ export async function getCurrentInfo(ctx: Koa.Context, next: () => Promise<any>)
     ctx.throw(404, {
       error: ctx.body.error,
     });
-  } else {
-    userInfo.delete('salt');
-    userInfo.delete('password');
-    ctx.body = userInfo;
-    ctx.status = 200;
   }
+
+  ctx.body = userInfo;
+  ctx.status = 200;
+
   await next();
 }
 
@@ -35,12 +34,11 @@ export async function getUserInfo(ctx: Koa.Context, next: () => Promise<any>) {
     ctx.throw(404, {
       error: ctx.body.error,
     });
-  } else {
-    userInfo.delete('salt');
-    userInfo.delete('password');
-    ctx.body = userInfo;
-    ctx.status = 200;
   }
+
+  ctx.body = userInfo;
+  ctx.status = 200;
+
   await next();
 }
 

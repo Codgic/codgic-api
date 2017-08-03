@@ -8,8 +8,8 @@ import { getUserInfo } from './../models/user';
 
 export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>) {
 
-  // Get user info.
-  const userInfo: any = await getUserInfo(ctx.request.body.username);
+  // Get user auth info.
+  const userInfo: any = await getUserInfo(ctx.request.body.username, { auth_info: true });
 
   if (userInfo.error) {
     ctx.throw(400, {
@@ -30,9 +30,9 @@ export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>)
     ctx.throw(500, {
       error: ctx.body.error,
     });
-  } else {
-    ctx.status = 200;
   }
+
+  ctx.status = 200;
 
   await next();
 }

@@ -13,7 +13,7 @@ import { User } from './../entities/user';
 
 const config = getConfig();
 
-export async function getUserInfo(username: string) {
+export async function getUserInfo(username: string, para: { auth_info: boolean } = { auth_info: false }) {
   try {
     if (!username) {
       throw new Error('Username can not be blank.');
@@ -29,9 +29,56 @@ export async function getUserInfo(username: string) {
                               throw new Error('Database operation failed.');
                             });
 
+    if (!userInfo) {
+      throw new Error('User does not exist.');
+    }
+
+    if (!para.auth_info) {
+      delete(userInfo.password);
+      delete(userInfo.salt);
+    }
+
     return new Promise((resolve) => {
       setTimeout(() => {
       resolve(userInfo);
+    });
+  });
+  } catch (err) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
+        });
+      });
+    });
+  }
+}
+
+export async function getUserAuthInfo(username: string) {
+  try {
+    if (!username) {
+      throw new Error('Username can not be blank.');
+    }
+
+    const userRepository = await getRepository(User);
+    const userAuthInfo = await userRepository
+                            .createQueryBuilder('user')
+                            .select([
+                              'user.id',
+                              'user.password',
+                              'user.salt',
+                              ])
+                            .where(`user.username = '${username}'`)
+                            .orWhere(`user.email = '${username}'`)
+                            .getOne()
+                            .catch((err) => {
+                              console.error(err);
+                              throw new Error('Database operation failed.');
+                            });
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+      resolve(userAuthInfo);
     });
   });
   } catch (err) {
