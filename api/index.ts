@@ -13,7 +13,7 @@ import { initRoutes } from './init/routes';
 import { createConnection } from 'typeorm';
 import { connectionOptions } from './init/typeorm';
 
-console.log('Establishing database connection.');
+console.log('Establishing database connection...');
 
 createConnection(connectionOptions).then(async (connection) => {
   const app = new Koa();
@@ -31,9 +31,9 @@ createConnection(connectionOptions).then(async (connection) => {
 
   // Start listening!
   app.listen(config.api.port, () => {
-      console.log(`Codgic-api listening at port ${config.api.port}`);
+    console.log(`Codgic-api listening at port ${config.api.port}`);
   });
 }).catch((err) => {
-  console.error('Database connection failed.');
   console.error(err);
+  throw new Error('Database connection failed.');
 });

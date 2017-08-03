@@ -22,18 +22,6 @@ export async function getUserInfo(username: string) {
     const userRepository = await getRepository(User);
     const userInfo = await userRepository
                             .createQueryBuilder('user')
-                            .select([
-                              'user.id',
-                              'user.email',
-                              'user.username',
-                              'user.nickname',
-                              'user.sex',
-                              'user.motto',
-                              'user.description',
-                              'user.privilege',
-                              'user.createdAt',
-                              'user.updatedAt',
-                              ])
                             .where(`user.username = '${username}'`)
                             .getOne()
                             .catch((err) => {

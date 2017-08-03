@@ -14,68 +14,56 @@ import { User } from './../entities/user';
 
 const config = getConfig();
 
-export async function verifyAuthInfo(data: any) {
+export async function verifyPassword(retrievedPassword: string, password: string, salt: string) {
   try {
-    if (!data.username || !data.password) {
+    if (!password) {
       throw new Error('Invalid username or password.');
     }
 
-    const userRepository = await getRepository(User);
-    const user = await userRepository
-                       .createQueryBuilder('user')
-                       .select([
-                         'user.id',
-                         'user.email',
-                         'user.username',
-                         'user.password',
-                         'user.salt',
-                         'user.privilege',
-                       ])
-                       .where(`user.username = '${data.username}'`)
-                       .orWhere(`user.email = '${data.username}'`)
-                       .getOne()
-                       .catch((err) => {
-                         console.error(err);
-                         throw new Error('Database operation failed.');
-                       });
+    // Verify password.
+    const passwordHash = crypto
+                          .createHash('sha512')
+                          .update(password + salt)
+                          .digest('hex');
 
-    if (!user) {
-      // Account does not exist.
-      throw new Error('Incorrect username or password.');
-    }
-
-    if (!(user.privilege & UserPrivilege.enabled)) {
-      throw new Error('Account has been disabled.');
-    }
-
-    const retrievedPassword = crypto
-                              .createHash('sha512')
-                              .update(data.password + user.salt)
-                              .digest('hex');
-
-    if (retrievedPassword === user.password) {
-      const accessToken = jwt.sign({
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        privilege: user.privilege,
-      }, config.api.jwt.secret, {
-        expiresIn: config.api.jwt.expire_time,
-      }, (err) => {
-        console.error(err);
-        throw new Error('Failed to generate token.');
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(passwordHash === password);
       });
+    });
 
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            token: accessToken,
-          });
+  } catch (err) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
         });
       });
-    } else {
-      throw new Error ('Incorrect username or password.');
-    }
+    });
+  }
+}
+
+export async function generateToken(userid: number, username: string, email: string, privilege: number) {
+  try {
+
+    // Sign jwt token.
+    const accessToken = jwt.sign({
+      id: userid,
+      email: `${email}`,
+      username: `${username}`,
+      privilege: `${privilege}`,
+    }, config.api.jwt.secret, {
+      expiresIn: config.api.jwt.expire_time,
+    });
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          token: accessToken,
+        });
+      });
+    });
+
   } catch (err) {
     return new Promise((resolve) => {
       setTimeout(() => {

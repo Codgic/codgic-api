@@ -12,12 +12,6 @@ export function initJWT(app: Koa) {
   app.use(jwt({
     secret: config.api.jwt.secret,
     debug: config.api.jwt.debug,
-    passthrough: !config.oj.policy.access.need_login,
-  }).unless({
-    path: [
-      '/',
-      '/auth',
-    ],
+    passthrough: true,
   }));
-
 }
