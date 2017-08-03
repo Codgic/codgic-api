@@ -2,7 +2,9 @@
 
 // UNFINISHED!!!
 
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+
+import { Group } from './group';
 
 @Entity()
 export class User {
@@ -35,7 +37,9 @@ export class User {
   })
   public nickname: string;
 
-  @Column('tinyint')
+  @Column('tinyint', {
+    nullable: true,
+  })
   public sex: number;
 
   @Column('varchar', {
@@ -51,11 +55,12 @@ export class User {
   @Column('tinyint')
   public privilege: number;
 
+  @ManyToMany((type) => Group, (group) => group.user)
+  public group: Group;
+
   @CreateDateColumn()
-  @Index()
   public createdAt: string;
 
   @UpdateDateColumn()
-  @Index()
   public updatedAt: string;
 }

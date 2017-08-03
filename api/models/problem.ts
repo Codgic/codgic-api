@@ -26,7 +26,7 @@ export async function verifyProblemPrivilege(operation: number, userid: number, 
                               .getOne()
                               .catch((err) => {
                                 console.error(err);
-                                throw new Error('Failed to verify privilege.');
+                                throw new Error('Database operation failed.');
                               });
 
   if (!privilegeInfo) {

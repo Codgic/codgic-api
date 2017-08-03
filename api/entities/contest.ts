@@ -71,10 +71,8 @@ export class Contest {
   public updatedBy: number;
 
   @CreateDateColumn()
-  @Index()
   public createdAt: string;
 
   @UpdateDateColumn()
-  @Index()
   public updatedAt: string;
 }

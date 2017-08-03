@@ -3,7 +3,7 @@
 import * as Koa from 'koa';
 import * as Problem from './../models/problem';
 
-import { UserPrivilege } from './../init/privilege';
+import { ProblemPrivilege, UserPrivilege } from './../init/privilege';
 
 export async function getProblemList(ctx: Koa.Context, next: () => Promise<any>) {
   ctx.body = await Problem.getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num);
@@ -18,7 +18,15 @@ export async function getProblemList(ctx: Koa.Context, next: () => Promise<any>)
 }
 
 export async function getProblemInfo(ctx: Koa.Context, next: () => Promise<any>) {
+  // Verify privilege.
+  if (!Problem.verifyProblemPrivilege(ProblemPrivilege.read, ctx.state.user.id, ctx.params.problemid)) {
+    ctx.throw(401);
+  }
+
+  // Obtain problem info.
   ctx.body = await Problem.getProblemInfo(ctx.params.problemid);
+
+  // Handle errors.
   if (ctx.body.error) {
     ctx.throw(404, {
       error: ctx.body.error,
@@ -26,6 +34,7 @@ export async function getProblemInfo(ctx: Koa.Context, next: () => Promise<any>)
   } else {
     ctx.status = 200;
   }
+
   await next();
 }
 
@@ -70,8 +79,8 @@ export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
 }
 
 export async function updateProblem(ctx: Koa.Context, next: () => Promise<any>) {
-  // Verify login.
-  if (!ctx.state.user) {
+  // Verify privilege.
+  if (!Problem.verifyProblemPrivilege(ProblemPrivilege.write, ctx.state.user.id, ctx.params.problemid)) {
     ctx.throw(401);
   }
 
