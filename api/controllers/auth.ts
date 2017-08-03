@@ -33,5 +33,6 @@ export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>)
   } else {
     ctx.status = 200;
   }
+
   await next();
 }

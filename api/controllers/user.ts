@@ -10,24 +10,35 @@ export async function getCurrentInfo(ctx: Koa.Context, next: () => Promise<any>)
     ctx.throw(400);
   }
 
-  ctx.body = await User.getUserInfo(ctx.state.user.id);
-  if (ctx.body.error) {
+  // Retrieve user info.
+  const userInfo: any = await User.getUserInfo(ctx.state.user.id);
+
+  if (userInfo.error) {
     ctx.throw(404, {
       error: ctx.body.error,
     });
   } else {
+    userInfo.delete('salt');
+    userInfo.delete('password');
+    ctx.body = userInfo;
     ctx.status = 200;
   }
   await next();
 }
 
 export async function getUserInfo(ctx: Koa.Context, next: () => Promise<any>) {
-  ctx.body = await User.getUserInfo(ctx.params.username);
-  if (ctx.body.error) {
+
+  // Retrieve user info.
+  const userInfo: any = await User.getUserInfo(ctx.params.username);
+
+  if (userInfo.error) {
     ctx.throw(404, {
       error: ctx.body.error,
     });
   } else {
+    userInfo.delete('salt');
+    userInfo.delete('password');
+    ctx.body = userInfo;
     ctx.status = 200;
   }
   await next();
