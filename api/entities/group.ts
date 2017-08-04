@@ -2,7 +2,16 @@
 
 // UNFINISHED!!!
 
-import { Column, CreateDateColumn, Entity, Index, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 import { User } from './user';
 
@@ -24,8 +33,9 @@ export class Group {
   })
   public description: string;
 
-  @ManyToMany((type) => User, (user) => user.group)
-  public user: User;
+  @ManyToMany((type) => User, (user) => user.groups)
+  @JoinTable()
+  public users: User[];
 
   @Column('tinyint')
   public privilege: number;
