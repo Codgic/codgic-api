@@ -3,46 +3,60 @@
 import * as Koa from 'koa';
 
 import { getRepository } from 'typeorm';
-
 import { getConfig } from './../init/config';
+import { isInGroup } from './group';
 
 import { Problem } from './../entities/problem';
 
 const config = getConfig();
 
 // Verify problem privilege.
-export async function verifyProblemPrivilege(operation: number, userid: number, problemid: number) {
-  const problemRepository = await getRepository(Problem);
-  const privilegeInfo = await problemRepository
-                              .createQueryBuilder('problem')
-                              .select([
-                                'problem.owner',
-                                'problem.group',
-                                'problem.ownerPrivilege',
-                                'problem.groupPrivilege',
-                                'problem.othersPrivilege',
-                              ])
-                              .where(`problem.problemid = '${problemid}'`)
-                              .getOne()
-                              .catch((err) => {
-                                console.error(err);
-                                throw new Error('Database operation failed.');
-                              });
-
-  if (!privilegeInfo) {
-    throw new Error('Invalid problem id.');
-  }
-
-  if (userid) {
-    if (userid === privilegeInfo.owner) {
-      return privilegeInfo.ownerPrivilege & operation;
+export async function verifyProblemPrivilege(
+  operation: number,
+  userid: number,
+  userPrivilege: number,
+  problemPrivilegeInfo: {
+    owner: number,
+    group: number,
+    ownerPrivilege: number,
+    groupPrivilege: number,
+    othersPrivilege: number,
+}) {
+  try {
+    if (!operation || !userid || !problemPrivilegeInfo) {
+      throw new Error('Invalid request.');
     }
-    // If user is in group: to be finished.
-    // ...
-    // ...
-  }
 
-  return privilegeInfo.othersPrivilege & operation;
+    let result: boolean = false;
+
+    if (userPrivilege & operation) {
+      // Check user's admin privilege first.
+      result = true;
+    } else if (userid === problemPrivilegeInfo.owner) {
+      // If user is the problem owner.
+      result = (problemPrivilegeInfo.ownerPrivilege & operation) === 1 ? true : false;
+    } else if (isInGroup(userid, problemPrivilegeInfo.group)) {
+      // If user belongs to the problem owner group.
+      result = (problemPrivilegeInfo.groupPrivilege & operation) === 1 ? true : false;
+    } else {
+      result = (problemPrivilegeInfo.othersPrivilege & operation) === 1 ? true : false;
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(result);
+      });
+    });
+
+  } catch (err) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
+        });
+      });
+    });
+  }
 }
 
 // Get problem info

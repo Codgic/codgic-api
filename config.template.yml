@@ -11,9 +11,10 @@ oj:
       need_login: false
     signup:
       need_confirmation: false
-      need_verify_email: false
+      # need_verify_email: false
     content:
-      need_confirmation: false
+      common_user_can_post: true
+      common_user_need_confirmation: false
   default:
     page:
       contest: 50

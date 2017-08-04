@@ -25,6 +25,18 @@ export function initKoa(app: Koa) {
             error: 'Unauthorized.',
           };
           break;
+        case 402:
+          ctx.status = 402;
+          ctx.body = {
+            error: 'Too much requests',
+          };
+          break;
+        case 403:
+          ctx.status = 403;
+          ctx.body = {
+            error: 'Forbidden.',
+          };
+          break;
         case 404:
           ctx.status = 404;
           ctx.body = {
