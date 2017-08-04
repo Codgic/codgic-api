@@ -7,13 +7,9 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  JoinTable,
-  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-import { User } from './user';
 
 @Entity()
 export class Group {
@@ -33,16 +29,14 @@ export class Group {
   })
   public description: string;
 
-  @ManyToMany((type) => User, (user) => user.groups)
-  @JoinTable()
-  public users: User[];
-
-  @Column('tinyint')
-  public privilege: number;
+  @Column('varchar')
+  @Index()
+  public owner: number;
 
   @CreateDateColumn()
   public createdAt: string;
 
   @UpdateDateColumn()
   public updatedAt: string;
+
 }

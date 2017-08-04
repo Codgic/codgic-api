@@ -6,6 +6,8 @@ import * as Auth from './../models/auth';
 
 import { getUserInfo } from './../models/user';
 
+import { UserPrivilege } from './../init/privilege';
+
 export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>) {
 
   // Get user auth info.
@@ -14,6 +16,13 @@ export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>)
   if (userInfo.error) {
     ctx.throw(400, {
       error: userInfo.error,
+    });
+  }
+
+  // Check if user is disabled.
+  if (!(userInfo.privilege & UserPrivilege.isEnabled)) {
+    ctx.throw(403, {
+      error: 'User is disabled.',
     });
   }
 
@@ -26,6 +35,7 @@ export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>)
 
   // Generate Token.
   ctx.body = await Auth.generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege);
+
   if (ctx.body.error) {
     ctx.throw(500, {
       error: ctx.body.error,
@@ -35,4 +45,5 @@ export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>)
   ctx.status = 200;
 
   await next();
+
 }

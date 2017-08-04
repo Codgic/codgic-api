@@ -5,7 +5,17 @@
 
 // UNFINISHED!!!
 
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+import { ContestPrivilege } from './../init/privilege';
 
 @Entity()
 export class Contest {
@@ -14,7 +24,7 @@ export class Contest {
   @Index()
   public id: number;
 
-  @Column('int', {
+  @PrimaryColumn('int', {
     unique: true,
   })
   @Index()
@@ -46,17 +56,22 @@ export class Contest {
   public group: number;
 
   @Column('tinyint', {
-    default: 31,
+    default: ContestPrivilege.join
+            + ContestPrivilege.write
+            + ContestPrivilege.read,
   })
   public ownerPrivilege: number;
 
   @Column('tinyint', {
-    default: 31,
+    default: ContestPrivilege.join
+            + ContestPrivilege.write
+            + ContestPrivilege.read,
   })
   public groupPrivilege: number;
 
   @Column('tinyint', {
-    default: 4,
+    default: ContestPrivilege.join
+            + ContestPrivilege.read,
   })
   public othersPrivilege: number;
 

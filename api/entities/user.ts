@@ -7,13 +7,11 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  JoinTable,
-  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Group } from './group';
+import { UserPrivilege } from './../init/privilege';
 
 @Entity()
 export class User {
@@ -61,16 +59,16 @@ export class User {
   })
   public description: string;
 
-  @Column('tinyint')
+  @Column('tinyint', {
+    default: UserPrivilege.isEnabled,
+  })
+  @Index()
   public privilege: number;
-
-  @ManyToMany((type) => Group, (group) => group.users)
-  @JoinTable()
-  public groups: Group[];
 
   @CreateDateColumn()
   public createdAt: string;
 
   @UpdateDateColumn()
   public updatedAt: string;
+
 }

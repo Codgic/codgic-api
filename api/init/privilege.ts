@@ -1,10 +1,9 @@
-// User privileges
+/* /api/init/privilege.ts */
 
-export const enum UserPrivilege {
-  enabled = 1,
-  source = 2,
-  content = 4,
-  user = 8,
+export const enum ContestPrivilege {
+  join = 1,
+  write = 2,
+  read = 4,
 }
 
 export const enum ProblemPrivilege {
@@ -13,4 +12,18 @@ export const enum ProblemPrivilege {
   read = 4,
   downloadData = 8,
   uploadData = 16,
+}
+
+export const enum GroupPrivilege {
+  isMember = 1,
+  editInfo = 2,
+  editUser = 4,
+}
+
+export const enum UserPrivilege {
+  isEnabled = 1,
+  viewSource = 2,
+  editContent = 4,
+  editUser = 8,
+  editGroup = 16,
 }

@@ -23,21 +23,25 @@ export async function verifyProblemPrivilege(
     othersPrivilege: number,
 }) {
   try {
-    if (!operation || !userid || !problemPrivilegeInfo) {
+    if (!operation || !problemPrivilegeInfo) {
       throw new Error('Invalid request.');
     }
 
     let result: boolean = false;
 
-    if (userPrivilege & operation) {
-      // Check user's admin privilege first.
-      result = true;
-    } else if (userid === problemPrivilegeInfo.owner) {
-      // If user is the problem owner.
-      result = (problemPrivilegeInfo.ownerPrivilege & operation) === 1 ? true : false;
-    } else if (isInGroup(userid, problemPrivilegeInfo.group)) {
-      // If user belongs to the problem owner group.
-      result = (problemPrivilegeInfo.groupPrivilege & operation) === 1 ? true : false;
+    if (userid) {
+      if (userPrivilege & operation) {
+        // Check user's admin privilege first.
+        result = true;
+      } else if (userid === problemPrivilegeInfo.owner) {
+        // If user is the problem owner.
+        result = (problemPrivilegeInfo.ownerPrivilege & operation) === 1 ? true : false;
+      } else if (isInGroup(userid, problemPrivilegeInfo.group)) {
+        // If user belongs to the problem owner group.
+        result = (problemPrivilegeInfo.groupPrivilege & operation) === 1 ? true : false;
+      } else {
+        result = (problemPrivilegeInfo.othersPrivilege & operation) === 1 ? true : false;
+      }
     } else {
       result = (problemPrivilegeInfo.othersPrivilege & operation) === 1 ? true : false;
     }
@@ -48,6 +52,47 @@ export async function verifyProblemPrivilege(
       });
     });
 
+  } catch (err) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
+        });
+      });
+    });
+  }
+}
+
+// Get maxium problem id.
+export async function getMaxProblemId() {
+  try {
+    const problemRepository = await getRepository(Problem);
+
+    let result: number;
+
+    // Get maximum problem id.
+    const maxProblemInfo = await problemRepository
+                              .createQueryBuilder('problem')
+                              .select([
+                                'problem.id',
+                                'problem.problemid',
+                              ])
+                              .orderBy('problem.problemid', 'DESC')
+                              .getOne()
+                              .catch((err) => {
+                                console.error(err);
+                                throw new Error('Database operation failed.');
+                              });
+
+    if (maxProblemInfo) {
+      result = maxProblemInfo.problemid;
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(result);
+      });
+    });
   } catch (err) {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -75,6 +120,10 @@ export async function getProblemInfo(problemid: number) {
                                 console.error(err);
                                 throw new Error('Database operation failed.');
                               });
+
+    if (!problemInfo) {
+      throw new Error('Problem does not exist.');
+    }
 
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -121,6 +170,10 @@ export async function getProblemList(
                                 console.error(err);
                                 throw new Error('Database operation failed.');
                               });
+
+    if (!problemList) {
+      throw new Error('No problem available.');
+    }
 
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -180,6 +233,10 @@ export async function searchProblem(
                                   throw new Error('Database operation failed.');
                                 });
 
+    if (!searchProblem) {
+      throw new Error('No matching result.');
+    }
+
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(searchResult);
@@ -196,8 +253,8 @@ export async function searchProblem(
   }
 }
 
-// Post problem (Common user).
-export async function postProblemCommon(data: any, userid: number) {
+// Post or update problem to temporary table.
+export async function postProblemTemp(problemid: number, data: Problem, userid: number) {
   try {
     if (!data.title || !data.memoryLimit || !data.timeLimit || !userid) {
       throw new Error('Required information not provided.');
@@ -220,40 +277,16 @@ export async function postProblemCommon(data: any, userid: number) {
   }
 }
 
-// Post problem (Admin).
-export async function postProblemAdmin(data: any, userid: number) {
+// Post or update problem directly.
+export async function postProblem(problemid: number, data: Problem, userid: number) {
   try {
     if (!data.title || !data.memoryLimit || !data.timeLimit || !userid) {
       throw new Error('Required information not provided.');
     }
 
-    const problemRepository = await getRepository(Problem);
-
-    // If no problem exists, default problem id is 1000.
-    let nextId: number = 1000;
-
-    // Get maximum problem id.
-    const maxProblem = await problemRepository
-          .createQueryBuilder('problem')
-          .select([
-              'problem.id',
-              'problem.problemid',
-          ])
-          .orderBy('problem.problemid', 'DESC')
-          .getOne()
-          .catch((err) => {
-            console.error(err);
-            throw new Error('Database operation failed.');
-          });
-
-    if (maxProblem !== undefined && maxProblem.problemid !== undefined) {
-      nextId = maxProblem.problemid + 1;
-    }
-
     const problem = new Problem();
 
-    problem.problemid = nextId;
-
+    problem.problemid = problemid;
     problem.title = data.title;
     problem.description = data.description;
     problem.inputFormat = data.inputFormat;
@@ -264,6 +297,8 @@ export async function postProblemAdmin(data: any, userid: number) {
     problem.memoryLimit = data.memoryLimit;
     problem.createdBy = userid;
     problem.owner = userid;
+
+    const problemRepository = await getRepository(Problem);
 
     await problemRepository
       .persist(problem)
@@ -279,92 +314,6 @@ export async function postProblemAdmin(data: any, userid: number) {
     });
   } catch (err) {
     console.error(err);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          error: err.message,
-        });
-      });
-    });
-  }
-}
-
-// Update Problem (Common user).
-export async function updateProblemCommon(problemid: number, data: any, userid: number) {
-  try {
-    if (!data.problemid || !data.title || !data.memoryLimit || !data.timeLimit) {
-      throw new Error('Required information not provided.');
-    }
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve('Comming Soon...');
-      });
-    });
-
-  } catch (err) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          error: err.message,
-        });
-      });
-    });
-  }
-}
-
-// Update Problem (Admin).
-export async function updateProblemAdmin(problemid: number, data: any, userid: number) {
-  try {
-    if (!data.problemid || !data.title || !data.memoryLimit || !data.timeLimit) {
-      throw new Error('Required information not provided.');
-    }
-
-    const problemRepository = await getRepository(Problem);
-
-    const thisProblem = await problemRepository
-          .createQueryBuilder('problem')
-          .select([
-              'problem.id',
-          ])
-          .where(`problem.problemid = ${problemid}`)
-          .getOne()
-          .catch((err) => {
-            console.error(err);
-            throw new Error('Database operation failed.');
-          });
-
-    if (!thisProblem) {
-      throw new Error('Problem does not exist.');
-    }
-
-    const problem = new Problem();
-
-    problem.id = thisProblem.id;
-    problem.title = data.title;
-    problem.description = data.description;
-    problem.inputFormat = data.inputFormat;
-    problem.outputFormat = data.outputFormat;
-    problem.sample = data.sample;
-    problem.additionalInfo = data.additionalInfo;
-    problem.timeLimit = data.timeLimit;
-    problem.memoryLimit = data.memoryLimit;
-    problem.updatedBy = userid;
-
-    await problemRepository
-      .persist(problem)
-      .catch((err) => {
-        console.error(err);
-        throw new Error('Database operation failed.');
-      });
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(problem);
-      });
-    });
-
-  } catch (err) {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({

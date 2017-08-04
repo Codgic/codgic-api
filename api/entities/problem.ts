@@ -5,7 +5,17 @@
 
 // UNFINISHED!!!
 
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+import { ProblemPrivilege } from './../init/privilege';
 
 @Entity()
 export class Problem {
@@ -14,7 +24,7 @@ export class Problem {
   @Index()
   public id: number;
 
-  @Column('int', {
+  @PrimaryColumn('int', {
     unique: true,
   })
   @Index()
@@ -61,17 +71,26 @@ export class Problem {
   public group: number;
 
   @Column('tinyint', {
-    default: 31,
+    default: ProblemPrivilege.submit
+             + ProblemPrivilege.write
+             + ProblemPrivilege.read
+             + ProblemPrivilege.downloadData
+             + ProblemPrivilege.uploadData,
   })
   public ownerPrivilege: number;
 
   @Column('tinyint', {
-    default: 31,
+    default: ProblemPrivilege.submit
+             + ProblemPrivilege.write
+             + ProblemPrivilege.read
+             + ProblemPrivilege.downloadData
+             + ProblemPrivilege.uploadData,
   })
   public groupPrivilege: number;
 
   @Column('tinyint', {
-    default: 4,
+    default: ProblemPrivilege.submit
+             + ProblemPrivilege.read,
   })
   public othersPrivilege: number;
 

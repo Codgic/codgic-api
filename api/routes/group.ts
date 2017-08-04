@@ -9,7 +9,7 @@ const group = new Router();
 // group.get('/', Group.getCurrentInfo);
 // group.get('/:groupname', Group.getGroupInfo);
 
-// group.post('/', group.newGroup);
+group.post('/', Group.postGroup);
 
 // group.put('/', group.updateProfile);
 // group.delete('/', group.deleteProfile);
