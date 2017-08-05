@@ -11,9 +11,10 @@ If you have any ideas or suggestions, feel free to create issues at https://gith
 - [x] Hello Typescript.
 - [x] Hello TypeORM.
 - [x] Hello JWT.
+- [x] Hello Gulp.
+- [ ] Hello Mocha.
 - [ ] Hello Socket.io?
 - [x] Trip to Sanya to grab some typhoon.
-- [ ] Write tests.
 - [ ] User related features.
 - [ ] Group related features.
 - [ ] Privilege system.
