@@ -9,6 +9,8 @@ import { getConfig } from './../init/config';
 import { Group } from './../entities/group';
 import { GroupMap } from './../entities/group_map';
 
+import { GroupMemberPrivilege } from './../init/privilege';
+
 const config = getConfig();
 
 export async function getGroupInfo(groupid: number) {
@@ -84,6 +86,55 @@ export async function getGroupMembers(groupid: number) {
   }
 }
 
+export async function searchGroup(
+  sort: 'id' | 'name' | 'createdAt' | 'updatedAt' = 'id',
+  order: 'ASC' | 'DESC'  = 'ASC',
+  keyword: string,
+  page: number = 1,
+  num: number = config.oj.default.page.group) {
+  try {
+    if (page < 1 || num < 1) {
+      throw new Error('Invalid request.');
+    }
+    if (!keyword) {
+      throw new Error('Keyword can not be blank.');
+    }
+
+    const firstResult = (page - 1) * num;
+    const groupRepository = await getRepository(Group);
+    const searchResult = await groupRepository
+                                .createQueryBuilder('group')
+                                .where(`problem.name LIKE '%${keyword}%'`)
+                                .orWhere(`problem.description LIKE '%${keyword}%'`)
+                                .setFirstResult(firstResult)
+                                .setMaxResults(num)
+                                .orderBy(`problem.${sort}`, order)
+                                .getMany()
+                                .catch((err) => {
+                                  console.error(err);
+                                  throw new Error('Database operation failed.');
+                                });
+
+    if (!searchResult) {
+      throw new Error('No matching result.');
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(searchResult);
+      });
+    });
+  } catch (err) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
+        });
+      });
+    });
+  }
+}
+
 // Judge whether user is in group.
 export async function isInGroup(userid: number, groupid: number) {
   try {
@@ -92,7 +143,7 @@ export async function isInGroup(userid: number, groupid: number) {
     }
 
     const groupMapRepository = getRepository(GroupMap);
-    const groupMapInfo = groupMapRepository
+    const groupMapInfo: any = groupMapRepository
                           .createQueryBuilder('group_map')
                           .where(`userid = ${userid}`)
                           .andWhere(`groupid = ${groupid}`)
@@ -103,7 +154,7 @@ export async function isInGroup(userid: number, groupid: number) {
                           });
 
     let result: boolean = false;
-    if (groupMapInfo) {
+    if (groupMapInfo && (groupMapInfo.privilege & GroupMemberPrivilege.isMember)) {
       result = true;
     }
 

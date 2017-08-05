@@ -33,6 +33,9 @@ export class Group {
   @Index()
   public owner: number;
 
+  @Column('tinyint')
+  public privilege: number;
+
   @CreateDateColumn()
   public createdAt: string;
 

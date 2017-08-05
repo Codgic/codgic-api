@@ -13,7 +13,7 @@ import {
 import { Group } from './group';
 import { User } from './user';
 
-import { GroupPrivilege } from './../init/privilege';
+import { GroupMemberPrivilege } from './../init/privilege';
 
 @Entity()
 @Index('userid_groupid', ['userid', 'groupid'])
@@ -28,7 +28,7 @@ export class GroupMap {
   public userid: number;
 
   @Column('tinyint', {
-    default: GroupPrivilege.isMember,
+    default: GroupMemberPrivilege.isMember,
   })
   @Index()
   public privilege: number;

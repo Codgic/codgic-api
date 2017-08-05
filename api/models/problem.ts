@@ -145,7 +145,7 @@ export async function getProblemInfo(problemid: number) {
 // Get problem list
 export async function getProblemList(
   sort: string = 'problemid',
-  order: string = 'ASC',
+  order: 'ASC' | 'DESC' = 'ASC',
   page: number = 1,
   num: number = config.oj.default.page.problem) {
   try {
@@ -191,9 +191,8 @@ export async function getProblemList(
   }
 }
 
-// Search problem
 export async function searchProblem(
-  sort: string = 'problemid',
+  sort: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
   order: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
   page: number = 1,
@@ -204,13 +203,6 @@ export async function searchProblem(
     }
     if (!keyword) {
       throw new Error('Keyword can not be blank.');
-    }
-    if (!order) {
-      throw new Error('Invalid order.');
-    }
-    // **To be extended.
-    if (sort !== 'problemid' && sort !== 'title' && sort !== 'createdAt' && sort !== 'updatedAt') {
-      throw new Error('Invalid sort.');
     }
 
     const firstResult = (page - 1) * num;
@@ -233,7 +225,7 @@ export async function searchProblem(
                                   throw new Error('Database operation failed.');
                                 });
 
-    if (!searchProblem) {
+    if (!searchResult) {
       throw new Error('No matching result.');
     }
 

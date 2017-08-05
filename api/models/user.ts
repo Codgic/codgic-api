@@ -93,7 +93,7 @@ export async function getUserAuthInfo(username: string) {
 }
 
 export async function searchUser(
-  sort: string = 'id',
+  sort: 'id' | 'username' | 'createdAt' = 'id',
   order: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
   page: number = 1,
@@ -104,13 +104,6 @@ export async function searchUser(
     }
     if (!keyword) {
       throw new Error('Keyword can not be blank.');
-    }
-    if (!order) {
-      throw new Error('Invalid order.');
-    }
-    // **To be extended.
-    if (sort !== 'id' && sort !== 'username' && sort !== 'createdAt') {
-      throw new Error('Invalid sort.');
     }
 
     const firstResult = (page - 1) * num;
