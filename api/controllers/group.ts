@@ -4,6 +4,36 @@
 import * as Koa from 'koa';
 import * as Group from './../models/group';
 
+export async function getGroupInfo(ctx: Koa.Context, next: () => Promise<any>) {
+
+  const groupInfo: any = await Group.getGroupInfo(ctx.params.groupid);
+
+  if (groupInfo.error) {
+    ctx.throw(404, groupInfo.error);
+  }
+
+  ctx.body = groupInfo;
+  ctx.status = 200;
+
+  await next();
+
+}
+
+export async function getGroupMembers(ctx: Koa.Context, next: () => Promise<any>) {
+
+  const groupMembers: any = await Group.getGroupMembers(ctx.params.groupid);
+
+  if (groupMembers.error) {
+    ctx.throw(404, groupMembers.error);
+  }
+
+  ctx.body = groupMembers;
+  ctx.status = 200;
+
+  await next();
+
+}
+
 export async function postGroup(ctx: Koa.Context, next: () => Promise<any>) {
 
   // Verify login.
@@ -12,15 +42,13 @@ export async function postGroup(ctx: Koa.Context, next: () => Promise<any>) {
   }
 
   // Create group.
-  const groupInfo: any = await Group.postGroup(ctx.request.body, ctx.state.user.id);
+  const result: any = await Group.postGroup(ctx.request.body, ctx.state.user.id);
 
-  if (groupInfo.error) {
-    ctx.throw(400, {
-      error: ctx.body.error,
-    });
+  if (result.error) {
+    ctx.throw(400, result.error);
   }
 
-  ctx.body = groupInfo;
+  ctx.body = result;
   ctx.status = 200;
 
   await next();

@@ -90,4 +90,5 @@ export class Contest {
 
   @UpdateDateColumn()
   public updatedAt: string;
+
 }

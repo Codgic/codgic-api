@@ -31,7 +31,7 @@ api:
   port: 8080
   jwt:
     secret: FuckZh@ngKeW@terQueen
-    expire_time: 3600h
+    expire_time: 1h
 
 # Database
 database:

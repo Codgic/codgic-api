@@ -17,39 +17,47 @@ export function initKoa(app: Koa) {
 
   app.use((ctx, next) => {
     return next().catch((err) => {
-      // Common error handler
-      switch (err.status) {
-        case 401:
-          ctx.status = 401;
-          ctx.body = {
-            error: 'Unauthorized.',
-          };
-          break;
-        case 402:
-          ctx.status = 402;
-          ctx.body = {
-            error: 'Too much requests',
-          };
-          break;
-        case 403:
-          ctx.status = 403;
-          ctx.body = {
-            error: 'Forbidden.',
-          };
-          break;
-        case 404:
-          ctx.status = 404;
-          ctx.body = {
-            error: 'Not found.',
-          };
-          break;
-        case 500:
-          ctx.status = 500;
-          ctx.body = {
-            error: 'Internal Server Error.',
-          };
-          break;
+      let errorMsg: string = err.message;
+
+      if (!errorMsg) {
+        switch (err.status) {
+          case 401:
+            ctx.status = 401;
+            if (!errorMsg) {
+              errorMsg = 'Unauthorized.';
+            }
+            break;
+          case 402:
+            ctx.status = 402;
+            if (!errorMsg) {
+              errorMsg = 'Too much requests.';
+            }
+            break;
+          case 403:
+            ctx.status = 403;
+            if (!errorMsg) {
+              errorMsg = 'Forbidden.';
+            }
+            break;
+          case 404:
+            ctx.status = 404;
+            if (!errorMsg) {
+              errorMsg = 'Not Found.';
+            }
+            break;
+          case 500:
+            ctx.status = 500;
+            if (!errorMsg) {
+              errorMsg = 'Internal Server Error.';
+            }
+            break;
+        }
       }
+
+      ctx.body = {
+        error: errorMsg,
+      };
+
     });
   });
 }

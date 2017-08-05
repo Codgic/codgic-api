@@ -12,15 +12,14 @@ const config = getConfig();
 
 export async function getProblemList(ctx: Koa.Context, next: () => Promise<any>) {
 
-  ctx.body = await Problem.getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num);
+  const problemList: any = await Problem.getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num);
 
-  if (ctx.body.error) {
-    ctx.throw(404, {
-      error: ctx.body.error,
-    });
-  } else {
-    ctx.status = 200;
+  if (problemList.error) {
+    ctx.throw(404, problemList.error);
   }
+
+  ctx.body = problemList;
+  ctx.status = 200;
 
   await next();
 
@@ -29,12 +28,10 @@ export async function getProblemList(ctx: Koa.Context, next: () => Promise<any>)
 export async function getProblemInfo(ctx: Koa.Context, next: () => Promise<any>) {
 
   // Retrieve problem info.
-  const problemInfo: any = Problem.getProblemInfo(ctx.params.problemid);
+  const problemInfo: any = await Problem.getProblemInfo(ctx.params.problemid);
 
   if (problemInfo.error) {
-    ctx.throw(404, {
-      error: problemInfo.error,
-    });
+    ctx.throw(404, problemInfo.error);
   }
 
   // Verify privilege.
@@ -53,9 +50,7 @@ export async function getProblemInfo(ctx: Koa.Context, next: () => Promise<any>)
   }
 
   if (problemInfo.error) {
-    ctx.throw(404, {
-      error: ctx.body.error,
-    });
+    ctx.throw(404, problemInfo.error);
   }
 
   ctx.body = problemInfo;
@@ -67,19 +62,19 @@ export async function getProblemInfo(ctx: Koa.Context, next: () => Promise<any>)
 
 export async function searchProblem(ctx: Koa.Context, next: () => Promise<any>) {
 
-  ctx.body = await Problem.searchProblem(
+  const searchResult: any = await Problem.searchProblem(
     ctx.query.sort,
     ctx.query.order,
     ctx.query.keyword,
     ctx.query.page,
     ctx.query.num,
   );
-  if (ctx.body.error) {
-    ctx.throw(404, {
-      error: ctx.body.error,
-    });
+
+  if (searchResult.error) {
+    ctx.throw(404, searchResult.error);
   }
 
+  ctx.body = searchResult;
   ctx.status = 200;
 
   await next();
@@ -94,7 +89,7 @@ export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
   }
 
   // Get maximum problem id.
-  const maxProblemId: any = Problem.getMaxProblemId();
+  const maxProblemId: any = await Problem.getMaxProblemId();
 
   // Generate next id (default: 1000).
   let nextProblemId: number = 1000;
@@ -108,39 +103,25 @@ export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
   }
 
   // Post problem.
-  if (ctx.state.user.privilege & UserPrivilege.editContent) {
-    ctx.body = await Problem.postProblem(nextProblemId, ctx.request.body, ctx.state.user.id);
-  } else {
-    if (config.oj.policy.content.common_user_can_post) {
-      if (config.oj.policy.content.common_user_need_confirmation) {
-        ctx.body = await Problem.postProblemTemp(nextProblemId, ctx.request.body, ctx.state.user.id);
-      } else {
-        ctx.body = await Problem.postProblem(nextProblemId, ctx.request.body, ctx.state.user.id);
-      }
-    } else {
-      ctx.throw(403);
-    }
+  const result: any = await routePost(ctx);
+
+  if (result.error) {
+    ctx.throw(400, result.error);
   }
 
-  if (ctx.body.error) {
-    ctx.throw(400, {
-      error: ctx.body.error,
-    });
-  } else {
-    ctx.status = 201;
-  }
+  ctx.body = result;
+  ctx.status = 201;
+
   await next();
 }
 
 export async function updateProblem(ctx: Koa.Context, next: () => Promise<any>) {
 
   // Retrieve problem info.
-  const problemInfo: any = Problem.getProblemInfo(ctx.params.problemid);
+  const problemInfo: any = await Problem.getProblemInfo(ctx.params.problemid);
 
   if (problemInfo.error) {
-    ctx.throw(404, {
-      error: problemInfo.error,
-    });
+    ctx.throw(404, problemInfo.error);
   }
 
   // Verify privilege.
@@ -154,19 +135,39 @@ export async function updateProblem(ctx: Koa.Context, next: () => Promise<any>) 
     ctx.throw(401);
   }
 
-  // To be rewritten.
-  if (ctx.state.user.privilege & UserPrivilege.editContent) {
-    ctx.body = await Problem.postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
-  } else {
-    ctx.body = await Problem.postProblemTemp(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
+  // Post problem.
+  const result: any = await routePost(ctx);
+
+  if (result.error) {
+    ctx.throw(400, result.error);
   }
 
-  if (ctx.body.error) {
-    ctx.throw(400, {
-      error: ctx.body.error,
-    });
-  } else {
-    ctx.status = 201;
-  }
+  ctx.body = result;
+  ctx.status = 201;
+
   await next();
+}
+
+async function routePost(ctx: Koa.Context) {
+    let result: any;
+
+    if (ctx.state.user.privilege & UserPrivilege.editContent) {
+      result = await Problem.postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
+    } else {
+      if (config.oj.policy.content.common_user_can_post) {
+        if (config.oj.policy.content.common_user_need_confirmation) {
+          result = await Problem.postProblemTemp(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
+        } else {
+          result = await Problem.postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
+        }
+      } else {
+        ctx.throw(403);
+      }
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(result);
+      });
+    });
 }

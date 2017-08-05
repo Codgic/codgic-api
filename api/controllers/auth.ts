@@ -14,32 +14,24 @@ export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>)
   const userInfo: any = await getUserInfo(ctx.request.body.username, { auth_info: true });
 
   if (userInfo.error) {
-    ctx.throw(400, {
-      error: userInfo.error,
-    });
+    ctx.throw(400, userInfo.error);
   }
 
   // Check if user is disabled.
   if (!(userInfo.privilege & UserPrivilege.isEnabled)) {
-    ctx.throw(403, {
-      error: 'User is disabled.',
-    });
+    ctx.throw(403, 'User is disabled.');
   }
 
   // Verify password.
   if (!Auth.verifyPassword(ctx.request.body.password, userInfo.password, userInfo.salt)) {
-    ctx.throw(400, {
-      error: ctx.body.error,
-    });
+    ctx.throw(400, ctx.body.error);
   }
 
   // Generate Token.
   ctx.body = await Auth.generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege);
 
   if (ctx.body.error) {
-    ctx.throw(500, {
-      error: ctx.body.error,
-    });
+    ctx.throw(500, ctx.body.error);
   }
 
   ctx.status = 200;

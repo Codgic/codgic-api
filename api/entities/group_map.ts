@@ -10,6 +10,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { Group } from './group';
+import { User } from './user';
+
 import { GroupPrivilege } from './../init/privilege';
 
 @Entity()

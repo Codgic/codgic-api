@@ -11,6 +11,79 @@ import { GroupMap } from './../entities/group_map';
 
 const config = getConfig();
 
+export async function getGroupInfo(groupid: number) {
+  try {
+    if (!groupid) {
+      throw new Error('Invalid request.');
+    }
+
+    const groupRepository = getRepository(Group);
+    const groupInfo = groupRepository
+                      .createQueryBuilder('group')
+                      .where(`id = ${groupid}`)
+                      .getOne()
+                      .catch((err) => {
+                        console.error(err);
+                        throw new Error('Database operation failed.');
+                      });
+
+    if (!groupInfo) {
+      throw new Error('Group does not exist.');
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(groupInfo);
+      });
+    });
+  } catch (err) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
+        });
+      });
+    });
+  }
+}
+
+export async function getGroupMembers(groupid: number) {
+  try {
+    if (!groupid) {
+      throw new Error('Invalid request.');
+    }
+
+    const groupMapRepository = getRepository(GroupMap);
+    const groupMapInfo = groupMapRepository
+                      .createQueryBuilder('group')
+                      .where(`id = ${groupid}`)
+                      .getMany()
+                      .catch((err) => {
+                        console.error(err);
+                        throw new Error('Database operation failed.');
+                      });
+
+    if (!groupMapInfo) {
+      throw new Error('Group does not exist.');
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(groupMapInfo);
+      });
+    });
+
+  } catch (err) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          error: err.message,
+        });
+      });
+    });
+  }
+}
+
 // Judge whether user is in group.
 export async function isInGroup(userid: number, groupid: number) {
   try {

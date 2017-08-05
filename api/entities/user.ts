@@ -28,7 +28,6 @@ export class User {
 
   @Column('varchar', {
     unique: true,
-    length: 30,
   })
   @Index()
   public username: string;
@@ -39,9 +38,7 @@ export class User {
   @Column('varchar')
   public salt: string;
 
-  @Column('varchar', {
-    length: 30,
-  })
+  @Column('varchar')
   public nickname: string;
 
   @Column('tinyint', {
