@@ -11,11 +11,10 @@ import { UserPrivilege } from './../init/privilege';
 export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>) {
 
   // Get user auth info.
-  const userInfo: any = await getUserInfo(ctx.request.body.username, { auth_info: true });
-
-  if (userInfo.error) {
-    ctx.throw(400, userInfo.error);
-  }
+  const userInfo: any = await getUserInfo(ctx.request.body.username, { auth_info: true })
+                            .catch((err) => {
+                              ctx.throw(400, err);
+                            });
 
   // Check if user is disabled.
   if (!(userInfo.privilege & UserPrivilege.isEnabled)) {
@@ -28,11 +27,11 @@ export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>)
   }
 
   // Generate Token.
-  ctx.body = await Auth.generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege);
-
-  if (ctx.body.error) {
-    ctx.throw(500, ctx.body.error);
-  }
+  ctx.body = await Auth
+                  .generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege)
+                  .catch((err) => {
+                    ctx.throw(500, err);
+                  });
 
   ctx.status = 200;
 

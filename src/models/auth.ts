@@ -33,9 +33,9 @@ export async function verifyPassword(retrievedPassword: string, password: string
     });
 
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -65,9 +65,9 @@ export async function generateToken(userid: number, username: string, email: str
     });
 
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });

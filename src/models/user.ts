@@ -44,9 +44,9 @@ export async function getUserInfo(username: string, para: { auth_info: boolean }
     });
   });
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -82,9 +82,9 @@ export async function getUserAuthInfo(username: string) {
     });
   });
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -136,9 +136,9 @@ export async function searchUser(
       });
     });
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -207,9 +207,9 @@ export async function signUp(data: any) {
     });
 
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });

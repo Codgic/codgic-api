@@ -53,9 +53,9 @@ export async function verifyProblemPrivilege(
     });
 
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -94,9 +94,9 @@ export async function getMaxProblemId() {
       });
     });
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -132,9 +132,9 @@ export async function getProblemInfo(problemid: number) {
     });
   } catch (err) {
     console.error(err);
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -181,9 +181,9 @@ export async function getProblemList(
       });
     });
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -235,9 +235,9 @@ export async function searchProblem(
       });
     });
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -259,9 +259,9 @@ export async function postProblemTemp(problemid: number, data: Problem, userid: 
     });
   } catch (err) {
     console.error(err);
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -306,9 +306,9 @@ export async function postProblem(problemid: number, data: Problem, userid: numb
     });
   } catch (err) {
     console.error(err);
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });

@@ -20,7 +20,7 @@ const connectionOptions: ConnectionOptions = {
   },
   autoSchemaSync: true,
   entities: [
-    __dirname + '/../entities/*.js',
+    __dirname + '/../entities/*.ts',
   ],
   /*
   subscribers: [

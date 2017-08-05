@@ -12,13 +12,12 @@ export async function getCurrentInfo(ctx: Koa.Context, next: () => Promise<any>)
   }
 
   // Retrieve user info.
-  const userInfo: any = await User.getUserInfo(ctx.state.user.id);
+  ctx.body = await User
+                  .getUserInfo(ctx.state.user.id)
+                  .catch((err) => {
+                    ctx.throw(404, err);
+                  });
 
-  if (userInfo.error) {
-    ctx.throw(404, userInfo.error);
-  }
-
-  ctx.body = userInfo;
   ctx.status = 200;
 
   await next();
@@ -28,13 +27,12 @@ export async function getCurrentInfo(ctx: Koa.Context, next: () => Promise<any>)
 export async function getUserInfo(ctx: Koa.Context, next: () => Promise<any>) {
 
   // Retrieve user info.
-  const userInfo: any = await User.getUserInfo(ctx.params.username);
+  ctx.body = await User
+                  .getUserInfo(ctx.params.username)
+                  .catch((err) => {
+                    ctx.throw(404, err);
+                  });
 
-  if (userInfo.error) {
-    ctx.throw(404, userInfo.error);
-  }
-
-  ctx.body = userInfo;
   ctx.status = 200;
 
   await next();
@@ -43,19 +41,18 @@ export async function getUserInfo(ctx: Koa.Context, next: () => Promise<any>) {
 
 export async function searchUser(ctx: Koa.Context, next: () => Promise<any>) {
 
-  const searchResult: any = await User.searchUser(
-    ctx.query.sort,
-    ctx.query.order,
-    ctx.query.keyword,
-    ctx.query.page,
-    ctx.query.num,
-  );
+  ctx.body = await User
+                  .searchUser(
+                    ctx.query.sort,
+                    ctx.query.order,
+                    ctx.query.keyword,
+                    ctx.query.page,
+                    ctx.query.num,
+                  )
+                  .catch((err) => {
+                    ctx.throw(404, err);
+                  });
 
-  if (searchResult.error) {
-    ctx.throw(404, searchResult.error);
-  }
-
-  ctx.body = searchResult;
   ctx.status = 200;
 
   await next();
@@ -64,13 +61,12 @@ export async function searchUser(ctx: Koa.Context, next: () => Promise<any>) {
 
 export async function signUp(ctx: Koa.Context, next: () => Promise<any>) {
 
-  const result: any = await User.signUp(ctx.request.body);
+  ctx.body = await User
+                  .signUp(ctx.request.body)
+                  .catch((err) => {
+                    ctx.throw(400, err);
+                  });
 
-  if (result.error) {
-    ctx.throw(400, result.error);
-  }
-
-  ctx.body = result;
   ctx.status = 201;
 
   await next();

@@ -20,9 +20,9 @@ export async function getGroupInfo(groupid: number) {
     }
 
     const groupRepository = getRepository(Group);
-    const groupInfo = groupRepository
+    const groupInfo = await groupRepository
                       .createQueryBuilder('group')
-                      .where(`id = ${groupid}`)
+                      .where(`id = '${groupid}'`)
                       .getOne()
                       .catch((err) => {
                         console.error(err);
@@ -39,9 +39,9 @@ export async function getGroupInfo(groupid: number) {
       });
     });
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -56,7 +56,7 @@ export async function getGroupMembers(groupid: number) {
     }
 
     const groupMapRepository = getRepository(GroupMap);
-    const groupMapInfo = groupMapRepository
+    const groupMapInfo = await groupMapRepository
                       .createQueryBuilder('group')
                       .where(`id = ${groupid}`)
                       .getMany()
@@ -76,9 +76,9 @@ export async function getGroupMembers(groupid: number) {
     });
 
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -125,9 +125,9 @@ export async function searchGroup(
       });
     });
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -143,15 +143,15 @@ export async function isInGroup(userid: number, groupid: number) {
     }
 
     const groupMapRepository = getRepository(GroupMap);
-    const groupMapInfo: any = groupMapRepository
-                          .createQueryBuilder('group_map')
-                          .where(`userid = ${userid}`)
-                          .andWhere(`groupid = ${groupid}`)
-                          .getOne()
-                          .catch((err) => {
-                            console.error(err);
-                            throw new Error('Database operation failed.');
-                          });
+    const groupMapInfo: any = await groupMapRepository
+                                  .createQueryBuilder('group_map')
+                                  .where(`userid = ${userid}`)
+                                  .andWhere(`groupid = ${groupid}`)
+                                  .getOne()
+                                  .catch((err) => {
+                                    console.error(err);
+                                    throw new Error('Database operation failed.');
+                                  });
 
     let result: boolean = false;
     if (groupMapInfo && (groupMapInfo.privilege & GroupMemberPrivilege.isMember)) {
@@ -164,9 +164,9 @@ export async function isInGroup(userid: number, groupid: number) {
       });
     });
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -201,9 +201,9 @@ export async function addToGroup(userid: number, groupid: number, privilege: num
       });
     });
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
@@ -243,9 +243,9 @@ export async function postGroup(data: Group, userid: number) {
     });
 
   } catch (err) {
-    return new Promise((resolve) => {
+    return new Promise((reject) => {
       setTimeout(() => {
-        resolve({
+        reject({
           error: err.message,
         });
       });
