@@ -10,21 +10,12 @@ import { UserPrivilege } from './../init/privilege';
 
 export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>) {
 
-  // Get user auth info.
-  const userInfo: any = await getUserInfo(ctx.request.body.username, { auth_info: true })
-                            .catch((err) => {
-                              ctx.throw(400, err);
-                            });
-
-  // Check if user is disabled.
-  if (!(userInfo.privilege & UserPrivilege.isEnabled)) {
-    ctx.throw(403, 'User is disabled.');
-  }
-
-  // Verify password.
-  if (!Auth.verifyPassword(ctx.request.body.password, userInfo.password, userInfo.salt)) {
-    ctx.throw(400, ctx.body.error);
-  }
+  // Auth and get user info.
+  const userInfo: any = Auth
+                      .getUserInfoWithAuth(ctx.request.body.password, ctx.request.body.username)
+                      .catch((err) => {
+                        ctx.throw(403, err);
+                      });
 
   // Generate Token.
   ctx.body = await Auth

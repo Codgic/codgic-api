@@ -1,6 +1,5 @@
 /* /api/models/auth.ts */
 
-import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import * as jwtKoa from 'koa-jwt';
 
@@ -14,21 +13,37 @@ import { User } from './../entities/user';
 
 const config = getConfig();
 
-export async function verifyPassword(retrievedPassword: string, password: string, salt: string) {
+export async function getUserInfoWithAuth(retrievedPassword: string, username: string) {
   try {
-    if (!password) {
-      throw new Error('Invalid username or password.');
+    if (!retrievedPassword || !username) {
+      throw new Error('Invalid requst.');
     }
 
-    // Verify password.
-    const passwordHash = crypto
-                          .createHash('sha512')
-                          .update(password + salt)
-                          .digest('hex');
+    const userRepository = await getRepository(User);
+    const userInfo = await userRepository
+                          .createQueryBuilder('user')
+                          .where(`user.username = '${username}'`)
+                          .getOne()
+                          .catch((err) => {
+                            console.error(err);
+                            throw new Error('Database operation failed.');
+                          });
+
+    if (!userInfo) {
+      throw new Error('User does not exist.');
+    }
+
+    if (!(userInfo.privilege & UserPrivilege.isEnabled)) {
+      throw new Error('User is disabled.');
+    }
+
+    if (!userInfo.verifyPassword(retrievedPassword)) {
+      throw new Error('Incorrect username or password.');
+    }
 
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(passwordHash === password);
+        resolve(userInfo);
       });
     });
 

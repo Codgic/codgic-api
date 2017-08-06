@@ -1,6 +1,5 @@
 /* /api/models/user.ts */
 
-import * as crypto from 'crypto';
 import * as emailValidator from 'email-validator';
 
 import { getRepository } from 'typeorm';
@@ -13,7 +12,7 @@ import { User } from './../entities/user';
 
 const config = getConfig();
 
-export async function getUserInfo(username: string, para: { auth_info: boolean } = { auth_info: false }) {
+export async function getUserInfo(username: string) {
   try {
     if (!username) {
       throw new Error('Username can not be blank.');
@@ -31,11 +30,6 @@ export async function getUserInfo(username: string, para: { auth_info: boolean }
 
     if (!userInfo) {
       throw new Error('User does not exist.');
-    }
-
-    if (!para.auth_info) {
-      delete(userInfo.password);
-      delete(userInfo.salt);
     }
 
     return new Promise((resolve) => {
@@ -158,19 +152,13 @@ export async function signUp(data: any) {
 
     const user = new User();
 
-    // Generate salt
-    crypto.randomBytes(32, (err, buf) => {
-      if (err) {
+    // Update passeord.
+    user
+      .updatePassword(data.password)
+      .catch((err) => {
         console.error(err);
-        throw new Error('Failed to generate salt.');
-      } else {
-        user.salt = buf.toString('hex');
-        user.password = crypto
-                        .createHash('sha512')
-                        .update(data.password + user.salt)
-                        .digest('hex');
-      }
-    });
+        throw new Error('Update user password failed.');
+      });
 
     user.email = data.email;
     user.username = data.username;
@@ -195,10 +183,6 @@ export async function signUp(data: any) {
             }
             throw new Error('Database operation failed.');
           });
-
-    // Do not return sensitive information.
-    delete(user.password);
-    delete(user.salt);
 
     return new Promise((resolve) => {
       setTimeout(() => {
