@@ -2,6 +2,7 @@
 
 // UNFINISHED!!!
 
+import * as crypto from 'crypto';
 import {
   Column,
   CreateDateColumn,
@@ -10,8 +11,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-import * as crypto from 'crypto';
 
 import { UserPrivilege } from './../init/privilege';
 

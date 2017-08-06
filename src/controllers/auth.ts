@@ -1,29 +1,37 @@
-/* /api/controllers/auth.ts
+/* /controllers/auth.ts
    Get authenticated first! */
 
-import * as Koa from 'koa';
-import * as Auth from './../models/auth';
+import { Context } from 'koa';
 
+import { getHttpStatusCode } from './../init/error';
+import { UserPrivilege } from './../init/privilege';
+import * as Auth from './../models/auth';
 import { getUserInfo } from './../models/user';
 
-import { UserPrivilege } from './../init/privilege';
+export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
 
-export async function verifyAuthInfo(ctx: Koa.Context, next: () => Promise<any>) {
+  // Validate request.
+  if (!ctx.request.body.password || !ctx.request.body.username) {
+    ctx.throw(400);
+  }
 
   // Auth and get user info.
-  const userInfo: any = Auth
+  const userInfo: any = await Auth
                       .getUserInfoWithAuth(ctx.request.body.password, ctx.request.body.username)
                       .catch((err) => {
-                        ctx.throw(403, err);
+                        ctx.throw(getHttpStatusCode(err.message), err.message);
                       });
 
   // Generate Token.
-  ctx.body = await Auth
-                  .generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege)
-                  .catch((err) => {
-                    ctx.throw(500, err);
-                  });
+  const token = await Auth
+                      .generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege)
+                      .catch((err) => {
+                        ctx.throw(getHttpStatusCode(err.message), err.message);
+                      });
 
+  ctx.body = {
+    token: `${token}`,
+  };
   ctx.status = 200;
 
   await next();

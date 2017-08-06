@@ -10,10 +10,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { GroupMemberPrivilege } from './../init/privilege';
 import { Group } from './group';
 import { User } from './user';
-
-import { GroupMemberPrivilege } from './../init/privilege';
 
 @Entity()
 @Index('userid_groupid', ['userid', 'groupid'])

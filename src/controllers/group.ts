@@ -1,51 +1,73 @@
-/* /api/controller/group.ts
+/* /controller/group.ts
   Groups promote love and friendship. */
 
-import * as Koa from 'koa';
+import { Context } from 'koa';
+
+import { getHttpStatusCode } from './../init/error';
 import * as Group from './../models/group';
 
-export async function getGroupInfo(ctx: Koa.Context, next: () => Promise<any>) {
+export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
 
-  ctx.body = await Group
-                  .getGroupInfo(ctx.params.groupid)
-                  .catch((err) => {
-                    ctx.throw(404, err);
-                  });
+  // Validate request.
+  if (isNaN(ctx.params.groupid)) {
+    ctx.throw(400);
+  }
 
+  // Retrieve group info.
+  const groupInfo = await Group
+                .getGroupInfo(ctx.params.groupid)
+                .catch((err) => {
+                  ctx.throw(getHttpStatusCode(err.message), err.message);
+                });
+
+  ctx.body = groupInfo;
   ctx.status = 200;
 
   await next();
 
 }
 
-export async function getGroupMembers(ctx: Koa.Context, next: () => Promise<any>) {
+export async function getGroupMembers(ctx: Context, next: () => Promise<any>) {
 
-  ctx.body = await Group
+  // Validate request.
+  if (isNaN(ctx.params.groupid)) {
+    ctx.throw(400, 'Invalid group id.');
+  }
+
+  // Retrieve group members.
+  const groupMembers = await Group
                   .getGroupMembers(ctx.params.groupid)
                   .catch((err) => {
-                    ctx.throw(404, err);
+                    ctx.throw(getHttpStatusCode(err.message), err.message);
                   });
 
+  ctx.body = groupMembers;
   ctx.status = 200;
 
   await next();
 
 }
 
-export async function postGroup(ctx: Koa.Context, next: () => Promise<any>) {
+export async function postGroup(ctx: Context, next: () => Promise<any>) {
 
   // Verify login.
   if (!ctx.state.user) {
+    ctx.throw(401);
+  }
+
+  // Validate request.
+  if (!ctx.request.body.name) {
     ctx.throw(400);
   }
 
   // Create group.
-  ctx.body = await Group
-                  .postGroup(ctx.request.body, ctx.state.user.id)
-                  .catch((err) => {
-                    ctx.throw(400, err);
-                  });
+  const groupInfo = await Group
+                .postGroup(ctx.request.body, ctx.state.user.id)
+                .catch((err) => {
+                  ctx.throw(getHttpStatusCode(err.message), err.message);
+                });
 
+  ctx.body = groupInfo;
   ctx.status = 200;
 
   await next();

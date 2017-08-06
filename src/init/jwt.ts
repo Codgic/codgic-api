@@ -1,9 +1,10 @@
+/* /init/jwt.ts */
+
 import * as Koa from 'koa';
 import * as koaJwt from 'koa-jwt';
 
-import { UserPrivilege } from './privilege';
-
 import { getConfig } from './config';
+import { UserPrivilege } from './privilege';
 
 const config = getConfig();
 

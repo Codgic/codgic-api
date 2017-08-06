@@ -12,19 +12,33 @@ oj:
     signup:
       need_confirmation: false
       # need_verify_email: false
+      nickname:
+        min_length:
+        max_length: 30
+      password:
+        min_length: 8
+        max_length:
+        # uppercase:
+        # lowercase:
+        # special:
+        # digit:
+      username:
+        min_length:
+        max_length: 30
     content:
       common_user_can_post: true
       common_user_need_confirmation: false
   default:
     page:
       contest: 50
+      group: 20
       problem: 50
       user: 20
     contest:
-      duration: 7200
+      # duration: 7200
     problem:
-      memory_limit: 256
-      time_limit: 1000
+      # memory_limit: 256
+      # time_limit: 1000
     
 # API
 api:

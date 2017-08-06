@@ -1,36 +1,26 @@
 /* /api/controllers/problem.ts */
 
-import * as Koa from 'koa';
-import * as Problem from './../models/problem';
-
-import { ProblemPrivilege, UserPrivilege } from './../init/privilege';
+import { Context } from 'koa';
 
 import { getConfig } from './../init/config';
-import { getMaxProblemId } from './../models/problem';
+import { getHttpStatusCode } from './../init/error';
+import { ProblemPrivilege, UserPrivilege } from './../init/privilege';
+import * as Problem from './../models/problem';
 
 const config = getConfig();
 
-export async function getProblemList(ctx: Koa.Context, next: () => Promise<any>) {
+export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
 
-  ctx.body = await Problem
-                  .getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num)
-                  .catch((err) => {
-                    ctx.throw(404, err);
-                  });
-
-  ctx.status = 200;
-
-  await next();
-
-}
-
-export async function getProblemInfo(ctx: Koa.Context, next: () => Promise<any>) {
+  // Validate request.
+  if (isNaN(ctx.params.problemid)) {
+    ctx.throw(400);
+  }
 
   // Retrieve problem info.
   const problemInfo: any = await Problem
                                 .getProblemInfo(ctx.params.problemid)
                                 .catch((err) => {
-                                  ctx.throw(404, err);
+                                  ctx.throw(getHttpStatusCode(err.message), err.message);
                                 });
 
   // Verify privilege.
@@ -47,7 +37,7 @@ export async function getProblemInfo(ctx: Koa.Context, next: () => Promise<any>)
                               },
                             )
                             .catch((err) => {
-                              ctx.throw(500);
+                              ctx.throw(getHttpStatusCode(err.message), err.message);
                             });
 
   if (!hasPrivilege) {
@@ -65,7 +55,21 @@ export async function getProblemInfo(ctx: Koa.Context, next: () => Promise<any>)
 
 }
 
-export async function searchProblem(ctx: Koa.Context, next: () => Promise<any>) {
+export async function getProblemList(ctx: Context, next: () => Promise<any>) {
+
+  ctx.body = await Problem
+                  .getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num)
+                  .catch((err) => {
+                    ctx.throw(getHttpStatusCode(err.message), err.message);
+                  });
+
+  ctx.status = 200;
+
+  await next();
+
+}
+
+export async function searchProblem(ctx: Context, next: () => Promise<any>) {
 
   ctx.body = await Problem
                   .searchProblem(
@@ -76,7 +80,7 @@ export async function searchProblem(ctx: Koa.Context, next: () => Promise<any>) 
                     ctx.query.num,
                   )
                   .catch((err) => {
-                    ctx.throw(404, err);
+                    ctx.throw(getHttpStatusCode(err.message), err.message);
                   });
 
   ctx.status = 200;
@@ -85,7 +89,7 @@ export async function searchProblem(ctx: Koa.Context, next: () => Promise<any>) 
 
 }
 
-export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
+export async function postProblem(ctx: Context, next: () => Promise<any>) {
 
   // Verify login.
   if (!ctx.state.user) {
@@ -96,7 +100,7 @@ export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
   const maxProblemId: any = await Problem
                                 .getMaxProblemId()
                                 .catch((err) => {
-                                  ctx.throw(500, err);
+                                  ctx.throw(getHttpStatusCode(err.message), err.message);
                                 });
 
   // Generate next id (default: 1000).
@@ -114,13 +118,13 @@ export async function postProblem(ctx: Koa.Context, next: () => Promise<any>) {
   await next();
 }
 
-export async function updateProblem(ctx: Koa.Context, next: () => Promise<any>) {
+export async function updateProblem(ctx: Context, next: () => Promise<any>) {
 
   // Retrieve problem info.
   const problemInfo: any = await Problem
                                 .getProblemInfo(ctx.params.problemid)
                                 .catch((err) => {
-                                  ctx.throw(404, err);
+                                  ctx.throw(getHttpStatusCode(err.message), err.message);
                                 });
 
   // Verify privilege.
@@ -137,7 +141,7 @@ export async function updateProblem(ctx: Koa.Context, next: () => Promise<any>) 
                               },
                             )
                             .catch((err) => {
-                              ctx.throw(500);
+                              ctx.throw(getHttpStatusCode(err.message), err.message);
                             });
 
   if (!hasPrivilege) {
@@ -152,14 +156,14 @@ export async function updateProblem(ctx: Koa.Context, next: () => Promise<any>) 
   await next();
 }
 
-async function routePost(ctx: Koa.Context) {
+async function routePost(ctx: Context) {
     let result: any;
 
     if (ctx.state.user.privilege & UserPrivilege.editContent) {
       result = await Problem
                     .postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
                     .catch((err) => {
-                      ctx.throw(500, err);
+                      ctx.throw(getHttpStatusCode(err.message), err.message);
                     });
     } else {
       if (config.oj.policy.content.common_user_can_post) {
@@ -167,13 +171,13 @@ async function routePost(ctx: Koa.Context) {
           result = await Problem
                         .postProblemTemp(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
                         .catch((err) => {
-                          ctx.throw(500, err);
+                          ctx.throw(getHttpStatusCode(err.message), err.message);
                         });
         } else {
           result = await Problem
                         .postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
                         .catch((err) => {
-                          ctx.throw(500, err);
+                          ctx.throw(getHttpStatusCode(err.message), err.message);
                         });
         }
       } else {

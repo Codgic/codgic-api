@@ -1,21 +1,26 @@
 /* /api/controllers/user.ts
    We love our users! */
 
-import * as Koa from 'koa';
+import { Context } from 'koa';
+
+import { getConfig } from './../init/config';
+import { getHttpStatusCode } from './../init/error';
 import * as User from './../models/user';
 
-export async function getCurrentInfo(ctx: Koa.Context, next: () => Promise<any>) {
+const config = getConfig();
+
+export async function getCurrentInfo(ctx: Context, next: () => Promise<any>) {
 
   // Verify login.
   if (!ctx.state.user) {
-    ctx.throw(400);
+    ctx.throw(401);
   }
 
   // Retrieve user info.
   ctx.body = await User
                   .getUserInfo(ctx.state.user.id)
                   .catch((err) => {
-                    ctx.throw(404, err);
+                    ctx.throw(getHttpStatusCode(err.message), err.message);
                   });
 
   ctx.status = 200;
@@ -24,13 +29,13 @@ export async function getCurrentInfo(ctx: Koa.Context, next: () => Promise<any>)
 
 }
 
-export async function getUserInfo(ctx: Koa.Context, next: () => Promise<any>) {
+export async function getUserInfo(ctx: Context, next: () => Promise<any>) {
 
   // Retrieve user info.
   ctx.body = await User
                   .getUserInfo(ctx.params.username)
                   .catch((err) => {
-                    ctx.throw(404, err);
+                    ctx.throw(getHttpStatusCode(err.message), err.message);
                   });
 
   ctx.status = 200;
@@ -39,7 +44,7 @@ export async function getUserInfo(ctx: Koa.Context, next: () => Promise<any>) {
 
 }
 
-export async function searchUser(ctx: Koa.Context, next: () => Promise<any>) {
+export async function searchUser(ctx: Context, next: () => Promise<any>) {
 
   ctx.body = await User
                   .searchUser(
@@ -50,7 +55,7 @@ export async function searchUser(ctx: Koa.Context, next: () => Promise<any>) {
                     ctx.query.num,
                   )
                   .catch((err) => {
-                    ctx.throw(404, err);
+                    ctx.throw(getHttpStatusCode(err.message), err.message);
                   });
 
   ctx.status = 200;
@@ -59,12 +64,18 @@ export async function searchUser(ctx: Koa.Context, next: () => Promise<any>) {
 
 }
 
-export async function signUp(ctx: Koa.Context, next: () => Promise<any>) {
+export async function signUp(ctx: Context, next: () => Promise<any>) {
+
+  // Validate request.
+  User.validateUserInfo(ctx.request.body)
+    .catch((err) => {
+      ctx.throw(getHttpStatusCode(err.message), err.message);
+    });
 
   ctx.body = await User
                   .signUp(ctx.request.body)
                   .catch((err) => {
-                    ctx.throw(400, err);
+                    ctx.throw(getHttpStatusCode(err.message), err.message);
                   });
 
   ctx.status = 201;

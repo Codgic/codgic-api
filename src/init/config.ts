@@ -1,11 +1,12 @@
 /* config.ts
-   Used to read configurations from config.yml. */
+  Read configurations from config.yml. */
 
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
-// Read yaml
+// Read config.yml.
 export function getConfig() {
+
   let conf;
 
   try {
@@ -16,4 +17,5 @@ export function getConfig() {
   }
 
   return conf;
+
 }

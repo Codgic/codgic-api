@@ -17,46 +17,31 @@ export function initKoa(app: Koa) {
 
   app.use((ctx, next) => {
     return next().catch((err) => {
-      let errorMsg: string = err.message;
 
-      if (!errorMsg) {
+      if (!err.message) {
         switch (err.status) {
-          case 401:
-            ctx.status = 401;
-            if (!errorMsg) {
-              errorMsg = 'Unauthorized.';
-            }
-            break;
-          case 402:
-            ctx.status = 402;
-            if (!errorMsg) {
-              errorMsg = 'Too much requests.';
-            }
-            break;
-          case 403:
-            ctx.status = 403;
-            if (!errorMsg) {
-              errorMsg = 'Forbidden.';
-            }
-            break;
-          case 404:
-            ctx.status = 404;
-            if (!errorMsg) {
-              errorMsg = 'Not Found.';
-            }
-            break;
-          case 500:
-            ctx.status = 500;
-            if (!errorMsg) {
-              errorMsg = 'Internal Server Error.';
-            }
-            break;
+        case 401:
+          err.message = 'Unauthorized.';
+          break;
+        case 402:
+          err.message = 'Too much requests.';
+          break;
+        case 403:
+          err.message = 'Forbidden.';
+          break;
+        case 404:
+          err.message = 'Not Found.';
+          break;
+        case 500:
+          err.message = 'Internal Server Error.';
+          break;
         }
       }
 
       ctx.body = {
-        error: errorMsg,
+        error: err.message,
       };
+      ctx.status = err.status;
 
     });
   });
