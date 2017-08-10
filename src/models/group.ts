@@ -5,10 +5,8 @@ import { getRepository } from 'typeorm';
 
 import { Group } from './../entities/group';
 import { GroupMap } from './../entities/group_map';
-import { getConfig } from './../init/config';
+import { config } from './../init/config';
 import { GroupMemberPrivilege } from './../init/privilege';
-
-const config = getConfig();
 
 export async function getGroupInfo(groupid: number) {
 

@@ -4,10 +4,8 @@ import * as Koa from 'koa';
 import { getRepository } from 'typeorm';
 
 import { Problem } from './../entities/problem';
-import { getConfig } from './../init/config';
+import { config } from './../init/config';
 import { isInGroup } from './group';
-
-const config = getConfig();
 
 // Verify problem privilege.
 export async function verifyProblemPrivilege(

@@ -3,11 +3,9 @@
 
 import { Context } from 'koa';
 
-import { getConfig } from './../init/config';
+import { config } from './../init/config';
 import { getHttpStatusCode } from './../init/error';
 import * as User from './../models/user';
-
-const config = getConfig();
 
 export async function getCurrentInfo(ctx: Context, next: () => Promise<any>) {
 

@@ -15,6 +15,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { config } from './../init/config';
 import { ProblemPrivilege } from './../init/privilege';
 
 @Entity()
@@ -58,10 +59,14 @@ export class Problem {
   })
   public additionalInfo: string;
 
-  @Column('int')
+  @Column('int', {
+    default: config.oj.default.problem.time_limit,
+  })
   public timeLimit: number;
 
-  @Column('int')
+  @Column('int', {
+    default: config.oj.default.problem.memory_limit,
+  })
   public memoryLimit: number;
 
   @Column('int')

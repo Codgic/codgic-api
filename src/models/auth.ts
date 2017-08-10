@@ -5,10 +5,8 @@ import * as jwtKoa from 'koa-jwt';
 import { getRepository } from 'typeorm';
 
 import { User } from './../entities/user';
-import { getConfig } from './../init/config';
+import { config } from './../init/config';
 import { UserPrivilege } from './../init/privilege';
-
-const config = getConfig();
 
 export async function getUserInfoWithAuth(retrievedPassword: string, username: string) {
 

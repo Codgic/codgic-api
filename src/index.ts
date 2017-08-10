@@ -5,7 +5,7 @@ import 'reflect-metadata';
 
 import * as Koa from 'koa';
 
-import { getConfig } from './init/config';
+import { config } from './init/config';
 import { initJWT } from './init/jwt';
 import { initKoa } from './init/koa';
 import { initRoutes } from './init/routes';
@@ -16,8 +16,8 @@ import { connectionOptions } from './init/typeorm';
 console.log('Establishing database connection...');
 
 createConnection(connectionOptions).then(async (connection) => {
+
   const app = new Koa();
-  const config = getConfig();
 
   // Initialize everything.
   initKoa(app);
@@ -33,7 +33,10 @@ createConnection(connectionOptions).then(async (connection) => {
   app.listen(config.api.port, () => {
     console.log(`Codgic-api listening at port ${config.api.port}`);
   });
+
 }).catch((err) => {
+
   console.error(err);
   throw new Error('Database connection failed.');
+
 });

@@ -2,9 +2,7 @@
 
 import { Context } from 'koa';
 
-import { getConfig } from './../init/config';
-
-const config = getConfig();
+import { config } from './../init/config';
 
 export async function hi(ctx: Context, next: () => Promise<any>) {
 

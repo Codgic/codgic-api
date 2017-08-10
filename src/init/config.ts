@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
 // Read config.yml.
-export function getConfig() {
+function getConfig() {
 
   let conf;
 
@@ -19,3 +19,5 @@ export function getConfig() {
   return conf;
 
 }
+
+export const config = getConfig();

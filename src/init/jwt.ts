@@ -3,10 +3,8 @@
 import * as Koa from 'koa';
 import * as koaJwt from 'koa-jwt';
 
-import { getConfig } from './config';
+import { config } from './config';
 import { UserPrivilege } from './privilege';
-
-const config = getConfig();
 
 function allowGuard(ctx: Koa.Context) {
   return ctx.url === '/' || ctx.url === '/auth' || (ctx.url === '/user' && ctx.method === 'POST');

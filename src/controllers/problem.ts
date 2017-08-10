@@ -2,12 +2,10 @@
 
 import { Context } from 'koa';
 
-import { getConfig } from './../init/config';
+import { config } from './../init/config';
 import { getHttpStatusCode } from './../init/error';
 import { ProblemPrivilege, UserPrivilege } from './../init/privilege';
 import * as Problem from './../models/problem';
-
-const config = getConfig();
 
 export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
 

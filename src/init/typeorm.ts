@@ -3,9 +3,7 @@
 
 import { ConnectionOptions } from 'typeorm';
 
-import { getConfig } from './config';
-
-const config = getConfig();
+import { config } from './config';
 
 const connectionOptions: ConnectionOptions = {
   type: config.database.type,

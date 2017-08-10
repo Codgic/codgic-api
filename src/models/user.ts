@@ -4,10 +4,8 @@ import * as emailValidator from 'email-validator';
 import { getRepository } from 'typeorm';
 
 import { User } from './../entities/user';
-import { getConfig } from './../init/config';
+import { config } from './../init/config';
 import { UserPrivilege } from './../init/privilege';
-
-const config = getConfig();
 
 export async function getUserInfo(username: string) {
 
