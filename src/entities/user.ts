@@ -8,6 +8,7 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -27,13 +28,15 @@ export class User {
   @Index()
   public email: string;
 
-  @Column('varchar', {
+  @PrimaryColumn('varchar', {
     unique: true,
   })
   @Index()
   public username: string;
 
-  @Column('varchar')
+  @Column('varchar', {
+    nullable: true,
+  })
   public nickname: string;
 
   @Column('tinyint', {
@@ -70,14 +73,16 @@ export class User {
   private salt: string;
 
   public verifyPassword(retrievedPassword: string) {
+
     return this.password === crypto
                             .createHash('sha512')
                             .update(retrievedPassword + this.salt)
                             .digest('hex');
+
   }
 
   public async updatePassword(retrievedPassword: string) {
-    try {
+
       crypto.randomBytes(32, (err, buf) => {
         if (err) {
           console.error(err);
@@ -91,20 +96,8 @@ export class User {
         }
       });
 
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        });
-      });
-    } catch (err) {
-      return new Promise((reject) => {
-        setTimeout(() => {
-          reject({
-            error: err.message,
-          });
-        });
-      });
-    }
+      return true;
+
   }
 
 }

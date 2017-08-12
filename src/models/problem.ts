@@ -7,54 +7,6 @@ import { Problem } from './../entities/problem';
 import { config } from './../init/config';
 import { isInGroup } from './group';
 
-// Verify problem privilege.
-export async function verifyProblemPrivilege(
-  operation: number,
-  userid: number,
-  userPrivilege: number,
-  problemPrivilegeInfo: {
-    owner: number,
-    group: number,
-    ownerPrivilege: number,
-    groupPrivilege: number,
-    othersPrivilege: number,
-}) {
-
-  // Validate parameters.
-  if (
-    !operation ||
-    !problemPrivilegeInfo.owner ||
-    !problemPrivilegeInfo.group ||
-    !problemPrivilegeInfo.ownerPrivilege ||
-    !problemPrivilegeInfo.groupPrivilege ||
-    !problemPrivilegeInfo.othersPrivilege
-  ) {
-    throw new Error('Invalid parameters.');
-  }
-
-  let result: boolean = false;
-
-  if (userid) {
-    if (userPrivilege & operation) {
-      // Check user's admin privilege first.
-      result = true;
-    } else if (userid === problemPrivilegeInfo.owner) {
-      // If user is the problem owner.
-      result = (problemPrivilegeInfo.ownerPrivilege & operation) === 1 ? true : false;
-    } else if (isInGroup(userid, problemPrivilegeInfo.group)) {
-      // If user belongs to the problem owner group.
-      result = (problemPrivilegeInfo.groupPrivilege & operation) === 1 ? true : false;
-    } else {
-      result = (problemPrivilegeInfo.othersPrivilege & operation) === 1 ? true : false;
-    }
-  } else {
-    result = (problemPrivilegeInfo.othersPrivilege & operation) === 1 ? true : false;
-  }
-
-  return result;
-
-}
-
 // Get maxium problem id.
 export async function getMaxProblemId() {
 
@@ -224,5 +176,53 @@ export async function postProblem(problemid: number, data: Problem, userid: numb
       });
 
   return problem;
+
+}
+
+// Verify problem privilege.
+export async function verifyProblemPrivilege(
+  operation: number,
+  userid: number,
+  userPrivilege: number,
+  problemPrivilegeInfo: {
+    owner: number,
+    group: number,
+    ownerPrivilege: number,
+    groupPrivilege: number,
+    othersPrivilege: number,
+}) {
+
+  // Validate parameters.
+  if (
+    !operation ||
+    !problemPrivilegeInfo.owner ||
+    !problemPrivilegeInfo.group ||
+    !problemPrivilegeInfo.ownerPrivilege ||
+    !problemPrivilegeInfo.groupPrivilege ||
+    !problemPrivilegeInfo.othersPrivilege
+  ) {
+    throw new Error('Invalid parameters.');
+  }
+
+  let result: boolean = false;
+
+  if (userid) {
+    if (userPrivilege & operation) {
+      // Check user's admin privilege first.
+      result = true;
+    } else if (userid === problemPrivilegeInfo.owner) {
+      // If user is the problem owner.
+      result = (problemPrivilegeInfo.ownerPrivilege & operation) === 1 ? true : false;
+    } else if (isInGroup(userid, problemPrivilegeInfo.group)) {
+      // If user belongs to the problem owner group.
+      result = (problemPrivilegeInfo.groupPrivilege & operation) === 1 ? true : false;
+    } else {
+      result = (problemPrivilegeInfo.othersPrivilege & operation) === 1 ? true : false;
+    }
+  } else {
+    result = (problemPrivilegeInfo.othersPrivilege & operation) === 1 ? true : false;
+  }
+
+  return result;
 
 }

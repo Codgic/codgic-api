@@ -71,7 +71,7 @@ export async function searchGroup(
   }
 
   const firstResult = (page - 1) * num;
-  const groupRepository = await getRepository(Group);
+  const groupRepository = getRepository(Group);
   const searchResult = await groupRepository
                               .createQueryBuilder('group')
                               .where(`problem.name LIKE '%${keyword}%'`)
@@ -161,7 +161,7 @@ export async function postGroup(data: Group, userid: number) {
   group.description = data.description;
   group.owner = userid;
 
-  const groupRepository = await getRepository(Group);
+  const groupRepository = getRepository(Group);
 
   await groupRepository
           .persist(group)

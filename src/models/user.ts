@@ -76,7 +76,7 @@ export async function searchUser(
 
 }
 
-export async function signUp(data: any) {
+export async function postUser(data: any) {
 
   // Verify parameters.
   if (!data.email || !data.username || !data.password) {
@@ -85,7 +85,7 @@ export async function signUp(data: any) {
 
   const user = new User();
 
-  // Update passeord.
+  // Update password.
   user
     .updatePassword(data.password)
     .catch((err) => {
@@ -105,7 +105,7 @@ export async function signUp(data: any) {
     user.privilege = 0;
   }
 
-  const userRepository = await getRepository(User);
+  const userRepository = getRepository(User);
 
   await userRepository
       .persist(user)
@@ -124,7 +124,7 @@ export async function signUp(data: any) {
 export async function validateUserInfo(data: any) {
 
   if (!data.username) {
-    throw new Error('Invalid username');
+    throw new Error('Invalid username.');
   }
 
   if (
@@ -132,6 +132,10 @@ export async function validateUserInfo(data: any) {
     data.username.length < config.oj.policy.signup.username.min_length
   ) {
     throw new Error('Username too short.');
+  }
+
+  if (!data.password) {
+    throw new Error('Invalid password.');
   }
 
   // Complexity Check: To be implemented.
@@ -144,6 +148,7 @@ export async function validateUserInfo(data: any) {
   }
 
   if (
+    data.nickname &&
     config.oj.policy.signup.nickname.min_length &&
     data.nickname.length < config.oj.policy.signup.nickname.min_length
   ) {
@@ -151,6 +156,7 @@ export async function validateUserInfo(data: any) {
   }
 
   if (
+    data.nickname &&
     config.oj.policy.signup.nickname.max_length &&
     data.nickname.length > config.oj.policy.signup.nickname.max_length
   ) {
@@ -162,5 +168,26 @@ export async function validateUserInfo(data: any) {
   }
 
   return true;
+
+}
+
+export async function verifyUserPrivilege(
+  operation: number,
+  currentUserid: number,
+  targetUserid: number,
+  privilege: number,
+) {
+
+  // Validate parameters.
+  if (
+    !operation ||
+    !currentUserid ||
+    !targetUserid ||
+    !privilege
+  ) {
+    throw new Error('Invalid parameters.');
+  }
+
+  return currentUserid === targetUserid || (privilege & UserPrivilege.editUser) === 1 ? true : false;
 
 }

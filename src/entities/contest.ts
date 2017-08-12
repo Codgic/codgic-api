@@ -10,7 +10,6 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -24,7 +23,7 @@ export class Contest {
   @Index()
   public id: number;
 
-  @PrimaryColumn('int', {
+  @Column('int', {
     unique: true,
   })
   @Index()

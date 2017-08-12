@@ -89,7 +89,7 @@ export async function searchProblem(ctx: Context, next: () => Promise<any>) {
 
 export async function postProblem(ctx: Context, next: () => Promise<any>) {
 
-  // Verify login.
+  // Check login.
   if (!ctx.state.user) {
     ctx.throw(401);
   }
@@ -117,6 +117,11 @@ export async function postProblem(ctx: Context, next: () => Promise<any>) {
 }
 
 export async function updateProblem(ctx: Context, next: () => Promise<any>) {
+
+  // Check login.
+  if (!ctx.state.user) {
+    ctx.throw(401);
+  }
 
   // Retrieve problem info.
   const problemInfo: any = await Problem
@@ -154,11 +159,12 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   await next();
 }
 
-async function routePost(ctx: Context) {
+function routePost(ctx: Context) {
+
     let result: any;
 
     if (ctx.state.user.privilege & UserPrivilege.editContent) {
-      result = await Problem
+      result = Problem
                     .postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
                     .catch((err) => {
                       ctx.throw(getHttpStatusCode(err.message), err.message);
@@ -166,13 +172,13 @@ async function routePost(ctx: Context) {
     } else {
       if (config.oj.policy.content.common_user_can_post) {
         if (config.oj.policy.content.common_user_need_confirmation) {
-          result = await Problem
+          result = Problem
                         .postProblemTemp(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
                         .catch((err) => {
                           ctx.throw(getHttpStatusCode(err.message), err.message);
                         });
         } else {
-          result = await Problem
+          result = Problem
                         .postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
                         .catch((err) => {
                           ctx.throw(getHttpStatusCode(err.message), err.message);
@@ -183,9 +189,6 @@ async function routePost(ctx: Context) {
       }
     }
 
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(result);
-      });
-    });
+    return result;
+
 }

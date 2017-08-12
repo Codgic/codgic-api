@@ -50,7 +50,7 @@ export async function getGroupMembers(ctx: Context, next: () => Promise<any>) {
 
 export async function postGroup(ctx: Context, next: () => Promise<any>) {
 
-  // Verify login.
+  // Check login.
   if (!ctx.state.user) {
     ctx.throw(401);
   }

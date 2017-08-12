@@ -9,11 +9,12 @@ const user = new Router();
 user.get('/', User.getCurrentInfo);
 user.get('/:username', User.getUserInfo);
 
-user.post('/', User.signUp);
+user.post('/', User.postUser);
+
+user.put('/', User.updateUser);
 
 // Unimplemented:
 
-// user.put('/', User.updateProfile);
-// user.delete('/', User.deleteProfile);
+// user.delete('/', User.deleteUser);
 
 export { user };

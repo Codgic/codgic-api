@@ -37,8 +37,8 @@ oj:
     contest:
       # duration: 7200
     problem:
-      # memory_limit: 256
-      # time_limit: 1000
+      memory_limit: 256
+      time_limit: 1000
     
 # API
 api:
