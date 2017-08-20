@@ -47,10 +47,12 @@
     "typeorm": "0.1.0-alpha.31"
   },
   "devDependencies": {
+    "@types/chai": "^4.0.3",
     "@types/del": "^2.2.32",
     "@types/gulp": "^4.0.4",
     "@types/gulp-shell": "0.0.30",
     "@types/mocha": "^2.2.41",
+    "chai": "^4.1.1",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-copy": "^1.0.0",
