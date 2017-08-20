@@ -15,7 +15,7 @@ export class Gulpfile {
   // Clean build folder.
   @Task()
   public clean() {
-    return del('./dist/*');
+    return del('./dist/**');
   }
 
   // Compile files.

@@ -12,9 +12,6 @@
         "no-console": [
             false
         ],
-        "object-literal-sort-keys": [
-            false
-        ],
         "no-bitwise": false
     },
     "rulesDirectory": []

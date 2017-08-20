@@ -28,7 +28,7 @@ export class User {
   @Index()
   public email: string;
 
-  @PrimaryColumn('varchar', {
+  @Column('varchar', {
     unique: true,
   })
   @Index()

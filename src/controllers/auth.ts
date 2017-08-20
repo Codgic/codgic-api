@@ -16,11 +16,10 @@ export async function refreshToken(ctx: Context, next: () => Promise<any>) {
   }
 
   // Generate Token.
-  const token = await Auth
-            .generateToken(ctx.state.user.id, ctx.state.user.username, ctx.state.user.email, ctx.state.user.privilege)
-            .catch((err) => {
-              ctx.throw(getHttpStatusCode(err.message), err.message);
-            });
+  const token = await getToken(ctx.state.user)
+          .catch((err) => {
+            ctx.throw(getHttpStatusCode(err.message), err.message);
+          })
 
   ctx.body = {
     token: `${token}`,
@@ -46,11 +45,15 @@ export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
                       });
 
   // Generate Token.
-  const token = await Auth
-                      .generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege)
-                      .catch((err) => {
-                        ctx.throw(getHttpStatusCode(err.message), err.message);
-                      });
+  const token = await getToken({
+    id: userInfo.id,
+    username: userInfo.username,
+    email: userInfo.email,
+    privilege: userInfo.privilege,
+  })
+          .catch((err) => {
+            ctx.throw(getHttpStatusCode(err.message), err.message);
+          });
 
   ctx.body = {
     token: `${token}`,
@@ -58,5 +61,22 @@ export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
   ctx.status = 200;
 
   await next();
+
+}
+
+function getToken(userInfo: {
+  id: number,
+  username: string,
+  email: string,
+  privilege: number,
+}) {
+
+  const token = Auth
+          .generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege)
+          .catch((err) => {
+            throw new Error(err);
+          });
+
+  return token;
 
 }
