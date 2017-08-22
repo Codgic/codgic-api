@@ -1,5 +1,5 @@
 /* /init/error.ts
-  Determine error code according to error message. */
+  Customized Error Classes here. */
 
 import { Context } from 'koa';
 
@@ -10,7 +10,7 @@ export class ModelError extends Error {
   constructor(code: number, message: string) {
 
     // Call parent.
-    super(message);
+    super();
     Object.setPrototypeOf(this, ModelError.prototype);
 
     this.code = code;
@@ -38,7 +38,7 @@ export class ModelError extends Error {
       }
     }
 
-    this.stack = (new Error(message)).stack;
+    this.stack = (new Error(this.message)).stack;
     this.name = this.constructor.name;
 
   }
