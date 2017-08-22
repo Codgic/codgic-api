@@ -6,13 +6,14 @@ import { getRepository } from 'typeorm';
 import { Group } from './../entities/group';
 import { GroupMap } from './../entities/group_map';
 import { config } from './../init/config';
+import { ModelError } from './../init/error';
 import { GroupMemberPrivilege } from './../init/privilege';
 
 export async function getGroupInfo(groupid: number) {
 
   // Validate parameters.
   if (!groupid) {
-    throw new Error('Invalid parameters.');
+    throw new ModelError(500, 'Invalid parameters.');
   }
 
   const groupRepository = getRepository(Group);
@@ -22,11 +23,11 @@ export async function getGroupInfo(groupid: number) {
                         .getOne()
                         .catch((err) => {
                           console.error(err);
-                          throw new Error('Database operation failed.');
+                          throw new ModelError(500, 'Database operation failed.');
                         });
 
   if (!groupInfo) {
-    throw new Error('Group not found.');
+    throw new ModelError(404, 'Group not found.');
   }
 
   return groupInfo;
@@ -37,7 +38,7 @@ export async function getGroupMembers(groupid: number) {
 
   // Validate parameters.
   if (!groupid) {
-    throw new Error('Invalid parameters.');
+    throw new ModelError(500, 'Invalid parameters.');
   }
 
   const groupMapRepository = getRepository(GroupMap);
@@ -47,11 +48,11 @@ export async function getGroupMembers(groupid: number) {
                         .getMany()
                         .catch((err) => {
                           console.error(err);
-                          throw new Error('Database operation failed.');
+                          throw new ModelError(500, 'Database operation failed.');
                         });
 
   if (!groupMapInfo) {
-      throw new Error('Group not found.');
+      throw new ModelError(404, 'Group not found.');
     }
 
   return groupMapInfo;
@@ -67,7 +68,7 @@ export async function searchGroup(
 
   // Validate parameters.
   if (page < 1 || num < 1 || !keyword) {
-    throw new Error('Invalid parameters.');
+    throw new ModelError(500, 'Invalid parameters.');
   }
 
   const firstResult = (page - 1) * num;
@@ -82,11 +83,11 @@ export async function searchGroup(
                               .getMany()
                               .catch((err) => {
                                 console.error(err);
-                                throw new Error('Database operation failed.');
+                                throw new ModelError(500, 'Database operation failed.');
                               });
 
   if (!searchResult) {
-    throw new Error('No matching result.');
+    throw new ModelError(404, 'No matching result.');
   }
 
   return searchResult;
@@ -98,7 +99,7 @@ export async function isInGroup(userid: number, groupid: number) {
 
   // Validate parameters.
   if (!userid || !groupid) {
-    throw new Error('Invalid request.');
+    throw new ModelError(500, 'Invalid parameters.');
   }
 
   const groupMapRepository = getRepository(GroupMap);
@@ -109,7 +110,7 @@ export async function isInGroup(userid: number, groupid: number) {
                                   .getOne()
                                   .catch((err) => {
                                     console.error(err);
-                                    throw new Error('Database operation failed.');
+                                    throw new ModelError(500, 'Database operation failed.');
                                   });
 
   let result: boolean = false;
@@ -125,7 +126,7 @@ export async function addToGroup(userid: number, groupid: number, privilege: num
 
   // Validate parameters.
   if (!userid || !groupid) {
-      throw new Error('Invalid request.');
+      throw new ModelError(500, 'Invalid parameters.');
     }
 
   const groupMap = new GroupMap();
@@ -140,7 +141,7 @@ export async function addToGroup(userid: number, groupid: number, privilege: num
           .persist(groupMap)
           .catch((err) => {
             console.error(err);
-            throw new Error('Database operation failed.');
+            throw new ModelError(500, 'Database operation failed.');
           });
 
   return groupMap;
@@ -152,7 +153,7 @@ export async function postGroup(data: Group, userid: number) {
 
   // Validate parameters.
   if (!data.name || !userid) {
-    throw new Error('Invalid request.');
+    throw new ModelError(500, 'Invalid parameters.');
   }
 
   const group = new Group();
@@ -168,9 +169,9 @@ export async function postGroup(data: Group, userid: number) {
           .catch((err) => {
             console.error(err);
             if (err.errno === 1062) {
-              throw new Error('Group name taken.');
+              throw new ModelError(400, 'Group name taken.');
             }
-            throw new Error ('Database operation failed.');
+            throw new ModelError (500, 'Database operation failed.');
           });
 
   return group;

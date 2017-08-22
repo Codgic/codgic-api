@@ -6,6 +6,7 @@ import { getRepository } from 'typeorm';
 
 import { User } from './../entities/user';
 import { config } from './../init/config';
+import { ModelError } from './../init/error';
 import { UserPrivilege } from './../init/privilege';
 
 export async function getUserInfoWithAuth(retrievedPassword: string, username: string) {
@@ -22,20 +23,20 @@ export async function getUserInfoWithAuth(retrievedPassword: string, username: s
                           .getOne()
                           .catch((err) => {
                             console.error(err);
-                            throw new Error('Database operation failed.');
+                            throw new ModelError(500, 'Database operation failed.');
                           });
 
   if (!userInfo) {
     // For security purposes, return 'Incorrect username or password.'.
-    throw new Error('Incorrect username or password.');
+    throw new ModelError(403, 'Incorrect username or password.');
   }
 
   if (!(userInfo.privilege & UserPrivilege.isEnabled)) {
-    throw new Error('User is disabled.');
+    throw new ModelError(403, 'User is disabled.');
   }
 
   if (!userInfo.verifyPassword(retrievedPassword)) {
-    throw new Error('Incorrect username or password.');
+    throw new ModelError(403, 'Incorrect username or password.');
   }
 
   return userInfo;
@@ -46,15 +47,15 @@ export async function generateToken(userid: number, username: string, email: str
 
   // Validate parameters.
   if (!userid || !username || !email || !privilege) {
-    throw new Error('Invalid parameters');
+    throw new ModelError(500, 'Invalid parameters');
   }
 
   // Sign jwt token.
   const accessToken = await jwt.sign({
-    id: userid,
     email: `${email}`,
-    username: `${username}`,
+    id: userid,
     privilege: `${privilege}`,
+    username: `${username}`,
   }, config.api.jwt.secret, {
     expiresIn: config.api.jwt.expire_time,
   });

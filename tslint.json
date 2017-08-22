@@ -5,14 +5,17 @@
     ],
     "jsRules": {},
     "rules": {
-        "quotemark": [
-            true,
-            "single"
-        ],
+        "no-bitwise": false,
         "no-console": [
             false
         ],
-        "no-bitwise": false
+        "object-literal-sort-keys": [
+            false
+        ],
+        "quotemark": [
+            true,
+            "single"
+        ]
     },
     "rulesDirectory": []
 }

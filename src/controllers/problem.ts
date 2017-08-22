@@ -3,7 +3,6 @@
 import { Context } from 'koa';
 
 import { config } from './../init/config';
-import { getHttpStatusCode } from './../init/error';
 import { ProblemPrivilege, UserPrivilege } from './../init/privilege';
 import * as Problem from './../models/problem';
 
@@ -18,7 +17,7 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
   const problemInfo: any = await Problem
                                 .getProblemInfo(ctx.params.problemid)
                                 .catch((err) => {
-                                  ctx.throw(getHttpStatusCode(err.message), err.message);
+                                  ctx.throw(err.code, err.message);
                                 });
 
   // Verify privilege.
@@ -35,7 +34,7 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
                               },
                             )
                             .catch((err) => {
-                              ctx.throw(getHttpStatusCode(err.message), err.message);
+                              ctx.throw(err.code, err.message);
                             });
 
   if (!hasPrivilege) {
@@ -58,7 +57,7 @@ export async function getProblemList(ctx: Context, next: () => Promise<any>) {
   ctx.body = await Problem
                   .getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num)
                   .catch((err) => {
-                    ctx.throw(getHttpStatusCode(err.message), err.message);
+                    ctx.throw(err.code, err.message);
                   });
 
   ctx.status = 200;
@@ -78,7 +77,7 @@ export async function searchProblem(ctx: Context, next: () => Promise<any>) {
                     ctx.query.num,
                   )
                   .catch((err) => {
-                    ctx.throw(getHttpStatusCode(err.message), err.message);
+                    ctx.throw(err.code, err.message);
                   });
 
   ctx.status = 200;
@@ -98,7 +97,7 @@ export async function postProblem(ctx: Context, next: () => Promise<any>) {
   const maxProblemId: any = await Problem
                                 .getMaxProblemId()
                                 .catch((err) => {
-                                  ctx.throw(getHttpStatusCode(err.message), err.message);
+                                  ctx.throw(err.code, err.message);
                                 });
 
   // Generate next id (default: 1000).
@@ -127,7 +126,7 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   const problemInfo: any = await Problem
                                 .getProblemInfo(ctx.params.problemid)
                                 .catch((err) => {
-                                  ctx.throw(getHttpStatusCode(err.message), err.message);
+                                  ctx.throw(err.code, err.message);
                                 });
 
   // Verify privilege.
@@ -144,7 +143,7 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
                               },
                             )
                             .catch((err) => {
-                              ctx.throw(getHttpStatusCode(err.message), err.message);
+                              ctx.throw(err.code, err.message);
                             });
 
   if (!hasPrivilege) {
@@ -167,7 +166,7 @@ function routePost(ctx: Context) {
       result = Problem
                     .postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
                     .catch((err) => {
-                      ctx.throw(getHttpStatusCode(err.message), err.message);
+                      ctx.throw(err.code, err.message);
                     });
     } else {
       if (config.oj.policy.content.common_user_can_post) {
@@ -175,13 +174,13 @@ function routePost(ctx: Context) {
           result = Problem
                         .postProblemTemp(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
                         .catch((err) => {
-                          ctx.throw(getHttpStatusCode(err.message), err.message);
+                          ctx.throw(err.code, err.message);
                         });
         } else {
           result = Problem
                         .postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
                         .catch((err) => {
-                          ctx.throw(getHttpStatusCode(err.message), err.message);
+                          ctx.throw(err.code, err.message);
                         });
         }
       } else {

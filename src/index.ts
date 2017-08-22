@@ -36,7 +36,7 @@ createConnection(connectionOptions).then(async (connection) => {
 
 }).catch((err) => {
 
+  console.error('Database connection failed!');
   console.error(err);
-  throw new Error('Database connection failed.');
 
 });

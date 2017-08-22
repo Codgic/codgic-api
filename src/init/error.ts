@@ -1,34 +1,64 @@
 /* /init/error.ts
   Determine error code according to error message. */
 
-export function getHttpStatusCode(err: string) {
+import { Context } from 'koa';
 
-  switch (err) {
-    case 'Group name taken.':
-    case 'Invalid email.':
-    case 'Invalid password.':
-    case 'Invalid username.':
-    case 'Nickname too long.':
-    case 'Nickname too short.':
-    case 'Password too long.':
-    case 'Password too short.':
-    case 'Username or email taken.':
-    case 'Username too long.':
-    case 'Username too short.':
-      return 400;
+export class ModelError extends Error {
 
-    case 'Incorrect username or password.':
-    case 'User is disabled.':
-      return 403;
+  public code: number;
 
-    case 'Group not found.':
-    case 'No matching result.':
-    case 'Problem not found':
-    case 'User not found.':
-      return 404;
+  constructor(code: number, message: string) {
 
-    default:
-      return 500;
+    // Call parent.
+    super(message);
+    Object.setPrototypeOf(this, ModelError.prototype);
+
+    this.code = code;
+
+    // Set default error message if message is not defined.
+    if (message) {
+      this.message = message;
+    } else {
+      switch (code) {
+        case 401:
+          this.message = 'Unauthorized.';
+          break;
+        case 402:
+          this.message = 'Too much requests.';
+          break;
+        case 403:
+          this.message = 'Forbidden.';
+          break;
+        case 404:
+          this.message = 'Not Found.';
+          break;
+        case 500:
+          this.message = 'Internal Server Error.';
+          break;
+      }
+    }
+
+    this.stack = (new Error(message)).stack;
+    this.name = this.constructor.name;
+
   }
+
+}
+
+export function handleKoaError(ctx: Context, next: () => Promise<any>) {
+
+  return next().catch((err) => {
+
+    // Never reveal real message to users if code is 500.
+    if (err.code === 500) {
+      err.message = 'Internal Server Error.';
+    }
+
+    ctx.body = {
+      error: err.message,
+    };
+    ctx.status = err.status;
+
+  });
 
 }

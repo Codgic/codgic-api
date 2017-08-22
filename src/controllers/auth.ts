@@ -3,7 +3,6 @@
 
 import { Context } from 'koa';
 
-import { getHttpStatusCode } from './../init/error';
 import { UserPrivilege } from './../init/privilege';
 import * as Auth from './../models/auth';
 import { getUserInfo } from './../models/user';
@@ -16,10 +15,11 @@ export async function refreshToken(ctx: Context, next: () => Promise<any>) {
   }
 
   // Generate Token.
-  const token = await getToken(ctx.state.user)
+  const token = await Auth
+          .generateToken(ctx.state.user.id, ctx.state.user.username, ctx.state.user.email, ctx.state.user.privilege)
           .catch((err) => {
-            ctx.throw(getHttpStatusCode(err.message), err.message);
-          })
+            ctx.throw(err.code, err.message);
+          });
 
   ctx.body = {
     token: `${token}`,
@@ -41,18 +41,14 @@ export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
   const userInfo: any = await Auth
                       .getUserInfoWithAuth(ctx.request.body.password, ctx.request.body.username)
                       .catch((err) => {
-                        ctx.throw(getHttpStatusCode(err.message), err.message);
+                        ctx.throw(err.code, err.message);
                       });
 
   // Generate Token.
-  const token = await getToken({
-    id: userInfo.id,
-    username: userInfo.username,
-    email: userInfo.email,
-    privilege: userInfo.privilege,
-  })
+  const token = await Auth
+          .generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege)
           .catch((err) => {
-            ctx.throw(getHttpStatusCode(err.message), err.message);
+            ctx.throw(err.code, err.message);
           });
 
   ctx.body = {
@@ -61,22 +57,5 @@ export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
   ctx.status = 200;
 
   await next();
-
-}
-
-function getToken(userInfo: {
-  id: number,
-  username: string,
-  email: string,
-  privilege: number,
-}) {
-
-  const token = Auth
-          .generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege)
-          .catch((err) => {
-            throw new Error(err);
-          });
-
-  return token;
 
 }

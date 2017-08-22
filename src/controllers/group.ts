@@ -3,7 +3,6 @@
 
 import { Context } from 'koa';
 
-import { getHttpStatusCode } from './../init/error';
 import * as Group from './../models/group';
 
 export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
@@ -17,7 +16,7 @@ export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
   const groupInfo = await Group
                 .getGroupInfo(ctx.params.groupid)
                 .catch((err) => {
-                  ctx.throw(getHttpStatusCode(err.message), err.message);
+                  ctx.throw(err.code, err.message);
                 });
 
   ctx.body = groupInfo;
@@ -38,7 +37,7 @@ export async function getGroupMembers(ctx: Context, next: () => Promise<any>) {
   const groupMembers = await Group
                   .getGroupMembers(ctx.params.groupid)
                   .catch((err) => {
-                    ctx.throw(getHttpStatusCode(err.message), err.message);
+                    ctx.throw(err.code, err.message);
                   });
 
   ctx.body = groupMembers;
@@ -64,7 +63,7 @@ export async function postGroup(ctx: Context, next: () => Promise<any>) {
   const groupInfo = await Group
                 .postGroup(ctx.request.body, ctx.state.user.id)
                 .catch((err) => {
-                  ctx.throw(getHttpStatusCode(err.message), err.message);
+                  ctx.throw(err.code, err.message);
                 });
 
   ctx.body = groupInfo;
