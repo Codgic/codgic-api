@@ -42,8 +42,6 @@ oj:
     
 # API
 api:
-  log:
-    all_errors: false
   port: 8080
   jwt:
     secret: FuckZh@ngKeW@terQueen

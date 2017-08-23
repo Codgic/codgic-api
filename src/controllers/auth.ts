@@ -35,12 +35,10 @@ export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   // Auth and get user info.
-  const userInfo: any = await Auth
-                      .getUserInfoWithAuth(ctx.request.body.password, ctx.request.body.username);
+  const userInfo: any = await Auth.getUserInfoWithAuth(ctx.request.body.password, ctx.request.body.username);
 
   // Generate Token.
-  const token = await Auth
-          .generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege);
+  const token = await Auth.generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege);
 
   ctx.body = {
     token: `${token}`,
