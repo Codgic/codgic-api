@@ -1,18 +1,18 @@
 /* /api/models/user.ts */
 
 import * as emailValidator from 'email-validator';
+import * as createError from 'http-errors';
 import { getRepository } from 'typeorm';
 
 import { User } from './../entities/user';
 import { config } from './../init/config';
-import { ModelError } from './../init/error';
 import { UserPrivilege } from './../init/privilege';
 
 export async function getUserInfo(username: string) {
 
   // Validate parameters.
   if (!username) {
-    throw new ModelError(500, 'Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   const userRepository = getRepository(User);
@@ -22,11 +22,11 @@ export async function getUserInfo(username: string) {
                 .getOne()
                 .catch((err) => {
                   console.error(err);
-                  throw new ModelError(500, 'Database operation failed.');
+                  throw createError(500, 'Database operation failed.');
                 });
 
   if (!userInfo) {
-    throw new ModelError(404, 'User not found.');
+    throw createError(404, 'User not found.');
   }
 
   return userInfo;
@@ -42,7 +42,7 @@ export async function searchUser(
 
   // Validate parameters.
   if (page < 1 || num < 1 || !keyword) {
-    throw new ModelError(500, 'Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   const firstResult = (page - 1) * num;
@@ -66,11 +66,11 @@ export async function searchUser(
                 .getMany()
                 .catch((err) => {
                   console.error(err);
-                  throw new ModelError(500, 'Database operation failed.');
+                  throw createError(500, 'Database operation failed.');
                 });
 
   if (!userInfo) {
-    throw new ModelError(404, 'No matching result.');
+    throw createError(404, 'No matching result.');
   }
 
   return userInfo;
@@ -81,7 +81,7 @@ export async function postUser(data: any) {
 
   // Verify parameters.
   if (!data.email || !data.username || !data.password) {
-    throw new ModelError(500, 'Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   const user = new User();
@@ -91,7 +91,7 @@ export async function postUser(data: any) {
     .updatePassword(data.password)
     .catch((err) => {
       console.error(err);
-      throw new ModelError(500, 'Update user password failed.');
+      throw createError(500, 'Update user password failed.');
     });
 
   user.email = data.email;
@@ -113,9 +113,9 @@ export async function postUser(data: any) {
       .catch((err) => {
         console.error(err);
         if (err.errno === 1062) {
-          throw new ModelError(400, 'Username or email taken.');
+          throw createError(400, 'Username or email taken.');
         }
-        throw new ModelError(500, 'Database operation failed.');
+        throw createError(500, 'Database operation failed.');
       });
 
   return user;
@@ -125,18 +125,18 @@ export async function postUser(data: any) {
 export async function validateUserInfo(data: any) {
 
   if (!data.username) {
-    throw new ModelError(400, 'Invalid username.');
+    throw createError(400, 'Invalid username.');
   }
 
   if (
     config.oj.policy.signup.username.min_length &&
     data.username.length < config.oj.policy.signup.username.min_length
   ) {
-    throw new ModelError(400, 'Username too short.');
+    throw createError(400, 'Username too short.');
   }
 
   if (!data.password) {
-    throw new ModelError(400, 'Invalid password.');
+    throw createError(400, 'Invalid password.');
   }
 
   // Complexity Check: To be implemented.
@@ -145,7 +145,7 @@ export async function validateUserInfo(data: any) {
     config.oj.policy.signup.password.max_length &&
     data.password.length > config.oj.policy.signup.password.max_length
   ) {
-    throw new ModelError(400, 'Password too long.');
+    throw createError(400, 'Password too long.');
   }
 
   if (
@@ -153,7 +153,7 @@ export async function validateUserInfo(data: any) {
     config.oj.policy.signup.nickname.min_length &&
     data.nickname.length < config.oj.policy.signup.nickname.min_length
   ) {
-    throw new ModelError(400, 'Nickname too short.');
+    throw createError(400, 'Nickname too short.');
   }
 
   if (
@@ -161,11 +161,11 @@ export async function validateUserInfo(data: any) {
     config.oj.policy.signup.nickname.max_length &&
     data.nickname.length > config.oj.policy.signup.nickname.max_length
   ) {
-    throw new ModelError(400, 'Nickname too long.');
+    throw createError(400, 'Nickname too long.');
   }
 
   if (!data.email || !emailValidator.validate(data.email)) {
-    throw new ModelError(400, 'Invalid email.');
+    throw createError(400, 'Invalid email.');
   }
 
   return true;
@@ -186,7 +186,7 @@ export async function verifyUserPrivilege(
     !targetUserid ||
     !privilege
   ) {
-    throw new ModelError(400, 'Invalid parameters.');
+    throw createError(400, 'Invalid parameters.');
   }
 
   return currentUserid === targetUserid || (privilege & UserPrivilege.editUser) === 1 ? true : false;

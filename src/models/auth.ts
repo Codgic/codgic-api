@@ -1,12 +1,12 @@
 /* /api/models/auth.ts */
 
+import * as createError from 'http-errors';
 import * as jwt from 'jsonwebtoken';
 import * as jwtKoa from 'koa-jwt';
 import { getRepository } from 'typeorm';
 
 import { User } from './../entities/user';
 import { config } from './../init/config';
-import { ModelError } from './../init/error';
 import { UserPrivilege } from './../init/privilege';
 
 export async function getUserInfoWithAuth(retrievedPassword: string, username: string) {
@@ -23,20 +23,20 @@ export async function getUserInfoWithAuth(retrievedPassword: string, username: s
                           .getOne()
                           .catch((err) => {
                             console.error(err);
-                            throw new ModelError(500, 'Database operation failed.');
+                            throw createError(500, 'Database operation failed.');
                           });
 
   if (!userInfo) {
     // For security purposes, return 'Incorrect username or password.'.
-    throw new ModelError(403, 'Incorrect username or password.');
+    throw createError(403, 'Incorrect username or password.');
   }
 
   if (!(userInfo.privilege & UserPrivilege.isEnabled)) {
-    throw new ModelError(403, 'User is disabled.');
+    throw createError(403, 'User is disabled.');
   }
 
   if (!userInfo.verifyPassword(retrievedPassword)) {
-    throw new ModelError(403, 'Incorrect username or password.');
+    throw createError(403, 'Incorrect username or password.');
   }
 
   return userInfo;
@@ -47,7 +47,7 @@ export async function generateToken(userid: number, username: string, email: str
 
   // Validate parameters.
   if (!userid || !username || !email || !privilege) {
-    throw new ModelError(500, 'Invalid parameters');
+    throw createError(500, 'Invalid parameters');
   }
 
   // Sign jwt token.

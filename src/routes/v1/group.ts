@@ -1,8 +1,8 @@
-/* /api/routes/group.ts */
+/* /api/routes/v1/group.ts */
 
 import * as Router from 'koa-router';
 
-import * as Group from './../controllers/group';
+import * as Group from './../../controllers/group';
 
 const group = new Router();
 

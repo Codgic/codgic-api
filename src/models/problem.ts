@@ -1,11 +1,11 @@
 /* /api/models/problem.ts */
 
+import * as createError from 'http-errors';
 import * as Koa from 'koa';
 import { getRepository } from 'typeorm';
 
 import { Problem } from './../entities/problem';
 import { config } from './../init/config';
-import { ModelError } from './../init/error';
 import { isInGroup } from './group';
 
 // Get maxium problem id.
@@ -22,7 +22,7 @@ export async function getMaxProblemId() {
                       .getOne()
                       .catch((err) => {
                         console.error(err);
-                        throw new ModelError(500, 'Database operation failed.');
+                        throw createError(500, 'Database operation failed.');
                       });
 
   return maxProblemInfo ? maxProblemInfo.problemid : null;
@@ -34,7 +34,7 @@ export async function getProblemInfo(problemid: number) {
 
   // Validate parameters.
   if (!problemid) {
-    throw new ModelError(500, 'Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   const problemRepository = getRepository(Problem);
@@ -44,11 +44,11 @@ export async function getProblemInfo(problemid: number) {
                   .getOne()
                   .catch((err) => {
                     console.error(err);
-                    throw new ModelError(500, 'Database operation failed.');
+                    throw createError(500, 'Database operation failed.');
                   });
 
   if (!problemInfo) {
-    throw new ModelError(404, 'Problem not found.');
+    throw createError(404, 'Problem not found.');
   }
 
   return problemInfo;
@@ -64,7 +64,7 @@ export async function getProblemList(
 
   // Validate parameters.
   if (page < 1 || num < 1) {
-    throw new ModelError(500, 'Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   const firstResult = (page - 1) * num;
@@ -82,11 +82,11 @@ export async function getProblemList(
                   .getMany()
                   .catch((err) => {
                     console.error(err);
-                    throw new ModelError(500, 'Database operation failed.');
+                    throw createError(500, 'Database operation failed.');
                   });
 
   if (!problemList) {
-    throw new ModelError(404, 'No problem available.');
+    throw createError(404, 'No problem available.');
   }
 
   return problemList;
@@ -102,7 +102,7 @@ export async function searchProblem(
 
   // Validate parameters.
   if (page < 1 || num < 1 || !keyword) {
-    throw new ModelError(500, 'Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   const firstResult = (page - 1) * num;
@@ -122,11 +122,11 @@ export async function searchProblem(
                     .getMany()
                     .catch((err) => {
                       console.error(err);
-                      throw new ModelError(500, 'Database operation failed.');
+                      throw createError(500, 'Database operation failed.');
                     });
 
   if (!searchResult) {
-    throw new ModelError(404, 'No matching result.');
+    throw createError(404, 'No matching result.');
   }
 
   return searchResult;
@@ -138,7 +138,7 @@ export async function postProblemTemp(problemid: number, data: Problem, userid: 
 
   // Validate parameters.
   if (!data.title || !data.memoryLimit || !data.timeLimit || !userid) {
-    throw new ModelError(500, 'Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   return 'Coming Soon...';
@@ -150,7 +150,7 @@ export async function postProblem(problemid: number, data: Problem, userid: numb
 
   // Validate parameters.
   if (!data.title || !data.memoryLimit || !data.timeLimit || !userid) {
-    throw new ModelError(500, 'Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   const problem = new Problem();
@@ -173,7 +173,7 @@ export async function postProblem(problemid: number, data: Problem, userid: numb
       .persist(problem)
       .catch((err) => {
         console.error(err);
-        throw new ModelError(500, 'Database operation failed.');
+        throw createError(500, 'Database operation failed.');
       });
 
   return problem;
@@ -202,7 +202,7 @@ export async function verifyProblemPrivilege(
     !problemPrivilegeInfo.groupPrivilege ||
     !problemPrivilegeInfo.othersPrivilege
   ) {
-    throw new ModelError(500, 'Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   let result: boolean = false;

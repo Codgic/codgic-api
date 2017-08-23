@@ -1,8 +1,8 @@
-/* /api/routes/problem.ts */
+/* /api/routes/v1/problem.ts */
 
 import * as Router from 'koa-router';
 
-import * as Problem from './../controllers/problem';
+import * as Problem from './../../controllers/problem';
 
 const problem = new Router();
 

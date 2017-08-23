@@ -16,10 +16,7 @@ export async function refreshToken(ctx: Context, next: () => Promise<any>) {
 
   // Generate Token.
   const token = await Auth
-          .generateToken(ctx.state.user.id, ctx.state.user.username, ctx.state.user.email, ctx.state.user.privilege)
-          .catch((err) => {
-            ctx.throw(err.code, err.message);
-          });
+          .generateToken(ctx.state.user.id, ctx.state.user.username, ctx.state.user.email, ctx.state.user.privilege);
 
   ctx.body = {
     token: `${token}`,
@@ -39,17 +36,11 @@ export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
 
   // Auth and get user info.
   const userInfo: any = await Auth
-                      .getUserInfoWithAuth(ctx.request.body.password, ctx.request.body.username)
-                      .catch((err) => {
-                        ctx.throw(err.code, err.message);
-                      });
+                      .getUserInfoWithAuth(ctx.request.body.password, ctx.request.body.username);
 
   // Generate Token.
   const token = await Auth
-          .generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege)
-          .catch((err) => {
-            ctx.throw(err.code, err.message);
-          });
+          .generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege);
 
   ctx.body = {
     token: `${token}`,

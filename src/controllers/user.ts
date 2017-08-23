@@ -15,11 +15,7 @@ export async function getCurrentInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve user info.
-  ctx.body = await User
-                  .getUserInfo(ctx.state.user.id)
-                  .catch((err) => {
-                    ctx.throw(err.code, err.message);
-                  });
+  ctx.body = await User.getUserInfo(ctx.state.user.id);
 
   ctx.status = 200;
 
@@ -30,11 +26,7 @@ export async function getCurrentInfo(ctx: Context, next: () => Promise<any>) {
 export async function getUserInfo(ctx: Context, next: () => Promise<any>) {
 
   // Retrieve user info.
-  ctx.body = await User
-                  .getUserInfo(ctx.params.username)
-                  .catch((err) => {
-                    ctx.throw(err.code, err.message);
-                  });
+  ctx.body = await User.getUserInfo(ctx.params.username);
 
   ctx.status = 200;
 
@@ -51,10 +43,7 @@ export async function searchUser(ctx: Context, next: () => Promise<any>) {
                     ctx.query.keyword,
                     ctx.query.page,
                     ctx.query.num,
-                  )
-                  .catch((err) => {
-                    ctx.throw(err.code, err.message);
-                  });
+                  );
 
   ctx.status = 200;
 
@@ -65,17 +54,10 @@ export async function searchUser(ctx: Context, next: () => Promise<any>) {
 export async function postUser(ctx: Context, next: () => Promise<any>) {
 
   // Validate request.
-  await User.validateUserInfo(ctx.request.body)
-    .catch((err) => {
-      ctx.throw(err.code, err.message);
-    });
+  await User.validateUserInfo(ctx.request.body);
 
   // Post user.
-  ctx.body = await User
-                  .postUser(ctx.request.body)
-                  .catch((err) => {
-                    ctx.throw(err.code, err.message);
-                  });
+  ctx.body = await User.postUser(ctx.request.body);
 
   ctx.status = 201;
 
@@ -91,35 +73,21 @@ export async function updateUser(ctx: Context, next: () => Promise<any>) {
   }
 
   // Validate request.
-  User.validateUserInfo(ctx.request.body)
-    .catch((err) => {
-      ctx.throw(err.code, err.message);
-    });
+  User.validateUserInfo(ctx.request.body);
 
   // Retrieve user info.
-  const userInfo: any = await User
-              .getUserInfo(ctx.params.username)
-              .catch((err) => {
-                ctx.throw(err.code, err.message);
-              });
+  const userInfo: any = await User.getUserInfo(ctx.params.username);
 
   // Check privilege.
   const hasPrivilege = await User
-              .verifyUserPrivilege(UserPrivilege.editUser, ctx.state.user.id, userInfo.id, ctx.state.user.privilege)
-              .catch((err) => {
-                ctx.throw(err.code, err.message);
-              });
+              .verifyUserPrivilege(UserPrivilege.editUser, ctx.state.user.id, userInfo.id, ctx.state.user.privilege);
 
   if (!hasPrivilege) {
     ctx.throw(403);
   }
 
   // Post user.
-  ctx.body = await User
-                  .postUser(ctx.request.body)
-                  .catch((err) => {
-                    ctx.throw(err.code, err.message);
-                  });
+  ctx.body = await User.postUser(ctx.request.body);
 
   ctx.status = 201;
 

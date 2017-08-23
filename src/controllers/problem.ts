@@ -14,11 +14,7 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve problem info.
-  const problemInfo: any = await Problem
-                                .getProblemInfo(ctx.params.problemid)
-                                .catch((err) => {
-                                  ctx.throw(err.code, err.message);
-                                });
+  const problemInfo: any = await Problem.getProblemInfo(ctx.params.problemid);
 
   // Verify privilege.
   const hasPrivilege = await Problem
@@ -32,10 +28,7 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
                                 groupPrivilege: problemInfo.groupPrivilege,
                                 othersPrivilege: problemInfo.othersPrivilege,
                               },
-                            )
-                            .catch((err) => {
-                              ctx.throw(err.code, err.message);
-                            });
+                            );
 
   if (!hasPrivilege) {
     if (ctx.state.user) {
@@ -54,11 +47,7 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
 
 export async function getProblemList(ctx: Context, next: () => Promise<any>) {
 
-  ctx.body = await Problem
-                  .getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num)
-                  .catch((err) => {
-                    ctx.throw(err.code, err.message);
-                  });
+  ctx.body = await Problem.getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num);
 
   ctx.status = 200;
 
@@ -75,11 +64,7 @@ export async function searchProblem(ctx: Context, next: () => Promise<any>) {
                     ctx.query.keyword,
                     ctx.query.page,
                     ctx.query.num,
-                  )
-                  .catch((err) => {
-                    ctx.throw(err.code, err.message);
-                  });
-
+                  );
   ctx.status = 200;
 
   await next();
@@ -94,11 +79,7 @@ export async function postProblem(ctx: Context, next: () => Promise<any>) {
   }
 
   // Get maximum problem id.
-  const maxProblemId: any = await Problem
-                                .getMaxProblemId()
-                                .catch((err) => {
-                                  ctx.throw(err.code, err.message);
-                                });
+  const maxProblemId: any = await Problem.getMaxProblemId();
 
   // Generate next id (default: 1000).
   let nextProblemId: number = 1000;
@@ -123,11 +104,7 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve problem info.
-  const problemInfo: any = await Problem
-                                .getProblemInfo(ctx.params.problemid)
-                                .catch((err) => {
-                                  ctx.throw(err.code, err.message);
-                                });
+  const problemInfo: any = await Problem.getProblemInfo(ctx.params.problemid);
 
   // Verify privilege.
   const hasPrivilege = await Problem
@@ -141,10 +118,7 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
                                 groupPrivilege: problemInfo.groupPrivilege,
                                 othersPrivilege: problemInfo.othersPrivilege,
                               },
-                            )
-                            .catch((err) => {
-                              ctx.throw(err.code, err.message);
-                            });
+                            );
 
   if (!hasPrivilege) {
       ctx.throw(401);
@@ -163,25 +137,13 @@ function routePost(ctx: Context) {
     let result: any;
 
     if (ctx.state.user.privilege & UserPrivilege.editContent) {
-      result = Problem
-                    .postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
-                    .catch((err) => {
-                      ctx.throw(err.code, err.message);
-                    });
+      result = Problem.postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
     } else {
       if (config.oj.policy.content.common_user_can_post) {
         if (config.oj.policy.content.common_user_need_confirmation) {
-          result = Problem
-                        .postProblemTemp(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
-                        .catch((err) => {
-                          ctx.throw(err.code, err.message);
-                        });
+          result = Problem.postProblemTemp(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
         } else {
-          result = Problem
-                        .postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id)
-                        .catch((err) => {
-                          ctx.throw(err.code, err.message);
-                        });
+          result = Problem.postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
         }
       } else {
         ctx.throw(403);

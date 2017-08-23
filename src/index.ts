@@ -8,7 +8,6 @@ import * as Koa from 'koa';
 import { config } from './init/config';
 import { initJWT } from './init/jwt';
 import { initKoa } from './init/koa';
-import { initRoutes } from './init/routes';
 
 import { createConnection } from 'typeorm';
 import { connectionOptions } from './init/typeorm';
@@ -22,7 +21,6 @@ createConnection(connectionOptions).then(async (connection) => {
   // Initialize everything.
   initKoa(app);
   initJWT(app);
-  initRoutes(app);
 
   // Quit if port is invalid.
   if (typeof (config.api.port) !== 'number') {

@@ -1,9 +1,9 @@
-/* /api/routes/search.ts */
+/* /api/routes/v1/search.ts */
 
 import * as Router from 'koa-router';
 
-import { searchProblem } from './../controllers/problem';
-import { searchUser } from './../controllers/user';
+import { searchProblem } from './../../controllers/problem';
+import { searchUser } from './../../controllers/user';
 
 const search = new Router();
 

@@ -1,8 +1,8 @@
-/* /api/routes/auth.ts */
+/* /api/routes/v1/auth.ts */
 
 import * as Router from 'koa-router';
 
-import * as Auth from './../controllers/auth';
+import * as Auth from './../../controllers/auth';
 
 const auth = new Router();
 

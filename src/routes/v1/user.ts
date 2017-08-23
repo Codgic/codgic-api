@@ -1,8 +1,8 @@
-/* /api/routes/user.ts */
+/* /api/routes/v1/user.ts */
 
 import * as Router from 'koa-router';
 
-import * as User from './../controllers/user';
+import * as User from './../../controllers/user';
 
 const user = new Router();
 

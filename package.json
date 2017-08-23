@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Codgic/codgic-api#readme",
   "dependencies": {
+    "@types/http-errors": "^1.6.0",
     "@types/js-yaml": "^3.9.0",
     "@types/jsonwebtoken": "^7.2.3",
     "@types/koa": "^2.0.39",
@@ -32,6 +33,7 @@
     "@types/koa-router": "^7.0.22",
     "@types/node": "^8.0.19",
     "email-validator": "^1.0.7",
+    "http-errors": "^1.6.2",
     "isemail": "^3.0.0",
     "js-yaml": "^3.9.1",
     "jsonwebtoken": "^7.4.2",
@@ -40,7 +42,6 @@
     "koa-compress": "^2.0.0",
     "koa-jwt": "^3.2.2",
     "koa-logger": "^3.0.1",
-    "koa-mount": "^3.0.0",
     "koa-router": "^7.2.1",
     "mysql": "^2.14.1",
     "reflect-metadata": "^0.1.10",
