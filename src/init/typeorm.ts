@@ -6,6 +6,7 @@ import { ConnectionOptions } from 'typeorm';
 import { config } from './config';
 
 const connectionOptions: ConnectionOptions = {
+
   type: config.database.type,
   host: config.database.host,
   port: config.database.port,
@@ -24,6 +25,7 @@ const connectionOptions: ConnectionOptions = {
   subscribers: [
     __dirname + '/../subscribers/.js',
   ] */
+
 };
 
 export {connectionOptions};

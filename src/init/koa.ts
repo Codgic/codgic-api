@@ -7,12 +7,13 @@ import * as compress from 'koa-compress';
 import * as logger from 'koa-logger';
 
 import { config } from './../init/config';
-import { handleError } from './../init/error';
+import { errorHandler } from './../middlewares/error';
+import { jwt } from './../middlewares/jwt';
 import { router } from './../routes/index';
 
 export function initKoa(app: Koa) {
 
-  app.use(handleError);
+  app.use(errorHandler);
 
   app.on('error', (err: string) => {
     console.error(err);
@@ -20,6 +21,7 @@ export function initKoa(app: Koa) {
 
   app.use(bodyParser());
   app.use(compress());
+  app.use(jwt);
   app.use(logger());
 
   app.use(router.routes());

@@ -6,7 +6,6 @@ import 'reflect-metadata';
 import * as Koa from 'koa';
 
 import { config } from './init/config';
-import { initJWT } from './init/jwt';
 import { initKoa } from './init/koa';
 
 import { createConnection } from 'typeorm';
@@ -20,7 +19,6 @@ createConnection(connectionOptions).then(async (connection) => {
 
   // Initialize everything.
   initKoa(app);
-  initJWT(app);
 
   // Quit if port is invalid.
   if (typeof (config.api.port) !== 'number') {

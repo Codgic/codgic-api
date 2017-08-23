@@ -1,21 +1,17 @@
-/* /init/error.ts
+/* /src/middlewares/error.ts
   A middleware that handles all errors. */
 
 import { Context } from 'koa';
 
-export async function handleError(ctx: Context, next: () => Promise<any>) {
-
+export async function errorHandler(ctx: Context, next: () => Promise<any>) {
   try {
-
     await next();
-
   } catch (err) {
 
-    if (!err.message) {
-      switch (err.status) {
+    switch (err.status) {
 
-        case 400:
-        err.message = 'Bad request.';
+      case 400:
+        err.message = err.message || 'Bad request.';
         break;
 
       case 401:
@@ -27,11 +23,11 @@ export async function handleError(ctx: Context, next: () => Promise<any>) {
         break;
 
       case 403:
-        err.message = 'Forbidden.';
+        err.message = err.message || 'Forbidden.';
         break;
 
       case 404:
-        err.message = 'Not Found.';
+        err.message = err.message || 'Not Found.';
         break;
 
       case 500:
@@ -44,8 +40,6 @@ export async function handleError(ctx: Context, next: () => Promise<any>) {
         err.message = 'Internal Server Error.';
         break;
 
-      }
-
     }
 
     ctx.body = {
@@ -54,5 +48,4 @@ export async function handleError(ctx: Context, next: () => Promise<any>) {
     ctx.status = err.status;
 
   }
-
 }
