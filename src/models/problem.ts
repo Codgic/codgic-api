@@ -1,4 +1,4 @@
-/* /api/models/problem.ts */
+/* /src/models/problem.ts */
 
 import * as createError from 'http-errors';
 import * as Koa from 'koa';

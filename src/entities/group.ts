@@ -1,4 +1,4 @@
-/* /api/entities/group.ts */
+/* /src/entities/group.ts */
 
 // UNFINISHED!!!
 

@@ -1,4 +1,4 @@
-/* /api/controllers/user.ts
+/* /src/controllers/user.ts
    We love our users! */
 
 import { Context } from 'koa';

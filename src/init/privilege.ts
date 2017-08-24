@@ -1,4 +1,4 @@
-/* /api/init/privilege.ts */
+/* /src/init/privilege.ts */
 
 export const enum ContestPrivilege {
   join = 1,

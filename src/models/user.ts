@@ -1,4 +1,4 @@
-/* /api/models/user.ts */
+/* /src/models/user.ts */
 
 import * as emailValidator from 'email-validator';
 import * as createError from 'http-errors';

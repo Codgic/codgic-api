@@ -1,4 +1,4 @@
-/* /api/init/typeorm.ts
+/* /src/init/typeorm.ts
    Let's set up our database connection. */
 
 import { ConnectionOptions } from 'typeorm';

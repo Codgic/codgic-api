@@ -1,4 +1,4 @@
-/* /controller/group.ts
+/* /src/controller/group.ts
   Groups promote love and friendship. */
 
 import { Context } from 'koa';

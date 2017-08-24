@@ -1,4 +1,4 @@
-/* /api/controllers/problem.ts */
+/* /src/controllers/problem.ts */
 
 import { Context } from 'koa';
 

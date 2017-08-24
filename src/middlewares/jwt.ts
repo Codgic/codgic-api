@@ -2,20 +2,20 @@
   A middleware that handles JWT. */
 
 import { Context } from 'koa';
-import * as koaJwt from 'koa-jwt';
+import * as KoaJwt from 'koa-jwt';
 
 import { config } from './../init/config';
 
-const jwt = koaJwt({
+let koaJwt = KoaJwt({
   secret: config.api.jwt.secret,
   debug: config.api.jwt.debug,
   passthrough: !config.oj.policy.access.need_login,
 });
 
 if (config.oj.policy.access.need_login) {
-  jwt.unless((ctx: Context) => {
-    return ctx.url === '/' || ctx.url === '/auth' || (ctx.url === '/user' && ctx.method === 'POST');
+  koaJwt = koaJwt.unless((ctx: Context) => {
+    return ctx.url === '/' || '/v1' || '/v1/auth' || (ctx.url === '/v1/user' && ctx.method === 'POST');
   });
 }
 
-export { jwt };
+export const jwt = koaJwt;

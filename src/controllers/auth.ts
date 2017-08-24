@@ -1,4 +1,4 @@
-/* /controllers/auth.ts
+/* /src/controllers/auth.ts
    Get authenticated first! */
 
 import { Context } from 'koa';

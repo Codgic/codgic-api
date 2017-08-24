@@ -1,6 +1,4 @@
-/* /api/entities/user.ts */
-
-// UNFINISHED!!!
+/* /src/entities/user.ts */
 
 import * as crypto from 'crypto';
 import {

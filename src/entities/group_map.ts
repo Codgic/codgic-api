@@ -1,4 +1,4 @@
-/* /api/entities/group_map.ts
+/* /src/entities/group_map.ts
   Let's map everything together. */
 
 import {

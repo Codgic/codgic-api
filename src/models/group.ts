@@ -1,4 +1,4 @@
-/* /api/models/group.ts */
+/* /src/models/group.ts */
 
 import * as createError from 'http-errors';
 import * as Koa from 'koa';

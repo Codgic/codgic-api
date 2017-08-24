@@ -1,7 +1,4 @@
-/* /api/entities/problem.ts
-  Privilege System:
-  SUBMIT = 1, WRITE = 2, READ = 4, DOWNLOAD_DATA = 8, UPLOAD_DATA = 16
-*/
+/* /src/entities/problem.ts */
 
 // UNFINISHED!!!
 

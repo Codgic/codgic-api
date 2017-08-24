@@ -1,4 +1,4 @@
-/* /api/init/koa.ts
+/* /src/init/koa.ts
    Where koa gets initialized. */
 
 import * as Koa from 'koa';

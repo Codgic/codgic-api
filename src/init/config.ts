@@ -1,4 +1,4 @@
-/* config.ts
+/* /src/init/config.ts
   Read configurations from config.yml. */
 
 import * as fs from 'fs';

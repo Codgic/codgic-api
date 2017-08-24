@@ -1,4 +1,4 @@
-/* /api/models/auth.ts */
+/* /src/models/auth.ts */
 
 import * as createError from 'http-errors';
 import * as jwt from 'jsonwebtoken';

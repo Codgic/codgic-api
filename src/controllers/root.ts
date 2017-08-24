@@ -1,4 +1,5 @@
-/* Let's just say hi! */
+/* /src/controllers/root.ts
+  Let's just say hi! */
 
 import { Context } from 'koa';
 
