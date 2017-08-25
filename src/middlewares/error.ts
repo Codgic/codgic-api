@@ -16,15 +16,23 @@ export async function errorHandler(ctx: Context, next: () => Promise<any>) {
 
   } catch (err) {
 
-    // Ensure Internal Error messages are not passed to users.
-    if (!err.status || err.status === 500) {
-      err.message = 'Internal Server Error';
+    if (!err.status) {
+
+      console.error('Error status is undefined!');
+      console.error(err);
+      err.status = 500;
+
+    } else if (err.status === 500) {
+
+      console.error(err);
+      err.message = err.expose ? err.message : 'Internal Server Error';
+
     }
 
     ctx.body = {
       error: err.message,
     };
-    ctx.status = err.status || 500;
+    ctx.status = err.status;
 
   }
 }

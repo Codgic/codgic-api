@@ -223,7 +223,7 @@ export async function verifyUserPrivilege(
 
   // Validate parameters.
   if (!(operation && currentUserid && targetUserid && privilege)) {
-    throw createError(400, 'Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   return currentUserid === targetUserid || (privilege & UserPrivilege.editUser) === 1 ? true : false;
