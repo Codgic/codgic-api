@@ -64,6 +64,13 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
+"@types/gulp-mocha@^0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@types/gulp-mocha/-/gulp-mocha-0.0.30.tgz#a412d0741aebb53477ebe26e5a677d4ecb8cd89b"
+  dependencies:
+    "@types/mocha" "*"
+    "@types/node" "*"
+
 "@types/gulp-shell@0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/gulp-shell/-/gulp-shell-0.0.30.tgz#7b1714bf585fd89e82a5a7c6d752f5d1d6c44bad"
@@ -160,7 +167,7 @@
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.1.tgz#b683eb60be358304ef146f5775db4c0e3696a550"
 
-"@types/mocha@^2.2.41":
+"@types/mocha@*", "@types/mocha@^2.2.41":
   version "2.2.42"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.42.tgz#ab769f51d37646b6fe8d4a086a98c285b1fab3f5"
 

@@ -149,6 +149,7 @@ $RECYCLE.BIN/
 ### codgic-api ###
 
 # Output files
+build/
 dist/
 
 # User configuration file

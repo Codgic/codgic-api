@@ -4,11 +4,12 @@
   "description": "API handler of Codgic Online Judge.",
   "main": "./src/index",
   "scripts": {
-    "test": "gulp tests",
-    "start": "ts-node ./src/index.ts",
+    "build": "gulp build",
     "clean": "gulp clean",
     "compile": "tsc -d -p .",
-    "compile:watch": "tsc -w -d -p ."
+    "compile:watch": "tsc -w -d -p .",
+    "start": "ts-node ./src/index.ts",
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
@@ -51,6 +52,7 @@
     "@types/chai": "^4.0.3",
     "@types/del": "^2.2.32",
     "@types/gulp": "^4.0.4",
+    "@types/gulp-mocha": "^0.0.30",
     "@types/gulp-shell": "0.0.30",
     "@types/mocha": "^2.2.41",
     "chai": "^4.1.1",

@@ -52,10 +52,10 @@ export async function generateToken(userid: number, username: string, email: str
 
   // Sign jwt token.
   const accessToken = await jwt.sign({
-    email: `${email}`,
     id: userid,
-    privilege: `${privilege}`,
     username: `${username}`,
+    email: `${email}`,
+    privilege: `${privilege}`,
   }, config.api.jwt.secret, {
     expiresIn: config.api.jwt.expire_time,
   });

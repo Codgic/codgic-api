@@ -2,6 +2,7 @@
 import {Gulpclass, MergedTask, SequenceTask, Task} from 'gulpclass';
 
 import * as gulp from 'gulp';
+import * as mocha from 'gulp-mocha';
 import * as shell from 'gulp-shell';
 import * as ts from 'gulp-typescript';
 
@@ -15,7 +16,7 @@ export class Gulpfile {
   // Clean build folder.
   @Task()
   public clean() {
-    return del('./dist/**');
+    return del('./build/**') && del('./dist/**');
   }
 
   // Compile files.
@@ -29,7 +30,17 @@ export class Gulpfile {
   @Task()
   public copyConfig() {
     return gulp.src(['./config.yml'])
-              .pipe(gulp.dest('./dist'));
+              .pipe(gulp.dest('./build'));
+  }
+
+  // Do tests.
+  @Task()
+  public test() {
+    return gulp.src(['./build/test/**/*.js'])
+        .pipe(mocha({
+          bail: true,
+          timeout: 15000,
+        }));
   }
 
   @SequenceTask()
