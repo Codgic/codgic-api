@@ -98,7 +98,7 @@ export async function searchGroup(
 export async function isInGroup(userid: number, groupid: number) {
 
   // Validate parameters.
-  if (!userid || !groupid) {
+  if (!(userid && groupid)) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -125,7 +125,7 @@ export async function isInGroup(userid: number, groupid: number) {
 export async function addToGroup(userid: number, groupid: number, privilege: number) {
 
   // Validate parameters.
-  if (!userid || !groupid) {
+  if (!(userid && !groupid)) {
       throw createError(500, 'Invalid parameters.');
     }
 
@@ -152,7 +152,7 @@ export async function addToGroup(userid: number, groupid: number, privilege: num
 export async function postGroup(data: Group, userid: number) {
 
   // Validate parameters.
-  if (!data.name || !userid) {
+  if (!(data.name && userid)) {
     throw createError(500, 'Invalid parameters.');
   }
 

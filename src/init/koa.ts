@@ -15,15 +15,15 @@ export function initKoa(app: Koa) {
 
   app.use(errorHandler);
 
-  app.on('error', (err: string) => {
+  app.on('error', (err) => {
     console.error(err);
   });
 
   app.use(bodyParser());
   app.use(compress());
-  app.use(jwt);
   app.use(logger());
 
+  app.use(jwt);
   app.use(router.routes());
 
 }

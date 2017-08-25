@@ -12,7 +12,7 @@ import { UserPrivilege } from './../init/privilege';
 export async function getUserInfoWithAuth(retrievedPassword: string, username: string) {
 
   // Validate parameters.
-  if (!retrievedPassword || !username) {
+  if (!(retrievedPassword && username)) {
     throw new Error('Invalid parameters.');
   }
 
@@ -46,7 +46,7 @@ export async function getUserInfoWithAuth(retrievedPassword: string, username: s
 export async function generateToken(userid: number, username: string, email: string, privilege: number) {
 
   // Validate parameters.
-  if (!userid || !username || !email || !privilege) {
+  if (!(userid && username && email && privilege)) {
     throw createError(500, 'Invalid parameters');
   }
 

@@ -4,11 +4,10 @@
 import 'reflect-metadata';
 
 import * as Koa from 'koa';
+import { createConnection } from 'typeorm';
 
 import { config } from './init/config';
 import { initKoa } from './init/koa';
-
-import { createConnection } from 'typeorm';
 import { connectionOptions } from './init/typeorm';
 
 console.log('Establishing database connection...');
@@ -20,8 +19,8 @@ createConnection(connectionOptions).then(async (connection) => {
   // Initialize everything.
   initKoa(app);
 
-  // Quit if port is invalid.
-  if (typeof (config.api.port) !== 'number') {
+  // Throw error if port is not a number.
+  if (isNaN(config.api.port) || config.api.port < 0) {
     throw new Error(`Invalid PORT: ${config.api.port}`);
   }
 

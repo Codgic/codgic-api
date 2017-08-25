@@ -33,12 +33,54 @@ export async function getUserInfo(username: string) {
 
 }
 
+export async function getUserList(
+  sort: 'id' | 'username' | 'createdAt' = 'id',
+  order: 'ASC' | 'DESC' = 'ASC',
+  page: number = 1,
+  num: number = config.oj.default.page.user,
+) {
+
+  // Validate parameters.
+  if (page < 1 || num < 1) {
+    throw createError(500, 'Invalid parameters.');
+  }
+
+  const firstResult = (page - 1) * num;
+  const userRepository = getRepository(User);
+  const userList = await userRepository
+                .createQueryBuilder('user')
+                .select([
+                  'user.id',
+                  'user.email',
+                  'user.username',
+                  'user.nickname',
+                  'user.sex',
+                  'user.privilege',
+                ])
+                .setFirstResult(firstResult)
+                .setMaxResults(num)
+                .orderBy(`user.${sort}`, order)
+                .getMany()
+                .catch((err) => {
+                  console.error(err);
+                  throw createError(500, 'Database operation failed.');
+                });
+
+  if (!userList || userList.length === 0) {
+    throw createError(404, 'No matching result.');
+  }
+
+  return userList;
+
+}
+
 export async function searchUser(
   sort: 'id' | 'username' | 'createdAt' = 'id',
   order: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
   page: number = 1,
-  num: number = config.oj.default.page.user) {
+  num: number = config.oj.default.page.user,
+) {
 
   // Validate parameters.
   if (page < 1 || num < 1 || !keyword) {
@@ -47,7 +89,7 @@ export async function searchUser(
 
   const firstResult = (page - 1) * num;
   const userRepository = getRepository(User);
-  const userInfo = await userRepository
+  const searchResult = await userRepository
                 .createQueryBuilder('user')
                 .select([
                   'user.id',
@@ -69,18 +111,18 @@ export async function searchUser(
                   throw createError(500, 'Database operation failed.');
                 });
 
-  if (!userInfo) {
+  if (!searchResult || searchResult.length === 0) {
     throw createError(404, 'No matching result.');
   }
 
-  return userInfo;
+  return searchResult;
 
 }
 
 export async function postUser(data: any) {
 
   // Verify parameters.
-  if (!data.email || !data.username || !data.password) {
+  if (!(data.email && data.username && data.password)) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -180,12 +222,7 @@ export async function verifyUserPrivilege(
 ) {
 
   // Validate parameters.
-  if (
-    !operation ||
-    !currentUserid ||
-    !targetUserid ||
-    !privilege
-  ) {
+  if (!(operation && currentUserid && targetUserid && privilege)) {
     throw createError(400, 'Invalid parameters.');
   }
 

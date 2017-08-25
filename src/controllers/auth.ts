@@ -30,7 +30,7 @@ export async function refreshToken(ctx: Context, next: () => Promise<any>) {
 export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
 
   // Validate request.
-  if (!ctx.request.body.password || !ctx.request.body.username) {
+  if (!(ctx.request.body.password && ctx.request.body.username)) {
     ctx.throw(400);
   }
 

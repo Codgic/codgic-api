@@ -14,7 +14,8 @@ let koaJwt = KoaJwt({
 
 if (config.oj.policy.access.need_login) {
   koaJwt = koaJwt.unless((ctx: Context) => {
-    return ctx.url === '/' || '/v1' || '/v1/auth' || (ctx.url === '/v1/user' && ctx.method === 'POST');
+    // Exclude login and sign up.
+    return (ctx.url === '/' || '/v1' || '/v1/auth') || (ctx.url === '/v1/user' && ctx.method === 'POST');
   });
 }
 

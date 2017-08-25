@@ -85,7 +85,7 @@ export async function getProblemList(
                     throw createError(500, 'Database operation failed.');
                   });
 
-  if (!problemList) {
+  if (!problemList || problemList.length === 1) {
     throw createError(404, 'No problem available.');
   }
 
@@ -125,7 +125,7 @@ export async function searchProblem(
                       throw createError(500, 'Database operation failed.');
                     });
 
-  if (!searchResult) {
+  if (!searchResult || searchResult.length === 0) {
     throw createError(404, 'No matching result.');
   }
 
@@ -137,7 +137,7 @@ export async function searchProblem(
 export async function postProblemTemp(problemid: number, data: Problem, userid: number) {
 
   // Validate parameters.
-  if (!data.title || !data.memoryLimit || !data.timeLimit || !userid) {
+  if (!(data.title && data.memoryLimit && data.timeLimit && userid)) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -149,7 +149,7 @@ export async function postProblemTemp(problemid: number, data: Problem, userid: 
 export async function postProblem(problemid: number, data: Problem, userid: number) {
 
   // Validate parameters.
-  if (!data.title || !data.memoryLimit || !data.timeLimit || !userid) {
+  if (!(data.title && data.memoryLimit && data.timeLimit && userid)) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -194,13 +194,13 @@ export async function verifyProblemPrivilege(
 }) {
 
   // Validate parameters.
-  if (
-    !operation ||
-    !problemPrivilegeInfo.owner ||
-    !problemPrivilegeInfo.group ||
-    !problemPrivilegeInfo.ownerPrivilege ||
-    !problemPrivilegeInfo.groupPrivilege ||
-    !problemPrivilegeInfo.othersPrivilege
+  if (!(
+    operation &&
+    problemPrivilegeInfo.owner &&
+    problemPrivilegeInfo.group &&
+    problemPrivilegeInfo.ownerPrivilege &&
+    problemPrivilegeInfo.groupPrivilege &&
+    problemPrivilegeInfo.othersPrivilege)
   ) {
     throw createError(500, 'Invalid parameters.');
   }
