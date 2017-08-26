@@ -3,11 +3,45 @@
 import * as chai from 'chai';
 import * as jwt from 'jsonwebtoken';
 import * as mocha from 'mocha';
+import { createConnection } from 'typeorm';
 
 import { config } from './../../../src/init/config';
+import { testConnectionOptions } from './../../utils';
+
 import * as Auth from './../../../src/models/auth';
 
-describe('Generate token.', () => {
+describe('Get User Info with Authentication.', async () => {
+
+  before(async () => {
+    await createConnection(testConnectionOptions);
+  });
+
+/* Not ready!
+  it('should return user info if password is correct.', async () => {
+  });
+*/
+
+  it('should throw error if password is incorrect.', async () => {
+    try {
+      const userInfo = await Auth.getUserInfoWithAuth('test', 'WrongPassword');
+    } catch (err) {
+      chai.expect(err.message).to.equal('Incorrect username or password.');
+    }
+  });
+
+/* Not ready!
+  it('should throw error if user is disabled', async () => {
+    try {
+      const userInfo = await Auth.getUserInfoWithAuth('test_disabled', 'CorrectPassword');
+    } catch (err) {
+      chai.expect(err.message).to.equal('User is disabled.');
+    }
+  });
+*/
+
+});
+
+describe('Generate token.', async () => {
   it('should return a valid json web token.', async () => {
 
     // Generate token.

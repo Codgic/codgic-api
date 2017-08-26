@@ -4,7 +4,8 @@ import {Gulpclass, MergedTask, SequenceTask, Task} from 'gulpclass';
 import * as gulp from 'gulp';
 import * as mocha from 'gulp-mocha';
 import * as shell from 'gulp-shell';
-import * as ts from 'gulp-typescript';
+import tslint from 'gulp-tslint';
+import * as typescript from 'gulp-typescript';
 
 import * as del from 'del';
 import * as fs from 'fs';
@@ -12,6 +13,10 @@ import * as path from 'path';
 
 @Gulpclass()
 export class Gulpfile {
+
+  // -------------------------
+  //  General tasks
+  // -------------------------
 
   // Clean build folder.
   @Task()
@@ -33,19 +38,42 @@ export class Gulpfile {
               .pipe(gulp.dest('./build'));
   }
 
+  // -------------------------
+  //  Run test tasks
+  // -------------------------
+
+  // Run tslint.
+  @Task()
+  public tslint() {
+    return gulp.src(['./src/**/*.ts', './test/**/*.ts'])
+        .pipe(tslint({
+          formatter: 'stylish',
+        }))
+        .pipe(tslint.report());
+  }
+
   // Do tests.
   @Task()
-  public test() {
-    return gulp.src(['./build/test/**/*.js'])
+  public runTests() {
+    return gulp.src('./build/test/**/*.js', {read: false})
         .pipe(mocha({
           bail: true,
           timeout: 15000,
         }));
   }
 
+  // -------------------------
+  //  Sequence tests
+  // -------------------------
+
   @SequenceTask()
   public build() {
     return ['clean', 'compile', 'copyConfig'];
+  }
+
+  @SequenceTask()
+  public test() {
+    return ['tslint', 'runTests'];
   }
 
 }

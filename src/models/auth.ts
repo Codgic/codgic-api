@@ -9,7 +9,7 @@ import { User } from './../entities/user';
 import { config } from './../init/config';
 import { UserPrivilege } from './../init/privilege';
 
-export async function getUserInfoWithAuth(retrievedPassword: string, username: string) {
+export async function getUserInfoWithAuth(username: string, retrievedPassword: string) {
 
   // Validate parameters.
   if (!(retrievedPassword && username)) {

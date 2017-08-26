@@ -1063,7 +1063,7 @@ gulp-sourcemaps@1.6.0:
     through2 "^2.0.0"
     vinyl "^1.0.0"
 
-gulp-tslint@^8.1.1:
+gulp-tslint@^8.1.2:
   version "8.1.2"
   resolved "https://registry.yarnpkg.com/gulp-tslint/-/gulp-tslint-8.1.2.tgz#e0f43194b473d7e76bb45a58fe8c60e7dfe3beb2"
   dependencies:

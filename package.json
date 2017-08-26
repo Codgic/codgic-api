@@ -61,7 +61,7 @@
     "gulp-copy": "^1.0.0",
     "gulp-mocha": "^4.3.1",
     "gulp-shell": "^0.6.3",
-    "gulp-tslint": "^8.1.1",
+    "gulp-tslint": "^8.1.2",
     "gulp-typescript": "^3.2.1",
     "gulpclass": "^0.1.2",
     "mocha": "^3.5.0",
