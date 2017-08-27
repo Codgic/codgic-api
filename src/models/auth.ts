@@ -13,7 +13,7 @@ export async function getUserInfoWithAuth(username: string, retrievedPassword: s
 
   // Validate parameters.
   if (!(retrievedPassword && username)) {
-    throw new Error('Invalid parameters.');
+    throw createError(500, 'Invalid parameters.');
   }
 
   const userRepository = getRepository(User);

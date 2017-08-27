@@ -1,3 +1,4 @@
+/* /gulpfile.ts */
 
 import {Gulpclass, MergedTask, SequenceTask, Task} from 'gulpclass';
 
@@ -63,7 +64,7 @@ export class Gulpfile {
   }
 
   // -------------------------
-  //  Sequence tests
+  //  Sequence tasks
   // -------------------------
 
   @SequenceTask()
