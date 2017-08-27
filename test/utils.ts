@@ -15,7 +15,7 @@ export const testConnectionOptions: ConnectionOptions = {
   username: config.database.username,
   password: config.database.password,
   logging: {
-    logQueries: true,
+    logQueries: false,
     logFailedQueryError: true,
   },
   autoSchemaSync: true,
@@ -28,3 +28,42 @@ export const testConnectionOptions: ConnectionOptions = {
   ] */
 
 };
+
+export async function initTestUser() {
+
+  const user = new User();
+
+  user.updatePassword('CorrectPassword');
+
+  user.id = 1;
+  user.username = 'test';
+  user.email = 'fuckzk@codgi.cc';
+  user.privilege = 1;
+
+  const userRepository = getRepository(User);
+
+  await userRepository.persist(user);
+
+}
+
+export async function deleteTestUser() {
+
+  await getRepository(User)
+      .createQueryBuilder('user')
+      .delete()
+      .where(`user.username = 'test'`)
+      .execute();
+
+}
+
+export async function updateTestUserPrivilege(username: string, privilege: number) {
+
+  await getRepository(User)
+      .createQueryBuilder('user')
+      .update({
+        privilege: `${privilege}`,
+      })
+      .where(`user.username = '${username}'`)
+      .execute();
+
+}
