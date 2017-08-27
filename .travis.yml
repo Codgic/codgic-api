@@ -18,7 +18,13 @@ before_install:
   # Grant privileges on user 'codgic'.
   - mysql -u root -e "GRANT ALL ON *.* TO 'codgic'@'localhost';"
 
-install: 
+before_script:
+  # Install dependencies.
+  - yarn install
+
+script:
   # Compile project.
   - yarn run build
 
+  # Run tests.
+  - yarn run test

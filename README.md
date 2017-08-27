@@ -1,4 +1,7 @@
 # codgic-api
+
+[![Build Status](https://travis-ci.org/codgician/codgic-api.svg?branch=master)](https://travis-ci.org/codgician/codgic-api)
+
 API handler of Codgic Online Judge.
 
 **EARLY DEVELOPMENT STAGE.**  
