@@ -13,10 +13,10 @@ before_install:
   - mysql -u root -e 'CREATE DATABASE codgic_test;'
 
   # Create user 'codgic'.
-  - mysql -u root -e  'CREATE USER 'codgic'@'localhost' IDENTIFIED BY 'YOURPASSWORD';'
+  - mysql -u root -e  "CREATE USER 'codgic'@'localhost' IDENTIFIED BY 'YOURPASSWORD';"
 
   # Grant privileges on user 'codgic'.
-  - mysql -u root -e 'GRANT ALL ON *.* TO 'codgic'@'localhost';'
+  - mysql -u root -e "GRANT ALL ON *.* TO 'codgic'@'localhost';"
 
 install: 
   # Compile project.
