@@ -23,6 +23,9 @@ before_script:
   - yarn install
 
 script:
+  # Generate config.yml.
+  - gulp renameConfig
+
   # Compile project.
   - yarn run build
 

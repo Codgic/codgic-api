@@ -71,6 +71,12 @@
     "@types/mocha" "*"
     "@types/node" "*"
 
+"@types/gulp-rename@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@types/gulp-rename/-/gulp-rename-0.0.32.tgz#602828783f97f190e438937dfa6a579eb0198e63"
+  dependencies:
+    "@types/node" "*"
+
 "@types/gulp-shell@0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/gulp-shell/-/gulp-shell-0.0.30.tgz#7b1714bf585fd89e82a5a7c6d752f5d1d6c44bad"
@@ -1043,6 +1049,10 @@ gulp-mocha@^4.3.1:
     mocha "^3.0.0"
     npm-run-path "^2.0.2"
     through2 "^2.0.3"
+
+gulp-rename@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/gulp-rename/-/gulp-rename-1.2.2.tgz#3ad4428763f05e2764dec1c67d868db275687817"
 
 gulp-shell@^0.6.3:
   version "0.6.3"

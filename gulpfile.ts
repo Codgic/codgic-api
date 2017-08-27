@@ -4,6 +4,7 @@ import {Gulpclass, MergedTask, SequenceTask, Task} from 'gulpclass';
 
 import * as gulp from 'gulp';
 import * as mocha from 'gulp-mocha';
+import * as rename from 'gulp-rename';
 import * as shell from 'gulp-shell';
 import tslint from 'gulp-tslint';
 import * as typescript from 'gulp-typescript';
@@ -35,8 +36,16 @@ export class Gulpfile {
   // Copy config.yml.
   @Task()
   public copyConfig() {
-    return gulp.src(['./config.yml'])
+    return gulp.src('./config.yml')
               .pipe(gulp.dest('./build'));
+  }
+
+  // Rename config.template.yml to config.yml.
+  @Task()
+  public renameConfig() {
+    return gulp.src('./config.template.yml')
+              .pipe(rename('./config.yml'))
+              .pipe(gulp.dest('./'));
   }
 
   // -------------------------
