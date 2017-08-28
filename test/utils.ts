@@ -36,11 +36,42 @@ export async function initTestUser() {
   user.updatePassword('CorrectPassword');
 
   user.id = 1;
-  user.username = 'test';
+  user.username = 'zk';
   user.email = 'fuckzk@codgi.cc';
   user.privilege = 1;
 
   const userRepository = getRepository(User);
+
+  await userRepository.persist(user);
+
+}
+
+export async function initAllUsers() {
+
+  const userRepository = getRepository(User);
+
+  const user = new User();
+
+  user.updatePassword('CorrectPassword');
+
+  user.id = 1;
+  user.username = 'zk';
+  user.email = 'fuckzk@codgi.cc';
+  user.privilege = 1;
+
+  await userRepository.persist(user);
+
+  user.id = 2;
+  user.username = 'gzf';
+  user.email = 'fuckgzf@codgi.cc';
+  user.privilege = 1;
+
+  await userRepository.persist(user);
+
+  user.id = 3;
+  user.username = 'yyd';
+  user.email = 'fuckyyd@codgi.cc';
+  user.privilege = 1;
 
   await userRepository.persist(user);
 

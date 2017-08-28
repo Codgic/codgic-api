@@ -15,7 +15,7 @@ describe('Get user info with Authentication', async () => {
   before(async () => {
     await createConnection(Utils.testConnectionOptions);
     await Utils.deleteAllUsers();
-    await Utils.initTestUser();
+    await Utils.initAllUsers();
   });
 
   after(async () => {
@@ -24,15 +24,15 @@ describe('Get user info with Authentication', async () => {
   });
 
   it('should return user info if password is correct', async () => {
-    const userInfo = await Auth.getUserInfoWithAuth('test', 'CorrectPassword');
-    chai.expect(userInfo.username).to.equal('test');
+    const userInfo = await Auth.getUserInfoWithAuth('zk', 'CorrectPassword');
+    chai.expect(userInfo.username).to.equal('zk');
     chai.expect(userInfo.email).to.equal('fuckzk@codgi.cc');
     chai.expect(userInfo.privilege).to.equal(1);
   });
 
   it('should throw error if password is incorrect', async () => {
     try {
-      const userInfo = await Auth.getUserInfoWithAuth('test', 'WrongPassword');
+      const userInfo = await Auth.getUserInfoWithAuth('zk', 'WrongPassword');
     } catch (err) {
       chai.expect(err.status).to.equal(403);
       chai.expect(err.expose).to.equal(true);
@@ -42,8 +42,8 @@ describe('Get user info with Authentication', async () => {
 
   it('should throw error if user is disabled', async () => {
     try {
-      Utils.updateTestUserPrivilege('test', 0);
-      const userInfo = await Auth.getUserInfoWithAuth('test', 'CorrectPassword');
+      Utils.updateTestUserPrivilege('zk', 0);
+      const userInfo = await Auth.getUserInfoWithAuth('zk', 'CorrectPassword');
     } catch (err) {
       chai.expect(err.status).to.equal(403);
       chai.expect(err.expose).to.equal(true);
@@ -57,18 +57,22 @@ describe('Get user info with Authentication', async () => {
     try {
       const userInfo = await Auth.getUserInfoWithAuth('', 'CorrectPassword');
     } catch (err) {
-      chai.expect(err.status).to.equal(500);
-      chai.expect(err.expose).to.equal(false);
-      chai.expect(err.message).to.equal('Invalid parameters.');
+      chai.expect(err).to.deep.include({
+        status: 500,
+        expose: false,
+        message: 'Invalid parameters.',
+      });
     }
 
     // If password is missing.
     try {
-      const userInfo = await Auth.getUserInfoWithAuth('test', '');
+      const userInfo = await Auth.getUserInfoWithAuth('zk', '');
     } catch (err) {
-      chai.expect(err.status).to.equal(500);
-      chai.expect(err.expose).to.equal(false);
-      chai.expect(err.message).to.equal('Invalid parameters.');
+      chai.expect(err).to.deep.include({
+        status: 500,
+        expose: false,
+        message: 'Invalid parameters.',
+      });
     }
   });
 
@@ -77,15 +81,17 @@ describe('Get user info with Authentication', async () => {
 describe('Generate token', async () => {
   it('should return a valid json web token', async () => {
     // Generate token.
-    const accessToken = await Auth.generateToken(1, 'codgic', 'fuckzk@codgi.cc', 1);
+    const accessToken = await Auth.generateToken(1, 'zk', 'fuckzk@codgi.cc', 1);
 
     // Verify token.
     jwt.verify(accessToken, config.api.jwt.secret, (err: any, decoded: any) => {
       chai.expect(err).to.equal(undefined);
-      chai.expect(decoded.id).to.equal(1);
-      chai.expect(decoded.username).to.equal('codgic');
-      chai.expect(decoded.email).to.equal('fuckzk@codgi.cc');
-      chai.expect(decoded.privilege).to.equal(1);
+      chai.expect(decoded).to.deep.include({
+        id: 1,
+        email: 'fuckzk@codgi.cc',
+        username: 'zk',
+        privilege: 1,
+      });
     });
   });
 });

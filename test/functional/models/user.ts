@@ -24,22 +24,26 @@ describe('Get user info', async () => {
   });
 
   it('should return user info if user exists', async () => {
-    const userInfo = await User.getUserInfo('test');
-    chai.expect(userInfo.id).to.equal(1);
-    chai.expect(userInfo.username).to.equal('test');
-    chai.expect(userInfo.email).to.equal('fuckzk@codgi.cc');
-    chai.expect(userInfo.privilege).to.equal(1);
+    const userInfo = await User.getUserInfo('zk');
+    chai.expect(userInfo).to.deep.include({
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      privilege: 1,
+    });
   });
 
   it('should throw error if user does not exist', async () => {
     try {
       await Utils.deleteTestUser();
-      const userInfo = await User.getUserInfo('test');
+      const userInfo = await User.getUserInfo('zk');
       Utils.initTestUser();
     } catch (err) {
-      chai.expect(err.status).to.equal(404);
-      chai.expect(err.expose).to.equal(true);
-      chai.expect(err.message).to.equal('User not found.');
+      chai.expect(err).to.deep.include({
+        status: 404,
+        expose: true,
+        message: 'User not found.',
+      });
     }
   });
 
@@ -47,21 +51,232 @@ describe('Get user info', async () => {
     try {
       const userInfo = await User.getUserInfo('');
     } catch (err) {
-      chai.expect(err.status).to.equal(500);
-      chai.expect(err.expose).to.equal(false);
-      chai.expect(err.message).to.equal('Invalid parameters.');
+      chai.expect(err).to.deep.include({
+        status: 500,
+        expose: false,
+        message: 'Invalid parameters.',
+      });
     }
   });
 
 });
 
-/* Not ready.
 describe('Get user list', async () => {
+
+  before(async () => {
+    await createConnection(Utils.testConnectionOptions);
+    await Utils.deleteAllUsers();
+    await Utils.initAllUsers();
+  });
+
+  after(async () => {
+    await Utils.deleteAllUsers();
+    await getConnectionManager().get().close();
+  });
+
+  it('should return user list (default options)', async () => {
+
+    // Test with default options.
+    const userList = await User.getUserList();
+
+    chai.expect(userList).to.be.an('array').that.have.lengthOf(3);
+
+    chai.expect(userList[0]).to.deep.equal({
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+    chai.expect(userList[1]).to.deep.equal({
+      id: 2,
+      email: 'fuckgzf@codgi.cc',
+      username: 'gzf',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+    chai.expect(userList[2]).to.deep.equal({
+      id: 3,
+      email: 'fuckyyd@codgi.cc',
+      username: 'yyd',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+  });
+
+  it('should return user list (DESC order)', async () => {
+
+    // Test order.
+    const userList = await User.getUserList('id', 'DESC');
+
+    chai.expect(userList).to.be.an('array').that.have.lengthOf(3);
+
+    chai.expect(userList[0]).to.deep.equal({
+      id: 3,
+      email: 'fuckyyd@codgi.cc',
+      username: 'yyd',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+    chai.expect(userList[1]).to.deep.equal({
+      id: 2,
+      email: 'fuckgzf@codgi.cc',
+      username: 'gzf',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+    chai.expect(userList[2]).to.deep.equal({
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+  });
+
+  it('should return user list (customized pagination)', async () => {
+
+    // Test pagination.
+    const userList = await User.getUserList('id', 'ASC', 1, 2);
+
+    chai.expect(userList).to.be.an('array').that.have.lengthOf(2);
+
+    chai.expect(userList[0]).to.deep.equal({
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+    chai.expect(userList[1]).to.deep.equal({
+      id: 2,
+      email: 'fuckgzf@codgi.cc',
+      username: 'gzf',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+  });
 });
 
 describe('Search user', async () => {
+
+  before(async () => {
+    await createConnection(Utils.testConnectionOptions);
+    await Utils.deleteAllUsers();
+    await Utils.initAllUsers();
+  });
+
+  after(async () => {
+    await Utils.deleteAllUsers();
+    await getConnectionManager().get().close();
+  });
+
+  it('should return search result (default options)', async () => {
+
+    // Test with default options.
+    const searchResult = await User.searchUser('z');
+
+    chai.expect(searchResult).to.be.an('array').that.have.lengthOf(2);
+
+    chai.expect(searchResult[0]).to.deep.equal({
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+    chai.expect(searchResult[1]).to.deep.equal({
+      id: 2,
+      email: 'fuckgzf@codgi.cc',
+      username: 'gzf',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+  });
+
+  it('should return search result (search email)', async () => {
+
+    // Test search email.
+    const searchResult = await User.searchUser('fuckzk@codgi.cc');
+
+    chai.expect(searchResult).to.be.an('array').that.have.lengthOf(1);
+
+    chai.expect(searchResult[0]).to.deep.equal({
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+  });
+
+  it('should return search result (DESC order)', async () => {
+
+    // Test sort order.
+    const searchResult = await User.searchUser('z', 'id', 'DESC');
+
+    chai.expect(searchResult).to.be.an('array').that.have.lengthOf(2);
+
+    chai.expect(searchResult[0]).to.deep.equal({
+      id: 2,
+      email: 'fuckgzf@codgi.cc',
+      username: 'gzf',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+    chai.expect(searchResult[1]).to.deep.equal({
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+  });
+
+  it('should return search result (customized pagination)', async () => {
+
+    // Test pagination.
+    const searchResult = await User.searchUser('z', 'id', 'ASC', 2, 1);
+
+    chai.expect(searchResult).to.be.an('array').that.have.lengthOf(1);
+
+    chai.expect(searchResult[0]).to.deep.equal({
+      id: 2,
+      email: 'fuckgzf@codgi.cc',
+      username: 'gzf',
+      nickname: null,
+      sex: null,
+      privilege: 1,
+    });
+
+  });
 });
-*/
 
 describe('Post user', async () => {
 
@@ -76,70 +291,81 @@ describe('Post user', async () => {
   it('should return user info if everything goes well', async () => {
 
     const data = {
-      username: 'test',
+      username: 'zk',
       email: 'fuckzk@codgi.cc',
       password: 'CorrectPassword',
     };
 
     const userInfo = await User.postUser(data);
 
-    chai.expect(userInfo.username).to.equal('test');
-    chai.expect(userInfo.email).to.equal('fuckzk@codgi.cc');
+    chai.expect(userInfo).to.deep.include({
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      // privilege: 1,
+    });
 
-    const correctPwdResult = await Utils.verifyUserPassword('test', 'CorrectPassword');
+    const correctPwdResult = await Utils.verifyUserPassword('zk', 'CorrectPassword');
     chai.expect(correctPwdResult).to.equal(true);
 
-    const wrongPwdResult = await Utils.verifyUserPassword('test', 'WrongPassword');
+    const wrongPwdResult = await Utils.verifyUserPassword('zk', 'WrongPassword');
     chai.expect(wrongPwdResult).to.equal(false);
 
   });
 
-  it('should throw error if requried fields are missing', async () => {
+  it('should throw error if username is missing', async () => {
 
     const data = {
-      username: 'test',
       email: 'fuckzk@codgi.cc',
       password: 'CorrectPassword',
     };
 
-    // If username is missing.
-    delete data.username;
+    try {
+      const userInfo = await User.postUser(data);
+    } catch (err) {
+      chai.expect(err).to.deep.include({
+        status: 500,
+        expose: false,
+        message: 'Invalid parameters.',
+      });
+    }
+
+  });
+
+  it('should throw error if email is missing', async () => {
+
+    const data = {
+      username: 'zk',
+      password: 'CorrectPassword',
+    };
 
     try {
       const userInfo = await User.postUser(data);
     } catch (err) {
-      chai.expect(err.status).to.equal(500);
-      chai.expect(err.expose).to.equal(false);
-      chai.expect(err.message).to.equal('Invalid parameters.');
+      chai.expect(err).to.deep.include({
+        status: 500,
+        expose: false,
+        message: 'Invalid parameters.',
+      });
     }
 
-    data.username = 'test';
+  });
 
-    // If email is missing.
-    delete data.email;
+  it('should throw error if password is missing', async () => {
+
+    const data = {
+      username: 'zk',
+      email: 'fuckzk@codgi.cc',
+    };
 
     try {
       const userInfo = await User.postUser(data);
     } catch (err) {
-      chai.expect(err.status).to.equal(500);
-      chai.expect(err.expose).to.equal(false);
-      chai.expect(err.message).to.equal('Invalid parameters.');
+      chai.expect(err).to.deep.include({
+        status: 500,
+        expose: false,
+        message: 'Invalid parameters.',
+      });
     }
-
-    data.email = 'fuckzk@codgi.cc';
-
-    // If password is missing.
-    delete data.password;
-
-    try {
-      const userInfo = await User.postUser(data);
-    } catch (err) {
-      chai.expect(err.status).to.equal(500);
-      chai.expect(err.expose).to.equal(false);
-      chai.expect(err.message).to.equal('Invalid parameters.');
-    }
-
-    data.password = 'CorrectPassword';
 
   });
 

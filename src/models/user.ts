@@ -75,9 +75,9 @@ export async function getUserList(
 }
 
 export async function searchUser(
+  keyword: string,
   sort: 'id' | 'username' | 'createdAt' = 'id',
   order: 'ASC' | 'DESC'  = 'ASC',
-  keyword: string,
   page: number = 1,
   num: number = config.oj.default.page.user,
 ) {
