@@ -82,7 +82,7 @@ export async function deleteTestUser() {
   await getRepository(User)
     .createQueryBuilder('user')
     .delete()
-    .where(`user.username = 'test'`)
+    .where(`user.username = 'zk'`)
     .execute();
 
 }

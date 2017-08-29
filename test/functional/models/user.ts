@@ -37,8 +37,9 @@ describe('Get user info', async () => {
       await Utils.deleteTestUser();
       const userInfo = await User.getUserInfo('zk');
       chai.expect(userInfo).to.equal(undefined);
-      Utils.initTestUser();
+      await Utils.initTestUser();
     } catch (err) {
+      console.log(err);
       chai.expect(err).to.deep.include({
         status: 404,
         expose: true,
