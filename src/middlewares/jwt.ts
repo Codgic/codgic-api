@@ -8,8 +8,8 @@ import { config } from './../init/config';
 
 let koaJwt = KoaJwt({
   secret: config.api.jwt.secret,
-  debug: config.api.jwt.debug,
-  passthrough: !config.oj.policy.access.need_login,
+  debug: config.api.jwt.debug || false,
+  passthrough: !config.oj.policy.access.need_login || true,
 });
 
 if (config.oj.policy.access.need_login) {

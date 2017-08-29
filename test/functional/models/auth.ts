@@ -4,7 +4,6 @@ import 'reflect-metadata';
 
 import * as chai from 'chai';
 import * as jwt from 'jsonwebtoken';
-import * as mocha from 'mocha';
 import { createConnection, getConnectionManager } from 'typeorm';
 
 import { config } from './../../../src/init/config';
