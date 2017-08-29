@@ -25,7 +25,7 @@ describe('Error handler middleware', async () => {
 
   });
 
-  it('should return error in json', async () => {
+  it('should return error in json with correct message', async () => {
 
     app.use(async (ctx, next) => {
       throw createError(400, 'You should be fucking zk!');
@@ -44,6 +44,20 @@ describe('Error handler middleware', async () => {
 
   });
 
+  it('should handle error 404 successfully', async () => {
+
+    chai.request(app.listen())
+      .get('/i/do/not/exist')
+      .then((res) => {
+        chai.expect(res.status).to.equal(404);
+        chai.expect(res.body.error).to.equal('Not Found');
+      })
+      .catch((err) => {
+        chai.expect(err.message).to.equal('Not Found');
+      });
+
+  });
+
   it('should hide error message by default if status > 500', async () => {
 
     app.use(async (ctx, next) => {
@@ -53,7 +67,6 @@ describe('Error handler middleware', async () => {
     chai.request(app.listen())
       .get('/')
       .then((res) => {
-        chai.expect(res.type).to.equal('application/json');
         chai.expect(res.status).to.equal(500);
         chai.expect(res.body.error).to.equal('Internal Server Error');
       })
@@ -76,7 +89,6 @@ describe('Error handler middleware', async () => {
     chai.request(app.listen())
       .get('/')
       .then((res) => {
-        chai.expect(res.type).to.equal('application/json');
         chai.expect(res.status).to.equal(500);
         chai.expect(res.body.error).to.equal('Internal Server Error');
       })

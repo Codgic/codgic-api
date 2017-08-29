@@ -12,7 +12,7 @@ export async function errorHandler(ctx: Context, next: () => Promise<any>) {
     // Handle Error 404.
     if (ctx.status === 404) {
       throw createError(404);
-   }
+    }
 
   } catch (err) {
 
