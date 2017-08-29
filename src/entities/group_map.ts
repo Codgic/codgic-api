@@ -11,8 +11,6 @@ import {
 } from 'typeorm';
 
 import { GroupMemberPrivilege } from './../init/privilege';
-import { Group } from './group';
-import { User } from './user';
 
 @Entity()
 @Index('userid_groupid', ['userid', 'groupid'])

@@ -1,7 +1,6 @@
 /* /src/models/problem.ts */
 
 import * as createError from 'http-errors';
-import * as Koa from 'koa';
 import { getRepository } from 'typeorm';
 
 import { Problem } from './../entities/problem';

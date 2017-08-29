@@ -1,7 +1,6 @@
 /* /src/models/group.ts */
 
 import * as createError from 'http-errors';
-import * as Koa from 'koa';
 import { getRepository } from 'typeorm';
 
 import { Group } from './../entities/group';

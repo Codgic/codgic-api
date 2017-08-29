@@ -2,13 +2,8 @@
 
 import * as chai from 'chai';
 import chaiHttp = require('chai-http');
-import * as http from 'http';
 import * as createError from 'http-errors';
 import * as Koa from 'koa';
-import { createConnection, getConnectionManager } from 'typeorm';
-
-import { config } from './../../../src/init/config';
-import * as Utils from './../../utils';
 
 import { errorHandler } from './../../../src/middlewares/error';
 
@@ -27,7 +22,7 @@ describe('Error handler middleware', async () => {
 
   it('should return error in json with correct message', async () => {
 
-    app.use(async (ctx, next) => {
+    app.use(async () => {
       throw createError(400, 'You should be fucking zk!');
     });
 
@@ -60,7 +55,7 @@ describe('Error handler middleware', async () => {
 
   it('should hide error message by default if status > 500', async () => {
 
-    app.use(async (ctx, next) => {
+    app.use(async () => {
       throw createError(500, 'Server failed to fuck zk.');
     });
 
@@ -78,11 +73,7 @@ describe('Error handler middleware', async () => {
 
   it('should return status 500 if status code is undefined', async () => {
 
-    if (app === undefined) {
-      throw new Error('Failed to initialize koa.');
-    }
-
-    app.use(async (ctx, next) => {
+    app.use(async () => {
       throw createError();
     });
 

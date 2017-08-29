@@ -1,17 +1,14 @@
 /* /gulpfile.ts */
 
-import {Gulpclass, MergedTask, SequenceTask, Task} from 'gulpclass';
+import {Gulpclass, SequenceTask, Task} from 'gulpclass';
 
 import * as gulp from 'gulp';
 import * as mocha from 'gulp-mocha';
 import * as rename from 'gulp-rename';
 import * as shell from 'gulp-shell';
 import tslint from 'gulp-tslint';
-import * as typescript from 'gulp-typescript';
 
 import * as del from 'del';
-import * as fs from 'fs';
-import * as path from 'path';
 
 @Gulpclass()
 export class Gulpfile {

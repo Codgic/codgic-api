@@ -6,7 +6,6 @@ import * as bodyParser from 'koa-bodyparser';
 import * as compress from 'koa-compress';
 import * as logger from 'koa-logger';
 
-import { config } from './../init/config';
 import { errorHandler } from './../middlewares/error';
 import { jwt } from './../middlewares/jwt';
 import { router } from './../routes/index';

@@ -3,9 +3,7 @@
 
 import { Context } from 'koa';
 
-import { UserPrivilege } from './../init/privilege';
 import * as Auth from './../models/auth';
-import { getUserInfo } from './../models/user';
 
 export async function refreshToken(ctx: Context, next: () => Promise<any>) {
 

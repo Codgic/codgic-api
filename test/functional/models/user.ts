@@ -5,7 +5,6 @@ import 'reflect-metadata';
 import * as chai from 'chai';
 import { createConnection, getConnectionManager } from 'typeorm';
 
-import { config } from './../../../src/init/config';
 import * as Utils from './../../utils';
 
 import * as User from './../../../src/models/user';
@@ -37,6 +36,7 @@ describe('Get user info', async () => {
     try {
       await Utils.deleteTestUser();
       const userInfo = await User.getUserInfo('zk');
+      chai.expect(userInfo).to.equal(undefined);
       Utils.initTestUser();
     } catch (err) {
       chai.expect(err).to.deep.include({
@@ -50,6 +50,7 @@ describe('Get user info', async () => {
   it('should throw error if parameters are incomplete', async () => {
     try {
       const userInfo = await User.getUserInfo('');
+      chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
         status: 500,
@@ -321,6 +322,7 @@ describe('Post user', async () => {
 
     try {
       const userInfo = await User.postUser(data);
+      chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
         status: 500,
@@ -340,6 +342,7 @@ describe('Post user', async () => {
 
     try {
       const userInfo = await User.postUser(data);
+      chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
         status: 500,
@@ -359,6 +362,7 @@ describe('Post user', async () => {
 
     try {
       const userInfo = await User.postUser(data);
+      chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
         status: 500,

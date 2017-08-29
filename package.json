@@ -66,7 +66,6 @@
     "gulp-rename": "^1.2.2",
     "gulp-shell": "^0.6.3",
     "gulp-tslint": "^8.1.2",
-    "gulp-typescript": "^3.2.1",
     "gulpclass": "^0.1.2",
     "mocha": "^3.5.0",
     "ts-node": "^3.3.0",

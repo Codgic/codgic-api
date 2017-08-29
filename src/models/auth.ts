@@ -2,7 +2,6 @@
 
 import * as createError from 'http-errors';
 import * as jwt from 'jsonwebtoken';
-import * as jwtKoa from 'koa-jwt';
 import { getRepository } from 'typeorm';
 
 import { User } from './../entities/user';

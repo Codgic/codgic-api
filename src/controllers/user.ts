@@ -3,7 +3,6 @@
 
 import { Context } from 'koa';
 
-import { config } from './../init/config';
 import { UserPrivilege } from './../init/privilege';
 import * as User from './../models/user';
 

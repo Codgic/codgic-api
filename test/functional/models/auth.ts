@@ -34,6 +34,7 @@ describe('Get user info with Authentication', async () => {
   it('should throw error if password is incorrect', async () => {
     try {
       const userInfo = await Auth.getUserInfoWithAuth('zk', 'WrongPassword');
+      chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err.status).to.equal(403);
       chai.expect(err.expose).to.equal(true);
@@ -45,6 +46,7 @@ describe('Get user info with Authentication', async () => {
     try {
       Utils.updateTestUserPrivilege('zk', 0);
       const userInfo = await Auth.getUserInfoWithAuth('zk', 'CorrectPassword');
+      chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err.status).to.equal(403);
       chai.expect(err.expose).to.equal(true);
@@ -57,6 +59,7 @@ describe('Get user info with Authentication', async () => {
     // If username is missing.
     try {
       const userInfo = await Auth.getUserInfoWithAuth('', 'CorrectPassword');
+      chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
         status: 500,
@@ -68,6 +71,7 @@ describe('Get user info with Authentication', async () => {
     // If password is missing.
     try {
       const userInfo = await Auth.getUserInfoWithAuth('zk', '');
+      chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
         status: 500,
