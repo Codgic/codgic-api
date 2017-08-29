@@ -136,6 +136,7 @@ export async function postUser(data: any) {
       throw createError(500, 'Update user password failed.');
     });
 
+  user.id = data.id;
   user.email = data.email;
   user.username = data.username;
   user.nickname = data.nickname;

@@ -292,8 +292,8 @@ describe('Post user', async () => {
   it('should return user info if everything goes well', async () => {
 
     const data = {
-      username: 'zk',
       email: 'fuckzk@codgi.cc',
+      username: 'zk',
       password: 'CorrectPassword',
     };
 
@@ -310,6 +310,73 @@ describe('Post user', async () => {
 
     const wrongPwdResult = await Utils.verifyUserPassword('zk', 'WrongPassword');
     chai.expect(wrongPwdResult).to.equal(false);
+
+  });
+
+  it('should update user info if user already exists', async () => {
+
+    await Utils.initTestUser();
+
+    const data = {
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'waterqueen',
+      password: 'CorrectPassword',
+    };
+
+    const userInfo = await User.postUser(data);
+
+    chai.expect(userInfo).to.deep.include({
+      email: 'fuckzk@codgi.cc',
+      username: 'waterqueen',
+      // privilege: 1,
+    });
+
+  });
+
+  it('should throw error if username already exists', async () => {
+
+    await Utils.initTestUser();
+
+    const data = {
+      email: 'fuckzkagain@codgi.cc',
+      username: 'zk',
+      password: 'AnotherCorrectPassword',
+    };
+
+    try {
+      const userInfo = await User.postUser(data);
+      chai.expect(userInfo).to.equal(undefined);
+    } catch (err) {
+      chai.expect(err).to.deep.include({
+        status: 400,
+        expose: true,
+        message: 'Username or email taken.',
+      });
+    }
+
+  });
+
+  it('should throw error if username already exists', async () => {
+
+    await Utils.initTestUser();
+
+    const data = {
+      email: 'fuckzk@codgi.cc',
+      username: 'anotherzk',
+      password: 'AnotherCorrectPassword',
+    };
+
+    try {
+      const userInfo = await User.postUser(data);
+      chai.expect(userInfo).to.equal(undefined);
+    } catch (err) {
+      chai.expect(err).to.deep.include({
+        status: 400,
+        expose: true,
+        message: 'Username or email taken.',
+      });
+    }
 
   });
 
