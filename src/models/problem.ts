@@ -136,7 +136,7 @@ export async function searchProblem(
 export async function postProblemTemp(problemid: number, data: Problem, userid: number) {
 
   // Validate parameters.
-  if (!(data.title && data.memoryLimit && data.timeLimit && userid)) {
+  if (!(problemid && data.title && data.memoryLimit && data.timeLimit && userid)) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -148,7 +148,7 @@ export async function postProblemTemp(problemid: number, data: Problem, userid: 
 export async function postProblem(problemid: number, data: Problem, userid: number) {
 
   // Validate parameters.
-  if (!(data.title && data.memoryLimit && data.timeLimit && userid)) {
+  if (!(problemid && data.title && data.memoryLimit && data.timeLimit && userid)) {
     throw createError(500, 'Invalid parameters.');
   }
 

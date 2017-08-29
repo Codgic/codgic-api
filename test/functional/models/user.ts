@@ -39,7 +39,6 @@ describe('Get user info', async () => {
       chai.expect(userInfo).to.equal(undefined);
       await Utils.initTestUser();
     } catch (err) {
-      console.log(err);
       chai.expect(err).to.deep.include({
         status: 404,
         expose: true,

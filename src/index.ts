@@ -12,7 +12,7 @@ import { connectionOptions } from './init/typeorm';
 
 console.log('Establishing database connection...');
 
-createConnection(connectionOptions).then(async (connection) => {
+createConnection(connectionOptions).then(async () => {
 
   const app = new Koa();
 
