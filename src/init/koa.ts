@@ -4,6 +4,7 @@
 import * as Koa from 'koa';
 import * as bodyParser from 'koa-bodyparser';
 import * as compress from 'koa-compress';
+import * as helmet from 'koa-helmet';
 import * as logger from 'koa-logger';
 
 import { errorHandler } from './../middlewares/error';
@@ -18,6 +19,7 @@ export function initKoa(app: Koa) {
     console.error(err);
   });
 
+  app.use(helmet());
   app.use(bodyParser());
   app.use(compress());
   app.use(logger());

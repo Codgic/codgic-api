@@ -9,6 +9,8 @@ API handler of Codgic Online Judge.
 
 If you have any ideas or suggestions, feel free to create issues at https://github.com/Codgic/codgic-api/issues.
 
+Recent changes will be pushed to [Codgic/codgic-api](https://github.com/codgic/codgic-api) soon after unit tests cover all existing functions. Pull requests will be highly appreciated by then.
+
 # To-do list
 - [x] Hello Koa.
 - [x] Hello Typescript.
