@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.0.3",
+    "@types/chai-http": "^3.0.2",
     "@types/del": "^2.2.32",
     "@types/gulp": "^4.0.4",
     "@types/gulp-mocha": "^0.0.30",
@@ -57,6 +58,7 @@
     "@types/gulp-shell": "0.0.30",
     "@types/mocha": "^2.2.41",
     "chai": "^4.1.1",
+    "chai-http": "^3.0.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-copy": "^1.0.0",
