@@ -60,7 +60,7 @@ export async function getProblemList(
   sort: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
   order: 'ASC' | 'DESC' = 'ASC',
   page: number = 1,
-  num: number = config.oj.default.page.problem) {
+  num: number = config.oj.default.page.problem || 50) {
 
   // Validate parameters.
   if (page < 1 || num < 1) {
@@ -98,7 +98,7 @@ export async function searchProblem(
   order: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
   page: number = 1,
-  num: number = config.oj.default.page.problem) {
+  num: number = config.oj.default.page.problem || 50) {
 
   // Validate parameters.
   if (page < 1 || num < 1 || !keyword) {

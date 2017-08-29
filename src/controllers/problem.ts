@@ -82,7 +82,7 @@ export async function postProblem(ctx: Context, next: () => Promise<any>) {
   const maxProblemId: any = await Problem.getMaxProblemId();
 
   // Generate next id (default: 1000).
-  let nextProblemId: number = 1000;
+  let nextProblemId: number = config.oj.default.problem.first_problem_id || 1000;
 
   if (maxProblemId) {
     nextProblemId = maxProblemId + 1;
@@ -140,7 +140,7 @@ function routePost(ctx: Context) {
       result = Problem.postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
     } else {
       if (config.oj.policy.content.common_user_can_post) {
-        if (config.oj.policy.content.common_user_need_confirmation) {
+        if (config.oj.policy.content.common_user_post_need_confirmation) {
           result = Problem.postProblemTemp(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
         } else {
           result = Problem.postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);

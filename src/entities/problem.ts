@@ -56,12 +56,12 @@ export class Problem {
   public additionalInfo: string;
 
   @Column('int', {
-    default: config.oj.default.problem.time_limit,
+    default: config.oj.default.problem.time_limit || 1000,
   })
   public timeLimit: number;
 
   @Column('int', {
-    default: config.oj.default.problem.memory_limit,
+    default: config.oj.default.problem.memory_limit || 256,
   })
   public memoryLimit: number;
 

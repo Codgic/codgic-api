@@ -1,4 +1,4 @@
-/* /api/routes/v1/search.ts */
+/* /src/routes/v1/search.ts */
 
 import * as Router from 'koa-router';
 

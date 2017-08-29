@@ -1,4 +1,4 @@
-/* /api/routes/v1/auth.ts */
+/* /src/routes/v1/auth.ts */
 
 import * as Router from 'koa-router';
 

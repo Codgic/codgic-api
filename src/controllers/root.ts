@@ -11,7 +11,6 @@ export async function hi(ctx: Context, next: () => Promise<any>) {
 
   ctx.body = {
     name: config.oj.name,
-    language: config.oj.language,
     timezone: config.oj.timezone,
     policy: config.oj.policy,
   };

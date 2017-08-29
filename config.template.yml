@@ -4,7 +4,6 @@
 # OJ
 oj:
   name: Codgic
-  language: en
   timezone: Asia/Shanghai
   policy:
     access:
@@ -12,6 +11,7 @@ oj:
     signup:
       need_confirmation: false
       # need_verify_email: false
+    profile:
       nickname:
         min_length:
         max_length: 30
@@ -27,7 +27,7 @@ oj:
         max_length: 30
     content:
       common_user_can_post: true
-      common_user_need_confirmation: false
+      common_user_post_need_confirmation: false
   default:
     page:
       contest: 50
@@ -37,15 +37,17 @@ oj:
     contest:
       # duration: 7200
     problem:
-      memory_limit: 256
-      time_limit: 1000
+      first_problem_id: 1000
+      memory_limit: 256 # MB
+      time_limit: 1000 # ms
     
 # API
 api:
   port: 8080
   jwt:
-    secret: FuckZh@ngKeW@terQueen
+    debug: false
     expire_time: 1h
+    secret: FuckZh@ngKeW@terQueen
 
 # Database
 database:

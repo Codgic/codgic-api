@@ -1,6 +1,8 @@
 /* /test/utils.ts
   Utilities here. Happy testing! */
 
+import * as fs from 'fs';
+import * as yaml from 'js-yaml';
 import { ConnectionOptions, getRepository } from 'typeorm';
 
 import { User } from './../src/entities/user';

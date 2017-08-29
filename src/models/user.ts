@@ -171,8 +171,8 @@ export async function validateUserInfo(data: any) {
   }
 
   if (
-    config.oj.policy.signup.username.min_length &&
-    data.username.length < config.oj.policy.signup.username.min_length
+    config.oj.policy.profile.username.min_length &&
+    data.username.length < config.oj.policy.profile.username.min_length
   ) {
     throw createError(400, 'Username too short.');
   }
@@ -184,24 +184,24 @@ export async function validateUserInfo(data: any) {
   // Complexity Check: To be implemented.
 
   if (
-    config.oj.policy.signup.password.max_length &&
-    data.password.length > config.oj.policy.signup.password.max_length
+    config.oj.policy.profile.password.max_length &&
+    data.password.length > config.oj.policy.profile.password.max_length
   ) {
     throw createError(400, 'Password too long.');
   }
 
   if (
     data.nickname &&
-    config.oj.policy.signup.nickname.min_length &&
-    data.nickname.length < config.oj.policy.signup.nickname.min_length
+    config.oj.policy.profile.nickname.min_length &&
+    data.nickname.length < config.oj.policy.profile.nickname.min_length
   ) {
     throw createError(400, 'Nickname too short.');
   }
 
   if (
     data.nickname &&
-    config.oj.policy.signup.nickname.max_length &&
-    data.nickname.length > config.oj.policy.signup.nickname.max_length
+    config.oj.policy.profile.nickname.max_length &&
+    data.nickname.length > config.oj.policy.profile.nickname.max_length
   ) {
     throw createError(400, 'Nickname too long.');
   }
