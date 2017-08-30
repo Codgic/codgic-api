@@ -24,8 +24,6 @@ Recent changes will be pushed to [Codgic/codgic-api](https://github.com/codgic/c
 
 # Known problems (Reminder)
 - Password and salt are revealed when retrieving user info (because private fields aren't really private. See [Issue #564 - Microsoft/TypeScript](https://github.com/Microsoft/TypeScript/issues/564)).
-- postProblem() in problem model won't work when it comes to updating existing info.
-- postUser() in user controller won't check whether user has the privilege to change his privilege.
 - Post user with taken username / email will trigger auto increment with InnoDB (not my fault, but what if some clown keeps sending faulty requests to overflow the primary key?).
 
 # Priorities

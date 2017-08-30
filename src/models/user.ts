@@ -129,7 +129,19 @@ export async function postUser(data: any) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const user = new User();
+  const userRepository = getRepository(User);
+  const userInfo = await userRepository
+    .findOne({
+      where: {
+        id: data.id,
+      },
+    })
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
+
+  const user = userInfo ? userInfo : new User();
 
   // Update password.
   user
@@ -139,7 +151,6 @@ export async function postUser(data: any) {
       throw createError(500, 'Update user password failed.');
     });
 
-  user.id = data.id;
   user.email = data.email;
   user.username = data.username;
   user.nickname = data.nickname;
@@ -151,8 +162,6 @@ export async function postUser(data: any) {
   if (config.oj.policy.signup.need_confirmation) {
     user.privilege = 0;
   }
-
-  const userRepository = getRepository(User);
 
   await userRepository
     .persist(user)

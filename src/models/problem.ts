@@ -155,7 +155,19 @@ export async function postProblem(problemid: number, data: Problem, userid: numb
     throw createError(500, 'Invalid parameters.');
   }
 
-  const problem = new Problem();
+  const problemRepository = getRepository(Problem);
+  const problemInfo = await problemRepository
+    .findOne({
+      where: {
+        problemid,
+      },
+    })
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
+
+  const problem = problemInfo ? problemInfo : new Problem();
 
   problem.problemid = problemid;
   problem.title = data.title;
@@ -168,8 +180,6 @@ export async function postProblem(problemid: number, data: Problem, userid: numb
   problem.memoryLimit = data.memoryLimit;
   problem.createdBy = userid;
   problem.owner = userid;
-
-  const problemRepository = getRepository(Problem);
 
   await problemRepository
     .persist(problem)
