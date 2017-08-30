@@ -12,17 +12,17 @@ export async function getMaxProblemId() {
 
   const problemRepository = getRepository(Problem);
   const maxProblemInfo = await problemRepository
-                      .createQueryBuilder('problem')
-                      .select([
-                        'problem.id',
-                        'problem.problemid',
-                      ])
-                      .orderBy('problem.problemid', 'DESC')
-                      .getOne()
-                      .catch((err) => {
-                        console.error(err);
-                        throw createError(500, 'Database operation failed.');
-                      });
+    .createQueryBuilder('problem')
+    .select([
+      'problem.id',
+      'problem.problemid',
+    ])
+    .orderBy('problem.problemid', 'DESC')
+    .getOne()
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   return maxProblemInfo ? maxProblemInfo.problemid : null;
 
@@ -38,13 +38,15 @@ export async function getProblemInfo(problemid: number) {
 
   const problemRepository = getRepository(Problem);
   const problemInfo = await problemRepository
-                  .createQueryBuilder('problem')
-                  .where(`problem.problemid = '${problemid}'`)
-                  .getOne()
-                  .catch((err) => {
-                    console.error(err);
-                    throw createError(500, 'Database operation failed.');
-                  });
+    .findOne({
+      where: {
+        problemid,
+      },
+    })
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   if (!problemInfo) {
     throw createError(404, 'Problem not found.');
@@ -56,7 +58,7 @@ export async function getProblemInfo(problemid: number) {
 
 // Get problem list
 export async function getProblemList(
-  sort: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
+  orderBy: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
   order: 'ASC' | 'DESC' = 'ASC',
   page: number = 1,
   num: number = config.oj.default.page.problem || 50) {
@@ -69,20 +71,20 @@ export async function getProblemList(
   const firstResult = (page - 1) * num;
   const problemRepository = getRepository(Problem);
   const problemList = await problemRepository
-                  .createQueryBuilder('problem')
-                  .select([
-                    'problem.id',
-                    'problem.problemid',
-                    'problem.title',
-                  ])
-                  .setFirstResult(firstResult)
-                  .setMaxResults(num)
-                  .orderBy(`problem.${sort}`, order)
-                  .getMany()
-                  .catch((err) => {
-                    console.error(err);
-                    throw createError(500, 'Database operation failed.');
-                  });
+    .createQueryBuilder('problem')
+    .select([
+      'problem.id',
+      'problem.problemid',
+      'problem.title',
+    ])
+    .setFirstResult(firstResult)
+    .setMaxResults(num)
+    .orderBy(`problem.${orderBy}`, order)
+    .getMany()
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   if (!problemList || problemList.length === 1) {
     throw createError(404, 'No problem available.');
@@ -93,7 +95,7 @@ export async function getProblemList(
 }
 
 export async function searchProblem(
-  sort: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
+  orderBy: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
   order: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
   page: number = 1,
@@ -107,22 +109,23 @@ export async function searchProblem(
   const firstResult = (page - 1) * num;
   const problemRepository = getRepository(Problem);
   const searchResult = await problemRepository
-                    .createQueryBuilder('problem')
-                    .select([
-                      'problem.id',
-                      'problem.problemid',
-                      'problem.title',
-                    ])
-                    .where(`problem.title LIKE '%${keyword}%'`)
-                    .orWhere(`problem.description LIKE '%${keyword}%'`)
-                    .setFirstResult(firstResult)
-                    .setMaxResults(num)
-                    .orderBy(`problem.${sort}`, order)
-                    .getMany()
-                    .catch((err) => {
-                      console.error(err);
-                      throw createError(500, 'Database operation failed.');
-                    });
+    .createQueryBuilder('problem')
+    .select([
+      'problem.id',
+      'problem.problemid',
+      'problem.title',
+    ])
+    .where('problem.title LIKE :keyword')
+    .orWhere('problem.description LIKE :keyword')
+    .setParameter('keyword', keyword)
+    .setFirstResult(firstResult)
+    .setMaxResults(num)
+    .orderBy(`problem.${orderBy}`, order)
+    .getMany()
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   if (!searchResult || searchResult.length === 0) {
     throw createError(404, 'No matching result.');
@@ -169,11 +172,11 @@ export async function postProblem(problemid: number, data: Problem, userid: numb
   const problemRepository = getRepository(Problem);
 
   await problemRepository
-      .persist(problem)
-      .catch((err) => {
-        console.error(err);
-        throw createError(500, 'Database operation failed.');
-      });
+    .persist(problem)
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   return problem;
 

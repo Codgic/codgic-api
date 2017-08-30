@@ -25,7 +25,7 @@ export class GroupMap {
   public userid: number;
 
   @Column('tinyint', {
-    default: GroupMemberPrivilege.isMember,
+    default: GroupMemberPrivilege.isMember || 0,
   })
   @Index()
   public privilege: number;

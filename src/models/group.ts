@@ -17,13 +17,15 @@ export async function getGroupInfo(groupid: number) {
 
   const groupRepository = getRepository(Group);
   const groupInfo = await groupRepository
-                        .createQueryBuilder('group')
-                        .where(`id = ${groupid}`)
-                        .getOne()
-                        .catch((err) => {
-                          console.error(err);
-                          throw createError(500, 'Database operation failed.');
-                        });
+    .findOne({
+      where: {
+        id: groupid,
+      },
+    })
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   if (!groupInfo) {
     throw createError(404, 'Group not found.');
@@ -42,24 +44,26 @@ export async function getGroupMembers(groupid: number) {
 
   const groupMapRepository = getRepository(GroupMap);
   const groupMapInfo = await groupMapRepository
-                            .createQueryBuilder('group')
-                            .where(`id = ${groupid}`)
-                        .getMany()
-                        .catch((err) => {
-                          console.error(err);
-                          throw createError(500, 'Database operation failed.');
-                        });
+    .find({
+      where: {
+        groupid,
+      },
+    })
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   if (!groupMapInfo) {
       throw createError(404, 'Group not found.');
-    }
+  }
 
   return groupMapInfo;
 
 }
 
 export async function searchGroup(
-  sort: 'id' | 'name' | 'createdAt' | 'updatedAt' = 'id',
+  orderBy: 'id' | 'name' | 'createdAt' | 'updatedAt' = 'id',
   order: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
   page: number = 1,
@@ -73,17 +77,18 @@ export async function searchGroup(
   const firstResult = (page - 1) * num;
   const groupRepository = getRepository(Group);
   const searchResult = await groupRepository
-                              .createQueryBuilder('group')
-                              .where(`problem.name LIKE '%${keyword}%'`)
-                              .orWhere(`problem.description LIKE '%${keyword}%'`)
-                              .setFirstResult(firstResult)
-                              .setMaxResults(num)
-                              .orderBy(`problem.${sort}`, order)
-                              .getMany()
-                              .catch((err) => {
-                                console.error(err);
-                                throw createError(500, 'Database operation failed.');
-                              });
+    .createQueryBuilder('group')
+    .where('problem.name LIKE :keyword')
+    .orWhere('problem.description LIKE :keyword')
+    .setParameter('keyword', keyword)
+    .setFirstResult(firstResult)
+    .setMaxResults(num)
+    .orderBy(`problem.${orderBy}`, order)
+    .getMany()
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   if (!searchResult) {
     throw createError(404, 'No matching result.');
@@ -102,15 +107,17 @@ export async function isInGroup(userid: number, groupid: number) {
   }
 
   const groupMapRepository = getRepository(GroupMap);
-  const groupMapInfo: any = await groupMapRepository
-                                  .createQueryBuilder('group_map')
-                                  .where(`userid = ${userid}`)
-                                  .andWhere(`groupid = ${groupid}`)
-                                  .getOne()
-                                  .catch((err) => {
-                                    console.error(err);
-                                    throw createError(500, 'Database operation failed.');
-                                  });
+  const groupMapInfo = await groupMapRepository
+    .findOne({
+      where: {
+        userid,
+        groupid,
+      },
+    })
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   let result: boolean = false;
   if (groupMapInfo && (groupMapInfo.privilege & GroupMemberPrivilege.isMember)) {
@@ -125,8 +132,8 @@ export async function addToGroup(userid: number, groupid: number, privilege: num
 
   // Validate parameters.
   if (!(userid && !groupid)) {
-      throw createError(500, 'Invalid parameters.');
-    }
+    throw createError(500, 'Invalid parameters.');
+  }
 
   const groupMap = new GroupMap();
 
@@ -137,11 +144,11 @@ export async function addToGroup(userid: number, groupid: number, privilege: num
   const groupMapRepository = getRepository(GroupMap);
 
   await groupMapRepository
-          .persist(groupMap)
-          .catch((err) => {
-            console.error(err);
-            throw createError(500, 'Database operation failed.');
-          });
+    .persist(groupMap)
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   return groupMap;
 
@@ -164,14 +171,14 @@ export async function postGroup(data: Group, userid: number) {
   const groupRepository = getRepository(Group);
 
   await groupRepository
-          .persist(group)
-          .catch((err) => {
-            console.error(err);
-            if (err.errno === 1062) {
-              throw createError(400, 'Group name taken.');
-            }
-            throw createError (500, 'Database operation failed.');
-          });
+    .persist(group)
+    .catch((err) => {
+      console.error(err);
+      if (err.errno === 1062) {
+        throw createError(400, 'Group name taken.');
+      }
+      throw createError (500, 'Database operation failed.');
+    });
 
   return group;
 

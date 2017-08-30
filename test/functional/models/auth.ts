@@ -24,7 +24,14 @@ describe('Get user info with Authentication', async () => {
     getConnectionManager().get().close();
   });
 
-  it('should return user info if password is correct', async () => {
+  it('should return user info if password is correct (by email)', async () => {
+    const userInfo = await Auth.getUserInfoWithAuth('zk', 'CorrectPassword');
+    chai.expect(userInfo.username).to.equal('zk');
+    chai.expect(userInfo.email).to.equal('fuckzk@codgi.cc');
+    chai.expect(userInfo.privilege).to.equal(1);
+  });
+
+  it('should return user info if password is correct (by username)', async () => {
     const userInfo = await Auth.getUserInfoWithAuth('zk', 'CorrectPassword');
     chai.expect(userInfo.username).to.equal('zk');
     chai.expect(userInfo.email).to.equal('fuckzk@codgi.cc');

@@ -8,22 +8,24 @@ import { User } from './../entities/user';
 import { config } from './../init/config';
 import { UserPrivilege } from './../init/privilege';
 
-export async function getUserInfo(username: string) {
+export async function getUserInfo(data: number | string, by: 'id' | 'username' = 'id') {
 
   // Validate parameters.
-  if (!username) {
+  if (!(data && by) || (by !== 'id' && by !== 'username')) {
     throw createError(500, 'Invalid parameters.');
   }
 
   const userRepository = getRepository(User);
   const userInfo = await userRepository
-                .createQueryBuilder('user')
-                .where(`user.username = '${username}'`)
-                .getOne()
-                .catch((err) => {
-                  console.error(err);
-                  throw createError(500, 'Database operation failed.');
-                });
+    .findOne({
+      where: {
+        [by]: data,
+      },
+    })
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   if (!userInfo) {
     throw createError(404, 'User not found.');
@@ -34,7 +36,7 @@ export async function getUserInfo(username: string) {
 }
 
 export async function getUserList(
-  sort: 'id' | 'username' | 'createdAt' = 'id',
+  orderBy: 'id' | 'username' | 'createdAt' = 'id',
   order: 'ASC' | 'DESC' = 'ASC',
   page: number = 1,
   num: number = config.oj.default.page.user,
@@ -48,23 +50,23 @@ export async function getUserList(
   const firstResult = (page - 1) * num;
   const userRepository = getRepository(User);
   const userList = await userRepository
-                .createQueryBuilder('user')
-                .select([
-                  'user.id',
-                  'user.email',
-                  'user.username',
-                  'user.nickname',
-                  'user.sex',
-                  'user.privilege',
-                ])
-                .setFirstResult(firstResult)
-                .setMaxResults(num)
-                .orderBy(`user.${sort}`, order)
-                .getMany()
-                .catch((err) => {
-                  console.error(err);
-                  throw createError(500, 'Database operation failed.');
-                });
+    .createQueryBuilder('user')
+    .select([
+      'user.id',
+      'user.email',
+      'user.username',
+      'user.nickname',
+      'user.sex',
+      'user.privilege',
+    ])
+    .setFirstResult(firstResult)
+    .setMaxResults(num)
+    .orderBy(`user.${orderBy}`, order)
+    .getMany()
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   if (!userList || userList.length === 0) {
     throw createError(404, 'No matching result.');
@@ -76,7 +78,7 @@ export async function getUserList(
 
 export async function searchUser(
   keyword: string,
-  sort: 'id' | 'username' | 'createdAt' = 'id',
+  orderBy: 'id' | 'username' | 'createdAt' = 'id',
   order: 'ASC' | 'DESC'  = 'ASC',
   page: number = 1,
   num: number = config.oj.default.page.user,
@@ -90,26 +92,27 @@ export async function searchUser(
   const firstResult = (page - 1) * num;
   const userRepository = getRepository(User);
   const searchResult = await userRepository
-                .createQueryBuilder('user')
-                .select([
-                  'user.id',
-                  'user.email',
-                  'user.username',
-                  'user.nickname',
-                  'user.sex',
-                  'user.privilege',
-                ])
-                .where(`user.username LIKE '%${keyword}%'`)
-                .orWhere(`user.email LIKE '%${keyword}%'`)
-                .orWhere(`user.nickname LIKE '%${keyword}%'`)
-                .setFirstResult(firstResult)
-                .setMaxResults(num)
-                .orderBy(`user.${sort}`, order)
-                .getMany()
-                .catch((err) => {
-                  console.error(err);
-                  throw createError(500, 'Database operation failed.');
-                });
+    .createQueryBuilder('user')
+    .select([
+      'user.id',
+      'user.email',
+      'user.username',
+      'user.nickname',
+      'user.sex',
+      'user.privilege',
+    ])
+    .where('user.username LIKE :keyword')
+    .orWhere('user.email LIKE :keyword')
+    .orWhere('user.nickname LIKE :keyword')
+    .setParameter('keyword', keyword)
+    .setFirstResult(firstResult)
+    .setMaxResults(num)
+    .orderBy(`user.${orderBy}`, order)
+    .getMany()
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   if (!searchResult || searchResult.length === 0) {
     throw createError(404, 'No matching result.');
@@ -152,14 +155,14 @@ export async function postUser(data: any) {
   const userRepository = getRepository(User);
 
   await userRepository
-      .persist(user)
-      .catch((err) => {
-        console.error(err);
-        if (err.errno === 1062) {
-          throw createError(400, 'Username or email taken.');
-        }
-        throw createError(500, 'Database operation failed.');
-      });
+    .persist(user)
+    .catch((err) => {
+      console.error(err);
+      if (err.errno === 1062) {
+        throw createError(400, 'Username or email taken.');
+      }
+      throw createError(500, 'Database operation failed.');
+    });
 
   return user;
 
@@ -212,21 +215,5 @@ export async function validateUserInfo(data: any) {
   }
 
   return true;
-
-}
-
-export async function verifyUserPrivilege(
-  operation: number,
-  currentUserid: number,
-  targetUserid: number,
-  privilege: number,
-) {
-
-  // Validate parameters.
-  if (!(operation && currentUserid && targetUserid && privilege)) {
-    throw createError(500, 'Invalid parameters.');
-  }
-
-  return currentUserid === targetUserid || (privilege & UserPrivilege.editUser) === 1 ? true : false;
 
 }

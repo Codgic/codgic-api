@@ -3,8 +3,7 @@
 
 import { Context } from 'koa';
 
-import { UserPrivilege } from './../init/privilege';
-import * as User from './../models/user';
+import * as UserModel from './../models/user';
 
 export async function getCurrentInfo(ctx: Context, next: () => Promise<any>) {
 
@@ -14,8 +13,9 @@ export async function getCurrentInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve user info.
-  ctx.body = await User.getUserInfo(ctx.state.user.id);
+  const userInfo = await UserModel.getUserInfo(ctx.state.user.id, 'id');
 
+  ctx.body = userInfo;
   ctx.status = 200;
 
   await next();
@@ -25,8 +25,9 @@ export async function getCurrentInfo(ctx: Context, next: () => Promise<any>) {
 export async function getUserInfo(ctx: Context, next: () => Promise<any>) {
 
   // Retrieve user info.
-  ctx.body = await User.getUserInfo(ctx.params.username);
+  const userInfo = await UserModel.getUserInfo(ctx.params.username, 'username');
 
+  ctx.body = userInfo;
   ctx.status = 200;
 
   await next();
@@ -35,15 +36,16 @@ export async function getUserInfo(ctx: Context, next: () => Promise<any>) {
 
 export async function searchUser(ctx: Context, next: () => Promise<any>) {
 
-  ctx.body = await User
-                  .searchUser(
-                    ctx.query.keyword,
-                    ctx.query.sort,
-                    ctx.query.order,
-                    ctx.query.page,
-                    ctx.query.num,
-                  );
+  const userList = await UserModel
+    .searchUser(
+      ctx.query.keyword,
+      ctx.query.sort,
+      ctx.query.order,
+      ctx.query.page,
+      ctx.query.num,
+    );
 
+  ctx.body = userList;
   ctx.status = 200;
 
   await next();
@@ -52,12 +54,22 @@ export async function searchUser(ctx: Context, next: () => Promise<any>) {
 
 export async function postUser(ctx: Context, next: () => Promise<any>) {
 
+  // Logged in users cannot sign up again.
+  if (ctx.state.user) {
+    ctx.throw(400, 'Please log out first.');
+  }
+
   // Validate request.
-  await User.validateUserInfo(ctx.request.body);
+  const isValid = await UserModel.validateUserInfo(ctx.request.body);
+
+  if (isValid !== true) {
+    ctx.throw(400);
+  }
 
   // Post user.
-  ctx.body = await User.postUser(ctx.request.body);
+  const userInfo = await UserModel.postUser(ctx.request.body);
 
+  ctx.body = userInfo;
   ctx.status = 201;
 
   await next();
@@ -71,23 +83,22 @@ export async function updateUser(ctx: Context, next: () => Promise<any>) {
     ctx.throw(401);
   }
 
-  // Validate request.
-  User.validateUserInfo(ctx.request.body);
-
-  // Retrieve user info.
-  const userInfo: any = await User.getUserInfo(ctx.params.username);
-
-  // Check privilege.
-  const hasPrivilege = await User
-              .verifyUserPrivilege(UserPrivilege.editUser, ctx.state.user.id, userInfo.id, ctx.state.user.privilege);
-
-  if (!hasPrivilege) {
+  // User can only update his profile.
+  if (ctx.state.user.id !== ctx.request.body.id) {
     ctx.throw(403);
   }
 
-  // Post user.
-  ctx.body = await User.postUser(ctx.request.body);
+  // Validate request.
+  const isValid = await UserModel.validateUserInfo(ctx.request.body);
 
+  if (isValid !== true) {
+    ctx.throw(400);
+  }
+
+  // Post user.
+  const userInfo = await UserModel.postUser(ctx.request.body);
+
+  ctx.body = userInfo;
   ctx.status = 201;
 
   await next();

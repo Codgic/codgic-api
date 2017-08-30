@@ -82,7 +82,7 @@ export async function deleteTestUser() {
   await getRepository(User)
     .createQueryBuilder('user')
     .delete()
-    .where(`user.username = 'zk'`)
+    .where('user.username = \'zk\'')
     .execute();
 
 }
@@ -101,9 +101,10 @@ export async function updateTestUserPrivilege(username: string, privilege: numbe
   await getRepository(User)
     .createQueryBuilder('user')
     .update({
-      privilege: `${privilege}`,
+      privilege,
     })
-    .where(`user.username = '${username}'`)
+    .where('user.username = :username')
+    .setParameter('username', username)
     .execute();
 
 }
@@ -111,9 +112,10 @@ export async function updateTestUserPrivilege(username: string, privilege: numbe
 export async function verifyUserPassword(username: string, retrievedPassword: string) {
 
   const userInfo = await getRepository(User)
-      .createQueryBuilder('user')
-      .where(`user.username = '${username}'`)
-      .getOne();
+    .createQueryBuilder('user')
+    .where('user.username = :username')
+    .setParameter('username', username)
+    .getOne();
 
   if (!userInfo) {
     throw new Error('User does not exist.');

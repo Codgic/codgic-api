@@ -8,22 +8,24 @@ import { User } from './../entities/user';
 import { config } from './../init/config';
 import { UserPrivilege } from './../init/privilege';
 
-export async function getUserInfoWithAuth(username: string, retrievedPassword: string) {
+export async function getUserInfoWithAuth(data: string, retrievedPassword: string) {
 
   // Validate parameters.
-  if (!(retrievedPassword && username)) {
+  if (!(retrievedPassword && data)) {
     throw createError(500, 'Invalid parameters.');
   }
 
   const userRepository = getRepository(User);
   const userInfo = await userRepository
-                          .createQueryBuilder('user')
-                          .where(`user.username = '${username}'`)
-                          .getOne()
-                          .catch((err) => {
-                            console.error(err);
-                            throw createError(500, 'Database operation failed.');
-                          });
+    .createQueryBuilder('user')
+    .where('user.username = :data')
+    .orWhere('user.email = :data')
+    .setParameter('data', data)
+    .getOne()
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
 
   if (!userInfo) {
     // For security purposes, return 'Incorrect username or password.'.
@@ -52,9 +54,9 @@ export async function generateToken(userid: number, username: string, email: str
   // Sign jwt token.
   const accessToken = await jwt.sign({
     id: userid,
-    username: `${username}`,
-    email: `${email}`,
-    privilege: `${privilege}`,
+    username,
+    email,
+    privilege,
   }, config.api.jwt.secret, {
     expiresIn: config.api.jwt.expire_time,
   });

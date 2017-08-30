@@ -72,9 +72,9 @@ export class User {
   public verifyPassword(retrievedPassword: string) {
 
     return this.password === crypto
-                            .createHash('sha512')
-                            .update(retrievedPassword + this.salt)
-                            .digest('hex');
+      .createHash('sha512')
+      .update(retrievedPassword + this.salt)
+      .digest('hex');
 
   }
 
@@ -87,9 +87,9 @@ export class User {
         } else {
           this.salt = buf.toString('hex');
           this.password = crypto
-                          .createHash('sha512')
-                          .update(retrievedPassword + this.salt)
-                          .digest('hex');
+            .createHash('sha512')
+            .update(retrievedPassword + this.salt)
+            .digest('hex');
         }
       });
 

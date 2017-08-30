@@ -3,7 +3,7 @@
 
 import { Context } from 'koa';
 
-import * as Group from './../models/group';
+import * as GroupModel from './../models/group';
 
 export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
 
@@ -13,7 +13,7 @@ export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve group info.
-  const groupInfo = await Group.getGroupInfo(ctx.params.groupid);
+  const groupInfo = await GroupModel.getGroupInfo(ctx.params.groupid);
 
   ctx.body = groupInfo;
   ctx.status = 200;
@@ -30,7 +30,7 @@ export async function getGroupMembers(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve group members.
-  const groupMembers = await Group.getGroupMembers(ctx.params.groupid);
+  const groupMembers = await GroupModel.getGroupMembers(ctx.params.groupid);
 
   ctx.body = groupMembers;
   ctx.status = 200;
@@ -52,7 +52,7 @@ export async function postGroup(ctx: Context, next: () => Promise<any>) {
   }
 
   // Create group.
-  const groupInfo = await Group.postGroup(ctx.request.body, ctx.state.user.id);
+  const groupInfo = await GroupModel.postGroup(ctx.request.body, ctx.state.user.id);
 
   ctx.body = groupInfo;
   ctx.status = 200;

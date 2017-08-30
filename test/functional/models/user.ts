@@ -22,8 +22,18 @@ describe('Get user info', async () => {
     await getConnectionManager().get().close();
   });
 
-  it('should return user info if user exists', async () => {
-    const userInfo = await User.getUserInfo('zk');
+  it('should return user info if user exists (by id)', async () => {
+    const userInfo = await User.getUserInfo(1, 'id');
+    chai.expect(userInfo).to.deep.include({
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      privilege: 1,
+    });
+  });
+
+  it('should return user info if user exists (by username)', async () => {
+    const userInfo = await User.getUserInfo('zk', 'username');
     chai.expect(userInfo).to.deep.include({
       id: 1,
       email: 'fuckzk@codgi.cc',
@@ -35,7 +45,7 @@ describe('Get user info', async () => {
   it('should throw error if user does not exist', async () => {
     try {
       await Utils.deleteTestUser();
-      const userInfo = await User.getUserInfo('zk');
+      const userInfo = await User.getUserInfo('zk', 'username');
       chai.expect(userInfo).to.equal(undefined);
       await Utils.initTestUser();
     } catch (err) {
@@ -47,7 +57,7 @@ describe('Get user info', async () => {
     }
   });
 
-  it('should throw error if parameters are incomplete', async () => {
+  it('should throw error if data is missing', async () => {
     try {
       const userInfo = await User.getUserInfo('');
       chai.expect(userInfo).to.equal(undefined);
@@ -77,7 +87,6 @@ describe('Get user list', async () => {
 
   it('should return user list (default options)', async () => {
 
-    // Test with default options.
     const userList = await User.getUserList();
 
     chai.expect(userList).to.be.an('array').that.have.lengthOf(3);
@@ -149,7 +158,6 @@ describe('Get user list', async () => {
 
   it('should return user list (customized pagination)', async () => {
 
-    // Test pagination.
     const userList = await User.getUserList('id', 'ASC', 1, 2);
 
     chai.expect(userList).to.be.an('array').that.have.lengthOf(2);
@@ -190,7 +198,6 @@ describe('Search user', async () => {
 
   it('should return search result (default options)', async () => {
 
-    // Test with default options.
     const searchResult = await User.searchUser('z');
 
     chai.expect(searchResult).to.be.an('array').that.have.lengthOf(2);
@@ -217,7 +224,6 @@ describe('Search user', async () => {
 
   it('should return search result (search email)', async () => {
 
-    // Test search email.
     const searchResult = await User.searchUser('fuckzk@codgi.cc');
 
     chai.expect(searchResult).to.be.an('array').that.have.lengthOf(1);
@@ -235,7 +241,6 @@ describe('Search user', async () => {
 
   it('should return search result (DESC order)', async () => {
 
-    // Test sort order.
     const searchResult = await User.searchUser('z', 'id', 'DESC');
 
     chai.expect(searchResult).to.be.an('array').that.have.lengthOf(2);
@@ -262,7 +267,6 @@ describe('Search user', async () => {
 
   it('should return search result (customized pagination)', async () => {
 
-    // Test pagination.
     const searchResult = await User.searchUser('z', 'id', 'ASC', 2, 1);
 
     chai.expect(searchResult).to.be.an('array').that.have.lengthOf(1);

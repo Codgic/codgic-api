@@ -1,9 +1,10 @@
-/* /src/controllers/auth.ts
+/* /src/controllers/AuthModel.ts
    Get authenticated first! */
 
 import { Context } from 'koa';
 
-import * as Auth from './../models/auth';
+import * as AuthModel from './../models/auth';
+import * as UserModel from './../models/user';
 
 export async function refreshToken(ctx: Context, next: () => Promise<any>) {
 
@@ -12,12 +13,19 @@ export async function refreshToken(ctx: Context, next: () => Promise<any>) {
     ctx.throw(401);
   }
 
+  // Retrieve user info again.
+  const userInfo = await UserModel.getUserInfo(ctx.state.user.id, 'id');
+
+  if (!userInfo) {
+    ctx.throw(400, 'Failed to retrieve user info.');
+  }
+
   // Generate Token.
-  const token = await Auth
-          .generateToken(ctx.state.user.id, ctx.state.user.username, ctx.state.user.email, ctx.state.user.privilege);
+  const token = await AuthModel
+    .generateToken(ctx.state.user.id, userInfo.username, userInfo.email, userInfo.privilege);
 
   ctx.body = {
-    token: `${token}`,
+    token,
   };
   ctx.status = 200;
 
@@ -32,14 +40,14 @@ export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
     ctx.throw(400);
   }
 
-  // Auth and get user info.
-  const userInfo: any = await Auth.getUserInfoWithAuth(ctx.request.body.username, ctx.request.body.password);
+  // AuthModel and get user info.
+  const userInfo = await AuthModel.getUserInfoWithAuth(ctx.request.body.username, ctx.request.body.password);
 
   // Generate Token.
-  const token = await Auth.generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege);
+  const token = await AuthModel.generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege);
 
   ctx.body = {
-    token: `${token}`,
+    token,
   };
   ctx.status = 200;
 
