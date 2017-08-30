@@ -39,7 +39,7 @@ export async function getUserList(
   orderBy: 'id' | 'username' | 'createdAt' = 'id',
   order: 'ASC' | 'DESC' = 'ASC',
   page: number = 1,
-  num: number = config.oj.default.page.user,
+  num: number = config.oj.default.page.user || 20,
 ) {
 
   // Validate parameters.
@@ -81,7 +81,7 @@ export async function searchUser(
   orderBy: 'id' | 'username' | 'createdAt' = 'id',
   order: 'ASC' | 'DESC'  = 'ASC',
   page: number = 1,
-  num: number = config.oj.default.page.user,
+  num: number = config.oj.default.page.user || 20,
 ) {
 
   // Validate parameters.
@@ -104,7 +104,7 @@ export async function searchUser(
     .where('user.username LIKE :keyword')
     .orWhere('user.email LIKE :keyword')
     .orWhere('user.nickname LIKE :keyword')
-    .setParameter('keyword', keyword)
+    .setParameter('keyword', `%${keyword}%`)
     .setFirstResult(firstResult)
     .setMaxResults(num)
     .orderBy(`user.${orderBy}`, order)

@@ -117,7 +117,7 @@ export async function searchProblem(
     ])
     .where('problem.title LIKE :keyword')
     .orWhere('problem.description LIKE :keyword')
-    .setParameter('keyword', keyword)
+    .setParameter('keyword', `%${keyword}%`)
     .setFirstResult(firstResult)
     .setMaxResults(num)
     .orderBy(`problem.${orderBy}`, order)

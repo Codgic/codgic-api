@@ -67,7 +67,7 @@ export async function searchGroup(
   order: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
   page: number = 1,
-  num: number = config.oj.default.page.group) {
+  num: number = config.oj.default.page.group || 20) {
 
   // Validate parameters.
   if (page < 1 || num < 1 || !keyword) {
@@ -80,7 +80,7 @@ export async function searchGroup(
     .createQueryBuilder('group')
     .where('problem.name LIKE :keyword')
     .orWhere('problem.description LIKE :keyword')
-    .setParameter('keyword', keyword)
+    .setParameter('keyword', `%${keyword}%`)
     .setFirstResult(firstResult)
     .setMaxResults(num)
     .orderBy(`problem.${orderBy}`, order)
