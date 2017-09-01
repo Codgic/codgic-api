@@ -1,7 +1,6 @@
 /* /src/middlewares/error.ts
   A middleware that handles all errors. */
 
-import * as createError from 'http-errors';
 import { Context } from 'koa';
 
 export async function errorHandler(ctx: Context, next: () => Promise<any>) {
@@ -11,7 +10,7 @@ export async function errorHandler(ctx: Context, next: () => Promise<any>) {
 
     // Handle Error 404.
     if (ctx.status === 404) {
-      throw createError(404);
+      ctx.throw(404);
     }
 
   } catch (err) {

@@ -4,9 +4,9 @@
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
-export class IConfigStructure {
+export interface IConfigStructure {
 
-  public oj: {
+  oj: {
     name: string,
     timezone: string,
     policy: {
@@ -14,8 +14,8 @@ export class IConfigStructure {
         need_login: boolean,
       },
       signup: {
-        need_confirmation: string,
-        need_verify_email: string,
+        need_confirmation: boolean,
+        need_verify_email: boolean,
       },
       profile: {
         nickname: {
@@ -54,7 +54,7 @@ export class IConfigStructure {
     },
   };
 
-  public api: {
+  api: {
     port: number,
     jwt: {
       debug: boolean,
@@ -63,7 +63,7 @@ export class IConfigStructure {
     },
   };
 
-  public database: {
+  database: {
     host: string,
     port: number,
     database: string,
@@ -79,19 +79,14 @@ export class IConfigStructure {
 }
 
 // Read config.yml.
-function getConfig() {
-
-  let conf: IConfigStructure;
-
+export function getConfig() {
   try {
-    conf = yaml.safeLoad(fs.readFileSync(`${__dirname}/../../config.yml`, 'utf8'));
+    const conf: IConfigStructure = yaml.safeLoad(fs.readFileSync(`${__dirname}/../../config.yml`, 'utf8'));
+    return conf;
   } catch (err) {
     console.error(err);
     throw new Error('Failed to read config.yml.');
   }
-
-  return conf;
-
 }
 
 export const config: IConfigStructure = getConfig();

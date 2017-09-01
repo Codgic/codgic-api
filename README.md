@@ -17,7 +17,7 @@ Recent changes will be pushed to [Codgic/codgic-api](https://github.com/codgic/c
 - [x] Hello TypeORM.
 - [x] Hello JWT.
 - [x] Hello Gulp.
-- [ ] **Hello Mocha && write tests.**
+- [ ] **Hello Mocha, Chai.**
 - [x] Hello Travis CI.
 - [ ] Hello Socket.io?
 - [ ] Probably more...
@@ -25,10 +25,10 @@ Recent changes will be pushed to [Codgic/codgic-api](https://github.com/codgic/c
 # Known problems (Reminder)
 - Password and salt are revealed when retrieving user info (because private fields aren't really private. See [Issue #564 - Microsoft/TypeScript](https://github.com/Microsoft/TypeScript/issues/564)).
 - Post user with taken username / email will trigger auto increment with InnoDB (not my fault, but what if some clown keeps sending faulty requests to overflow the primary key?).
+- Serval Database Injection vulnerabilities.
 
 # Priorities
-- Find a way to unit test controllers.
-- Find a way to change config when testing.
+- Finish writing tests.
 - Find a better way to refresh jwt.
 - Fix known problems.
 

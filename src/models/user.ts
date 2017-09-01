@@ -159,7 +159,7 @@ export async function postUser(data: any) {
   user.description = data.description;
   user.privilege = UserPrivilege.isEnabled;
 
-  if (config.oj.policy.signup.need_confirmation) {
+  if (config.oj.policy.signup.need_confirmation && !(user.createdAt)) {
     user.privilege = 0;
   }
 

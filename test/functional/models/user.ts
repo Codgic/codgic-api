@@ -7,6 +7,7 @@ import { createConnection, getConnectionManager } from 'typeorm';
 
 import * as Utils from './../../utils';
 
+import { config } from './../../../src/init/config';
 import * as User from './../../../src/models/user';
 
 describe('Get user info', async () => {
@@ -293,7 +294,9 @@ describe('Post user', async () => {
     await Utils.deleteAllUsers();
   });
 
-  it('should return user info if everything goes well', async () => {
+  it('should return user info if everything goes well (signup.need_confirmation == false)', async () => {
+
+    config.oj.policy.signup.need_confirmation = false;
 
     const data = {
       email: 'fuckzk@codgi.cc',
@@ -306,7 +309,33 @@ describe('Post user', async () => {
     chai.expect(userInfo).to.deep.include({
       email: 'fuckzk@codgi.cc',
       username: 'zk',
-      // privilege: 1,
+      privilege: 1,
+    });
+
+    const correctPwdResult = await Utils.verifyUserPassword('zk', 'CorrectPassword');
+    chai.expect(correctPwdResult).to.equal(true);
+
+    const wrongPwdResult = await Utils.verifyUserPassword('zk', 'WrongPassword');
+    chai.expect(wrongPwdResult).to.equal(false);
+
+  });
+
+  it('should return user info if everything goes well (signup.need_confirmation == true)', async () => {
+
+    config.oj.policy.signup.need_confirmation = true;
+
+    const data = {
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      password: 'CorrectPassword',
+    };
+
+    const userInfo = await User.postUser(data);
+
+    chai.expect(userInfo).to.deep.include({
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      privilege: 0,
     });
 
     const correctPwdResult = await Utils.verifyUserPassword('zk', 'CorrectPassword');
@@ -333,7 +362,7 @@ describe('Post user', async () => {
     chai.expect(userInfo).to.deep.include({
       email: 'fuckzk@codgi.cc',
       username: 'waterqueen',
-      // privilege: 1,
+      privilege: 1,
     });
 
   });
