@@ -324,7 +324,7 @@ describe('Post user', async () => {
     await createConnection(Utils.testConnectionOptions);
   });
 
-  beforeEach(async () => {
+  afterEach(async () => {
     await Utils.deleteAllUsers();
   });
 
@@ -338,19 +338,18 @@ describe('Post user', async () => {
       password: 'CorrectPassword',
     };
 
-    const userInfo = await UserModel.postUser(data);
-
-    chai.expect(userInfo).to.deep.include({
-      email: 'fuckzk@codgi.cc',
-      username: 'zk',
-      privilege: 1,
-    });
-
-    const correctPwdResult = await Utils.verifyUserPassword('zk', 'CorrectPassword');
-    chai.expect(correctPwdResult).to.equal(true);
-
-    const wrongPwdResult = await Utils.verifyUserPassword('zk', 'WrongPassword');
-    chai.expect(wrongPwdResult).to.equal(false);
+    return Promise.all([
+      await chai.expect(UserModel.postUser(data))
+        .to.be.fulfilled.and.eventually.deep.include({
+          email: 'fuckzk@codgi.cc',
+          username: 'zk',
+          privilege: 1,
+        }),
+      chai.expect(Utils.verifyUserPassword('zk', 'CorrectPassword'))
+        .to.be.fulfilled.and.eventually.equal(true),
+      chai.expect(Utils.verifyUserPassword('zk', 'WrongPassword'))
+        .to.be.fulfilled.and.eventually.equal(false),
+    ]);
 
   });
 
@@ -364,19 +363,18 @@ describe('Post user', async () => {
       password: 'CorrectPassword',
     };
 
-    const userInfo = await UserModel.postUser(data);
-
-    chai.expect(userInfo).to.deep.include({
-      email: 'fuckzk@codgi.cc',
-      username: 'zk',
-      privilege: 0,
-    });
-
-    const correctPwdResult = await Utils.verifyUserPassword('zk', 'CorrectPassword');
-    chai.expect(correctPwdResult).to.equal(true);
-
-    const wrongPwdResult = await Utils.verifyUserPassword('zk', 'WrongPassword');
-    chai.expect(wrongPwdResult).to.equal(false);
+    return Promise.all([
+      await chai.expect(UserModel.postUser(data))
+        .to.be.fulfilled.and.eventually.deep.include({
+          email: 'fuckzk@codgi.cc',
+          username: 'zk',
+          privilege: 0,
+        }),
+      chai.expect(Utils.verifyUserPassword('zk', 'CorrectPassword'))
+        .to.be.fulfilled.and.eventually.equal(true),
+      chai.expect(Utils.verifyUserPassword('zk', 'WrongPassword'))
+        .to.be.fulfilled.and.eventually.equal(false),
+    ]);
 
   });
 
@@ -386,7 +384,7 @@ describe('Post user', async () => {
 
     const data = {
       id: 1,
-      email: 'fuckzk@codgi.cc',
+      email: 'fuckwaterqueen@codgi.cc',
       username: 'waterqueen',
       password: 'CorrectPassword',
     };
@@ -394,7 +392,7 @@ describe('Post user', async () => {
     return chai.expect(UserModel.postUser(data))
       .to.be.fulfilled.and.eventually.deep.include({
         id: 1,
-        email: 'fuckzk@codgi.cc',
+        email: 'fuckwaterqueen@codgi.cc',
         username: 'waterqueen',
         privilege: 1,
       });
@@ -420,7 +418,7 @@ describe('Post user', async () => {
 
   });
 
-  it('should throw error if username already exists', async () => {
+  it('should throw error if email already exists', async () => {
 
     await Utils.initTestUser();
 
