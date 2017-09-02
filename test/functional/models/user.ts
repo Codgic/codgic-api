@@ -282,6 +282,45 @@ describe('Search user', async () => {
     });
 
   });
+
+  it('should throw error if keyword is blank', async () => {
+    try {
+      const searchResult = await UserModel.searchUser('');
+      chai.expect(searchResult).to.equal(undefined);
+    } catch (err) {
+      chai.expect(err).to.deep.include({
+        status: 500,
+        expose: false,
+        message: 'Invalid parameters.',
+      });
+    }
+  });
+
+  it('should throw error if pagination is invalid (invalid page)', async () => {
+    try {
+      const searchResult = await UserModel.searchUser('z', 'id', 'ASC', 0, 1);
+      chai.expect(searchResult).to.equal(undefined);
+    } catch (err) {
+      chai.expect(err).to.deep.include({
+        status: 500,
+        expose: false,
+        message: 'Invalid parameters.',
+      });
+    }
+  });
+
+  it('should throw error if pagination is invalid (invalid num)', async () => {
+    try {
+      const searchResult = await UserModel.searchUser('z', 'id', 'ASC', 1, 0);
+      chai.expect(searchResult).to.equal(undefined);
+    } catch (err) {
+      chai.expect(err).to.deep.include({
+        status: 500,
+        expose: false,
+        message: 'Invalid parameters.',
+      });
+    }
+  });
 });
 
 describe('Post user', async () => {

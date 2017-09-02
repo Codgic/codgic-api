@@ -70,7 +70,12 @@ export async function searchGroup(
   num: number = config.oj.default.page.group || 20) {
 
   // Validate parameters.
-  if (page < 1 || num < 1 || !keyword) {
+  if (
+    page < 1 ||
+    num < 1 ||
+    keyword !== ('id' || 'name' || 'createdAt' || 'updatedAt') ||
+    order !== ('ASC' || 'DESC')
+  ) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -102,7 +107,7 @@ export async function searchGroup(
 export async function isInGroup(userid: number, groupid: number) {
 
   // Validate parameters.
-  if (!(userid && groupid)) {
+  if (isNaN(userid || groupid)) {
     throw createError(500, 'Invalid parameters.');
   }
 

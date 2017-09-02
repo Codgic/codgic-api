@@ -11,7 +11,7 @@ import { UserPrivilege } from './../init/privilege';
 export async function getUserInfo(data: number | string, by: 'id' | 'username' = 'id') {
 
   // Validate parameters.
-  if (!(data && by) || (by !== 'id' && by !== 'username')) {
+  if (!data || by !== ('id' || 'username')) {
     throw createError(500, 'Invalid parameters.');
   }
 
