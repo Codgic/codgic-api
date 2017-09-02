@@ -3,12 +3,15 @@
 import 'reflect-metadata';
 
 import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import { createConnection, getConnectionManager } from 'typeorm';
 
 import * as Utils from './../../utils/utils';
 
 import { config } from './../../../src/init/config';
 import * as UserModel from './../../../src/models/user';
+
+chai.use(chaiAsPromised);
 
 describe('Get user info', async () => {
 
@@ -24,51 +27,55 @@ describe('Get user info', async () => {
   });
 
   it('should return user info if user exists (by id)', async () => {
-    const userInfo = await UserModel.getUserInfo(1, 'id');
-    chai.expect(userInfo).to.deep.include({
-      id: 1,
-      email: 'fuckzk@codgi.cc',
-      username: 'zk',
-      privilege: 1,
-    });
+    return chai.expect(UserModel.getUserInfo(1, 'id'))
+      .to.be.fulfilled.and.eventually.deep.include({
+        id: 1,
+        email: 'fuckzk@codgi.cc',
+        username: 'zk',
+        privilege: 1,
+      });
   });
 
   it('should return user info if user exists (by username)', async () => {
-    const userInfo = await UserModel.getUserInfo('zk', 'username');
-    chai.expect(userInfo).to.deep.include({
-      id: 1,
-      email: 'fuckzk@codgi.cc',
-      username: 'zk',
-      privilege: 1,
-    });
+    return chai.expect(UserModel.getUserInfo('zk', 'username'))
+      .to.be.fulfilled.and.eventually.deep.include({
+        id: 1,
+        email: 'fuckzk@codgi.cc',
+        username: 'zk',
+        privilege: 1,
+      });
+  });
+
+  it('should return user info if user exists (by email)', async () => {
+    return chai.expect(UserModel.getUserInfo('fuckzk@codgi.cc', 'email'))
+      .to.be.fulfilled.and.eventually.deep.include({
+        id: 1,
+        email: 'fuckzk@codgi.cc',
+        username: 'zk',
+        privilege: 1,
+      });
   });
 
   it('should throw error if user does not exist', async () => {
-    try {
-      await Utils.deleteTestUser();
-      const userInfo = await UserModel.getUserInfo('zk', 'username');
-      chai.expect(userInfo).to.equal(undefined);
-      await Utils.initTestUser();
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+    await Utils.deleteTestUser();
+    return chai.expect(UserModel.getUserInfo('zk', 'username'))
+      .to.be.rejected.and.eventually.deep.include({
         status: 404,
         expose: true,
         message: 'User not found.',
+      })
+      .then(async () => {
+        await Utils.initTestUser();
       });
-    }
   });
 
   it('should throw error if data is missing', async () => {
-    try {
-      const userInfo = await UserModel.getUserInfo('');
-      chai.expect(userInfo).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+    return chai.expect(UserModel.getUserInfo(''))
+      .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
       });
-    }
   });
 
 });
@@ -284,42 +291,30 @@ describe('Search user', async () => {
   });
 
   it('should throw error if keyword is blank', async () => {
-    try {
-      const searchResult = await UserModel.searchUser('');
-      chai.expect(searchResult).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+    return chai.expect(UserModel.searchUser(''))
+      .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
       });
-    }
   });
 
   it('should throw error if pagination is invalid (invalid page)', async () => {
-    try {
-      const searchResult = await UserModel.searchUser('z', 'id', 'ASC', 0, 1);
-      chai.expect(searchResult).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+    return chai.expect(UserModel.searchUser('z', 'id', 'ASC', 0, 1))
+      .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
       });
-    }
   });
 
   it('should throw error if pagination is invalid (invalid num)', async () => {
-    try {
-      const searchResult = await UserModel.searchUser('z', 'id', 'ASC', 1, 0);
-      chai.expect(searchResult).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+    return chai.expect(UserModel.searchUser('z', 'id', 'ASC', 1, 0))
+      .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
       });
-    }
   });
 });
 
@@ -396,13 +391,13 @@ describe('Post user', async () => {
       password: 'CorrectPassword',
     };
 
-    const userInfo = await UserModel.postUser(data);
-
-    chai.expect(userInfo).to.deep.include({
-      email: 'fuckzk@codgi.cc',
-      username: 'waterqueen',
-      privilege: 1,
-    });
+    return chai.expect(UserModel.postUser(data))
+      .to.be.fulfilled.and.eventually.deep.include({
+        id: 1,
+        email: 'fuckzk@codgi.cc',
+        username: 'waterqueen',
+        privilege: 1,
+      });
 
   });
 
@@ -416,16 +411,12 @@ describe('Post user', async () => {
       password: 'AnotherCorrectPassword',
     };
 
-    try {
-      const userInfo = await UserModel.postUser(data);
-      chai.expect(userInfo).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+    return chai.expect(UserModel.postUser(data))
+      .to.be.rejected.and.eventually.deep.include({
         status: 400,
         expose: true,
         message: 'Username or email taken.',
       });
-    }
 
   });
 
@@ -439,16 +430,12 @@ describe('Post user', async () => {
       password: 'AnotherCorrectPassword',
     };
 
-    try {
-      const userInfo = await UserModel.postUser(data);
-      chai.expect(userInfo).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+    return chai.expect(UserModel.postUser(data))
+      .to.be.rejected.and.eventually.deep.include({
         status: 400,
         expose: true,
         message: 'Username or email taken.',
       });
-    }
 
   });
 
@@ -459,16 +446,12 @@ describe('Post user', async () => {
       password: 'CorrectPassword',
     };
 
-    try {
-      const userInfo = await UserModel.postUser(data);
-      chai.expect(userInfo).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+    return chai.expect(UserModel.postUser(data))
+      .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
       });
-    }
 
   });
 
@@ -479,16 +462,12 @@ describe('Post user', async () => {
       password: 'CorrectPassword',
     };
 
-    try {
-      const userInfo = await UserModel.postUser(data);
-      chai.expect(userInfo).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+    return chai.expect(UserModel.postUser(data))
+      .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
       });
-    }
 
   });
 
@@ -499,17 +478,12 @@ describe('Post user', async () => {
       email: 'fuckzk@codgi.cc',
     };
 
-    try {
-      const userInfo = await UserModel.postUser(data);
-      chai.expect(userInfo).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+    return chai.expect(UserModel.postUser(data))
+      .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
       });
-    }
-
   });
 
 /* Not ready.

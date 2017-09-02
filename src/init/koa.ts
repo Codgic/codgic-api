@@ -18,6 +18,9 @@ export function initKoa(app: Koa) {
   app.on('error', (err) => {
     console.error(err);
   });
+  app.on('unhandledRejection', (promise, reason) => {
+    console.error(`Unhandled Promise Rejection at: Promise: ${promise}, Reason: ${reason}`);
+  });
 
   app.use(helmet());
   app.use(bodyParser());

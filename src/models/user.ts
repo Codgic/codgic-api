@@ -8,10 +8,10 @@ import { User } from './../entities/user';
 import { config } from './../init/config';
 import { UserPrivilege } from './../init/privilege';
 
-export async function getUserInfo(data: number | string, by: 'id' | 'username' = 'id') {
+export async function getUserInfo(data: number | string, by: 'id' | 'username' | 'email' = 'id') {
 
   // Validate parameters.
-  if (!data || by !== ('id' || 'username')) {
+  if (!data || (by !== 'id' && by !== 'username' && by !== 'email')) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -129,19 +129,34 @@ export async function postUser(data: any) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const userRepository = getRepository(User);
-  const userInfo = await userRepository
-    .findOne({
-      where: {
-        id: data.id,
-      },
-    })
-    .catch((err) => {
-      console.error(err);
-      throw createError(500, 'Database operation failed.');
-    });
+  let user = new User();
 
-  const user = userInfo ? userInfo : new User();
+  const userRepository = getRepository(User);
+
+  if (data.id) {
+
+    const userInfo = await userRepository
+      .findOne({
+        where: {
+          id: data.id,
+        },
+      })
+      .catch((err) => {
+        console.error(err);
+        throw createError(500, 'Database operation failed.');
+      });
+
+    if (!userInfo) {
+      throw createError(400, 'User does not exist.');
+    }
+
+    user = userInfo;
+
+  } else {
+
+    user.privilege = config.oj.policy.signup.need_confirmation && !user.createdAt ? 0 : UserPrivilege.isEnabled;
+
+  }
 
   // Update password.
   user
@@ -151,26 +166,22 @@ export async function postUser(data: any) {
       throw createError(500, 'Update user password failed.');
     });
 
-  user.email = data.email;
-  user.username = data.username;
-  user.nickname = data.nickname;
-  user.sex = data.sex;
-  user.motto = data.motto;
-  user.description = data.description;
-  user.privilege = UserPrivilege.isEnabled;
-
-  if (config.oj.policy.signup.need_confirmation && !(user.createdAt)) {
-    user.privilege = 0;
-  }
+  user.email = data.email || user.email;
+  user.username = data.username || user.username;
+  user.nickname = data.nickname || user.nickname;
+  user.sex = data.sex || user.sex;
+  user.motto = data.motto || user.motto;
+  user.description = data.description || user.description;
 
   await userRepository
     .persist(user)
     .catch((err) => {
-      console.error(err);
       if (err.errno === 1062) {
         throw createError(400, 'Username or email taken.');
+      } else {
+        console.error(err);
+        throw createError(500, 'Database operation failed.');
       }
-      throw createError(500, 'Database operation failed.');
     });
 
   return user;

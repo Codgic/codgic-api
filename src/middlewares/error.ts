@@ -17,13 +17,13 @@ export async function errorHandler(ctx: Context, next: () => Promise<any>) {
 
     if (!err.status) {
 
-      console.error('Error status is undefined!');
-      console.error(err);
+      // console.error('Error status is undefined!');
+      // console.error(err);
       err.status = 500;
 
     } else if (err.status === 500) {
 
-      console.error(err);
+      // console.error(err);
       err.message = err.expose ? err.message : 'Internal Server Error';
 
     }

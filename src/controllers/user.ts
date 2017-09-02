@@ -60,9 +60,7 @@ export async function postUser(ctx: Context, next: () => Promise<any>) {
   }
 
   // Validate request.
-  const isValid = await UserModel.validateUserInfo(ctx.request.body);
-
-  if (isValid !== true) {
+  if (ctx.request.body.id || !await UserModel.validateUserInfo(ctx.request.body)) {
     ctx.throw(400);
   }
 
@@ -83,10 +81,7 @@ export async function updateUser(ctx: Context, next: () => Promise<any>) {
     ctx.throw(401);
   }
 
-  // User can only update his profile.
-  if (ctx.state.user.id !== ctx.request.body.id) {
-    ctx.throw(403);
-  }
+  ctx.request.body.id = ctx.state.user.id;
 
   // Validate request.
   const isValid = await UserModel.validateUserInfo(ctx.request.body);

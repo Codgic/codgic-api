@@ -107,7 +107,7 @@ export async function searchGroup(
 export async function isInGroup(userid: number, groupid: number) {
 
   // Validate parameters.
-  if (isNaN(userid || groupid)) {
+  if (isNaN(userid) || isNaN(groupid)) {
     throw createError(500, 'Invalid parameters.');
   }
 

@@ -3,6 +3,7 @@
 import 'reflect-metadata';
 
 import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as jwt from 'jsonwebtoken';
 import { createConnection, getConnectionManager } from 'typeorm';
 
@@ -10,6 +11,8 @@ import { config } from './../../../src/init/config';
 import * as Utils from './../../utils/utils';
 
 import * as AuthModel from './../../../src/models/auth';
+
+chai.use(chaiAsPromised);
 
 describe('Get user info with Authentication', async () => {
 
@@ -21,71 +24,76 @@ describe('Get user info with Authentication', async () => {
 
   after(async () => {
     await Utils.deleteAllUsers();
-    getConnectionManager().get().close();
+    await getConnectionManager().get().close();
   });
 
   it('should return user info if password is correct (by email)', async () => {
-    const userInfo = await AuthModel.getUserInfoWithAuth('zk', 'CorrectPassword');
-    chai.expect(userInfo.username).to.equal('zk');
-    chai.expect(userInfo.email).to.equal('fuckzk@codgi.cc');
-    chai.expect(userInfo.privilege).to.equal(1);
+    return chai.expect(AuthModel.getUserInfoWithAuth('fuckzk@codgi.cc', 'CorrectPassword'))
+      .to.eventually.deep.include({
+        id: 1,
+        username: 'zk',
+        email: 'fuckzk@codgi.cc',
+        privilege: 1,
+      });
   });
 
   it('should return user info if password is correct (by username)', async () => {
-    const userInfo = await AuthModel.getUserInfoWithAuth('zk', 'CorrectPassword');
-    chai.expect(userInfo.username).to.equal('zk');
-    chai.expect(userInfo.email).to.equal('fuckzk@codgi.cc');
-    chai.expect(userInfo.privilege).to.equal(1);
+    return chai.expect(AuthModel.getUserInfoWithAuth('zk', 'CorrectPassword'))
+      .to.eventually.deep.include({
+        id: 1,
+        username: 'zk',
+        email: 'fuckzk@codgi.cc',
+        privilege: 1,
+      });
+  });
+
+  it('should throw error if user does not exist', async () => {
+    return chai.expect(AuthModel.getUserInfoWithAuth('hellozk', 'CorrectPassword'))
+      .to.be.rejected.and.eventually.deep.include({
+        status: 403,
+        expose: true,
+        message: 'Incorrect username or password.',
+      });
   });
 
   it('should throw error if password is incorrect', async () => {
-    try {
-      const userInfo = await AuthModel.getUserInfoWithAuth('zk', 'WrongPassword');
-      chai.expect(userInfo).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err.status).to.equal(403);
-      chai.expect(err.expose).to.equal(true);
-      chai.expect(err.message).to.equal('Incorrect username or password.');
-    }
+    return chai.expect(AuthModel.getUserInfoWithAuth('zk', 'WrongPassword'))
+      .to.be.rejected.and.eventually.deep.include({
+        status: 403,
+        expose: true,
+        message: 'Incorrect username or password.',
+      });
   });
 
   it('should throw error if user is disabled', async () => {
-    try {
-      Utils.updateTestUserPrivilege('zk', 0);
-      const userInfo = await AuthModel.getUserInfoWithAuth('zk', 'CorrectPassword');
-      chai.expect(userInfo).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err.status).to.equal(403);
-      chai.expect(err.expose).to.equal(true);
-      chai.expect(err.message).to.equal('User is disabled.');
-    }
+    await Utils.updateTestUserPrivilege('zk', 0);
+    return chai.expect(AuthModel.getUserInfoWithAuth('zk', 'CorrectPassword'))
+      .to.be.rejected.and.eventually.deep.include({
+        status: 403,
+        expose: true,
+        message: 'User is disabled.',
+      })
+      .then(async () => {
+        await Utils.updateTestUserPrivilege('zk', 1);
+      });
   });
 
-  it('should throw error if parameters are incomplete', async () => {
-
-    // If username is missing.
-    try {
-      const userInfo = await AuthModel.getUserInfoWithAuth('', 'CorrectPassword');
-      chai.expect(userInfo).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+  it('should throw error if username is missing', async () => {
+    chai.expect(AuthModel.getUserInfoWithAuth('', 'CorrectPassword'))
+      .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
       });
-    }
+  });
 
-    // If password is missing.
-    try {
-      const userInfo = await AuthModel.getUserInfoWithAuth('zk', '');
-      chai.expect(userInfo).to.equal(undefined);
-    } catch (err) {
-      chai.expect(err).to.deep.include({
+  it('should throw error if password is missing', async () => {
+    chai.expect(AuthModel.getUserInfoWithAuth('zk', ''))
+      .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
       });
-    }
   });
 
 });
