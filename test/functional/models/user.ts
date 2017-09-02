@@ -5,10 +5,10 @@ import 'reflect-metadata';
 import * as chai from 'chai';
 import { createConnection, getConnectionManager } from 'typeorm';
 
-import * as Utils from './../../utils';
+import * as Utils from './../../utils/utils';
 
 import { config } from './../../../src/init/config';
-import * as User from './../../../src/models/user';
+import * as UserModel from './../../../src/models/user';
 
 describe('Get user info', async () => {
 
@@ -24,7 +24,7 @@ describe('Get user info', async () => {
   });
 
   it('should return user info if user exists (by id)', async () => {
-    const userInfo = await User.getUserInfo(1, 'id');
+    const userInfo = await UserModel.getUserInfo(1, 'id');
     chai.expect(userInfo).to.deep.include({
       id: 1,
       email: 'fuckzk@codgi.cc',
@@ -34,7 +34,7 @@ describe('Get user info', async () => {
   });
 
   it('should return user info if user exists (by username)', async () => {
-    const userInfo = await User.getUserInfo('zk', 'username');
+    const userInfo = await UserModel.getUserInfo('zk', 'username');
     chai.expect(userInfo).to.deep.include({
       id: 1,
       email: 'fuckzk@codgi.cc',
@@ -46,7 +46,7 @@ describe('Get user info', async () => {
   it('should throw error if user does not exist', async () => {
     try {
       await Utils.deleteTestUser();
-      const userInfo = await User.getUserInfo('zk', 'username');
+      const userInfo = await UserModel.getUserInfo('zk', 'username');
       chai.expect(userInfo).to.equal(undefined);
       await Utils.initTestUser();
     } catch (err) {
@@ -60,7 +60,7 @@ describe('Get user info', async () => {
 
   it('should throw error if data is missing', async () => {
     try {
-      const userInfo = await User.getUserInfo('');
+      const userInfo = await UserModel.getUserInfo('');
       chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
@@ -88,7 +88,7 @@ describe('Get user list', async () => {
 
   it('should return user list (default options)', async () => {
 
-    const userList = await User.getUserList();
+    const userList = await UserModel.getUserList();
 
     chai.expect(userList).to.be.an('array').that.have.lengthOf(3);
 
@@ -124,7 +124,7 @@ describe('Get user list', async () => {
   it('should return user list (DESC order)', async () => {
 
     // Test order.
-    const userList = await User.getUserList('id', 'DESC');
+    const userList = await UserModel.getUserList('id', 'DESC');
 
     chai.expect(userList).to.be.an('array').that.have.lengthOf(3);
 
@@ -159,7 +159,7 @@ describe('Get user list', async () => {
 
   it('should return user list (customized pagination)', async () => {
 
-    const userList = await User.getUserList('id', 'ASC', 1, 2);
+    const userList = await UserModel.getUserList('id', 'ASC', 1, 2);
 
     chai.expect(userList).to.be.an('array').that.have.lengthOf(2);
 
@@ -199,7 +199,7 @@ describe('Search user', async () => {
 
   it('should return search result (default options)', async () => {
 
-    const searchResult = await User.searchUser('z');
+    const searchResult = await UserModel.searchUser('z');
 
     chai.expect(searchResult).to.be.an('array').that.have.lengthOf(2);
 
@@ -225,7 +225,7 @@ describe('Search user', async () => {
 
   it('should return search result (search email)', async () => {
 
-    const searchResult = await User.searchUser('fuckzk@codgi.cc');
+    const searchResult = await UserModel.searchUser('fuckzk@codgi.cc');
 
     chai.expect(searchResult).to.be.an('array').that.have.lengthOf(1);
 
@@ -242,7 +242,7 @@ describe('Search user', async () => {
 
   it('should return search result (DESC order)', async () => {
 
-    const searchResult = await User.searchUser('z', 'id', 'DESC');
+    const searchResult = await UserModel.searchUser('z', 'id', 'DESC');
 
     chai.expect(searchResult).to.be.an('array').that.have.lengthOf(2);
 
@@ -268,7 +268,7 @@ describe('Search user', async () => {
 
   it('should return search result (customized pagination)', async () => {
 
-    const searchResult = await User.searchUser('z', 'id', 'ASC', 2, 1);
+    const searchResult = await UserModel.searchUser('z', 'id', 'ASC', 2, 1);
 
     chai.expect(searchResult).to.be.an('array').that.have.lengthOf(1);
 
@@ -304,7 +304,7 @@ describe('Post user', async () => {
       password: 'CorrectPassword',
     };
 
-    const userInfo = await User.postUser(data);
+    const userInfo = await UserModel.postUser(data);
 
     chai.expect(userInfo).to.deep.include({
       email: 'fuckzk@codgi.cc',
@@ -330,7 +330,7 @@ describe('Post user', async () => {
       password: 'CorrectPassword',
     };
 
-    const userInfo = await User.postUser(data);
+    const userInfo = await UserModel.postUser(data);
 
     chai.expect(userInfo).to.deep.include({
       email: 'fuckzk@codgi.cc',
@@ -357,7 +357,7 @@ describe('Post user', async () => {
       password: 'CorrectPassword',
     };
 
-    const userInfo = await User.postUser(data);
+    const userInfo = await UserModel.postUser(data);
 
     chai.expect(userInfo).to.deep.include({
       email: 'fuckzk@codgi.cc',
@@ -378,7 +378,7 @@ describe('Post user', async () => {
     };
 
     try {
-      const userInfo = await User.postUser(data);
+      const userInfo = await UserModel.postUser(data);
       chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
@@ -401,7 +401,7 @@ describe('Post user', async () => {
     };
 
     try {
-      const userInfo = await User.postUser(data);
+      const userInfo = await UserModel.postUser(data);
       chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
@@ -421,7 +421,7 @@ describe('Post user', async () => {
     };
 
     try {
-      const userInfo = await User.postUser(data);
+      const userInfo = await UserModel.postUser(data);
       chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
@@ -441,7 +441,7 @@ describe('Post user', async () => {
     };
 
     try {
-      const userInfo = await User.postUser(data);
+      const userInfo = await UserModel.postUser(data);
       chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
@@ -461,7 +461,7 @@ describe('Post user', async () => {
     };
 
     try {
-      const userInfo = await User.postUser(data);
+      const userInfo = await UserModel.postUser(data);
       chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({

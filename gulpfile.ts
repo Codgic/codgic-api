@@ -62,7 +62,9 @@ export class Gulpfile {
   // Do tests.
   @Task()
   public runTests() {
-    return gulp.src('./build/test/**/*.js', {read: false})
+    return gulp.src([
+      './build/test/functional/**/*.js',
+    ], {read: false})
         .pipe(mocha({
           bail: true,
           timeout: 15000,

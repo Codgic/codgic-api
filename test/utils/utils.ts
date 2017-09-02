@@ -3,8 +3,8 @@
 
 import { ConnectionOptions, getRepository } from 'typeorm';
 
-import { User } from './../src/entities/user';
-import { config } from './../src/init/config';
+import { User } from './../../src/entities/user';
+import { config } from './../../src/init/config';
 
 export const testConnectionOptions: ConnectionOptions = {
 
@@ -20,11 +20,11 @@ export const testConnectionOptions: ConnectionOptions = {
   },
   autoSchemaSync: true,
   entities: [
-    __dirname + '/../src/entities/*.js',
+    __dirname + '/../../src/entities/*.js',
   ],
   /*
   subscribers: [
-    __dirname + '/../subscribers/.js',
+    __dirname + '/../../subscribers/.js',
   ] */
 
 };

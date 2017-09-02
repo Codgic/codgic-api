@@ -7,9 +7,9 @@ import * as jwt from 'jsonwebtoken';
 import { createConnection, getConnectionManager } from 'typeorm';
 
 import { config } from './../../../src/init/config';
-import * as Utils from './../../utils';
+import * as Utils from './../../utils/utils';
 
-import * as Auth from './../../../src/models/auth';
+import * as AuthModel from './../../../src/models/auth';
 
 describe('Get user info with Authentication', async () => {
 
@@ -25,14 +25,14 @@ describe('Get user info with Authentication', async () => {
   });
 
   it('should return user info if password is correct (by email)', async () => {
-    const userInfo = await Auth.getUserInfoWithAuth('zk', 'CorrectPassword');
+    const userInfo = await AuthModel.getUserInfoWithAuth('zk', 'CorrectPassword');
     chai.expect(userInfo.username).to.equal('zk');
     chai.expect(userInfo.email).to.equal('fuckzk@codgi.cc');
     chai.expect(userInfo.privilege).to.equal(1);
   });
 
   it('should return user info if password is correct (by username)', async () => {
-    const userInfo = await Auth.getUserInfoWithAuth('zk', 'CorrectPassword');
+    const userInfo = await AuthModel.getUserInfoWithAuth('zk', 'CorrectPassword');
     chai.expect(userInfo.username).to.equal('zk');
     chai.expect(userInfo.email).to.equal('fuckzk@codgi.cc');
     chai.expect(userInfo.privilege).to.equal(1);
@@ -40,7 +40,7 @@ describe('Get user info with Authentication', async () => {
 
   it('should throw error if password is incorrect', async () => {
     try {
-      const userInfo = await Auth.getUserInfoWithAuth('zk', 'WrongPassword');
+      const userInfo = await AuthModel.getUserInfoWithAuth('zk', 'WrongPassword');
       chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err.status).to.equal(403);
@@ -52,7 +52,7 @@ describe('Get user info with Authentication', async () => {
   it('should throw error if user is disabled', async () => {
     try {
       Utils.updateTestUserPrivilege('zk', 0);
-      const userInfo = await Auth.getUserInfoWithAuth('zk', 'CorrectPassword');
+      const userInfo = await AuthModel.getUserInfoWithAuth('zk', 'CorrectPassword');
       chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err.status).to.equal(403);
@@ -65,7 +65,7 @@ describe('Get user info with Authentication', async () => {
 
     // If username is missing.
     try {
-      const userInfo = await Auth.getUserInfoWithAuth('', 'CorrectPassword');
+      const userInfo = await AuthModel.getUserInfoWithAuth('', 'CorrectPassword');
       chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
@@ -77,7 +77,7 @@ describe('Get user info with Authentication', async () => {
 
     // If password is missing.
     try {
-      const userInfo = await Auth.getUserInfoWithAuth('zk', '');
+      const userInfo = await AuthModel.getUserInfoWithAuth('zk', '');
       chai.expect(userInfo).to.equal(undefined);
     } catch (err) {
       chai.expect(err).to.deep.include({
@@ -93,7 +93,7 @@ describe('Get user info with Authentication', async () => {
 describe('Generate token', async () => {
   it('should return a valid json web token', async () => {
     // Generate token.
-    const accessToken = await Auth.generateToken(1, 'zk', 'fuckzk@codgi.cc', 1);
+    const accessToken = await AuthModel.generateToken(1, 'zk', 'fuckzk@codgi.cc', 1);
 
     // Verify token.
     jwt.verify(accessToken, config.api.jwt.secret, (err: any, decoded: any) => {

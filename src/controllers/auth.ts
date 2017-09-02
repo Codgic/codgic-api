@@ -16,10 +16,6 @@ export async function refreshToken(ctx: Context, next: () => Promise<any>) {
   // Retrieve user info again.
   const userInfo = await UserModel.getUserInfo(ctx.state.user.id, 'id');
 
-  if (!userInfo) {
-    ctx.throw(400, 'Failed to retrieve user info.');
-  }
-
   // Generate Token.
   const token = await AuthModel
     .generateToken(ctx.state.user.id, userInfo.username, userInfo.email, userInfo.privilege);
@@ -40,7 +36,7 @@ export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
     ctx.throw(400);
   }
 
-  // AuthModel and get user info.
+  // Auth and get user info.
   const userInfo = await AuthModel.getUserInfoWithAuth(ctx.request.body.username, ctx.request.body.password);
 
   // Generate Token.
