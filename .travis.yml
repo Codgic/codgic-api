@@ -30,6 +30,4 @@ script:
   - yarn run build
 
   # Run tests.
-  - istanbul cover ./node_modules/mocha/bin/_mocha -- -R spec
   - yarn run test
-  - codecov

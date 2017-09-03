@@ -1,10 +1,7 @@
 # codgic-api
 
 [![Build status][travis-image]][travis-url]
-[![Build coverage][codecov-image]][codecov-url]
 
-[codecov-image]: https://img.shields.io/codecov/c/github/codgician/codgic-api.svg?style=flat-square
-[codecov-url]: https://codecov.io/gh/codgician/codgic-api/
 [travis-image]: https://img.shields.io/travis/codgician/codgic-api/master.svg?style=flat-square
 [travis-url]: https://travis-ci.org/codgician/codgic-api
 
