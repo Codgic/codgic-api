@@ -16,7 +16,7 @@ export const testConnectionOptions: ConnectionOptions = {
   password: config.database.password,
   logging: {
     logQueries: false,
-    logFailedQueryError: true,
+    logFailedQueryError: false,
   },
   autoSchemaSync: true,
   entities: [

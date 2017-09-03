@@ -1,6 +1,12 @@
 # codgic-api
 
-[![Build Status](https://travis-ci.org/codgician/codgic-api.svg?branch=master)](https://travis-ci.org/codgician/codgic-api)
+[![Build status][travis-image]][travis-url]
+[![Build coverage][codecov-image]][codecov-url]
+
+[codecov-image]: https://img.shields.io/codecov/c/github/codgician/codgic-api.svg
+[codecov-url]: https://codecov.io/gh/codgician/codgic-api/
+[travis-image]: https://img.shields.io/travis/codgician/codgic-api/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/codgician/codgic-api
 
 API handler of Codgic Online Judge.
 
