@@ -150,6 +150,9 @@ export async function postUser(data: any) {
       throw createError(400, 'User does not exist.');
     }
 
+    // Update privilege.
+    user.privilege = data.privilege === undefined ? user.privilege : data.privilege;
+
     user = userInfo;
 
   } else {
@@ -159,19 +162,21 @@ export async function postUser(data: any) {
   }
 
   // Update password.
-  user
-    .updatePassword(data.password)
-    .catch((err) => {
-      console.error(err);
-      throw createError(500, 'Update user password failed.');
-    });
+  if (data.password) {
+    user
+      .updatePassword(data.password)
+      .catch((err) => {
+        console.error(err);
+        throw createError(500, 'Update user password failed.');
+      });
+  }
 
-  user.email = data.email || user.email;
-  user.username = data.username || user.username;
-  user.nickname = data.nickname || user.nickname;
-  user.sex = data.sex || user.sex;
-  user.motto = data.motto || user.motto;
-  user.description = data.description || user.description;
+  user.email = data.email === undefined ? user.email : data.email;
+  user.username = data.username === undefined ? user.username : data.username;
+  user.nickname = data.nickname === undefined ? user.nickname : data.nickname;
+  user.sex = data.sex === undefined ? user.sex : data.sex;
+  user.motto = data.motto === undefined ? user.motto : data.motto;
+  user.description = data.description === undefined ? user.description : data.description;
 
   await userRepository
     .persist(user)
@@ -190,24 +195,29 @@ export async function postUser(data: any) {
 
 export async function validateUserInfo(data: any) {
 
-  if (!data.username) {
-    throw createError(400, 'Invalid username.');
-  }
+  // Only validate if property exists.
+  // It is controller's job to check whether important fields are missing.
 
   if (
+    data.username &&
     config.oj.policy.profile.username.min_length &&
     data.username.length < config.oj.policy.profile.username.min_length
   ) {
     throw createError(400, 'Username too short.');
   }
 
-  if (!data.password) {
-    throw createError(400, 'Invalid password.');
-  }
-
-  // Complexity Check: To be implemented.
+  // Password Complexity Check: To be implemented.
 
   if (
+    data.password &&
+    config.oj.policy.profile.password.min_length &&
+    data.password.length < config.oj.policy.profile.password.min_length
+  ) {
+    throw createError(400, 'Password too long.');
+  }
+
+  if (
+    data.password &&
     config.oj.policy.profile.password.max_length &&
     data.password.length > config.oj.policy.profile.password.max_length
   ) {
@@ -230,7 +240,7 @@ export async function validateUserInfo(data: any) {
     throw createError(400, 'Nickname too long.');
   }
 
-  if (!data.email || !emailValidator.validate(data.email)) {
+  if (data.email && !emailValidator.validate(data.email)) {
     throw createError(400, 'Invalid email.');
   }
 

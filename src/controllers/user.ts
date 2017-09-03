@@ -3,26 +3,14 @@
 
 import { Context } from 'koa';
 
+import { checkPrivilege, UserPrivilege } from './../init/privilege';
 import * as UserModel from './../models/user';
 
-export async function getCurrentInfo(ctx: Context, next: () => Promise<any>) {
-
-  // Check login.
-  if (!ctx.state.user) {
-    ctx.throw(401);
-  }
-
-  // Retrieve user info.
-  const userInfo = await UserModel.getUserInfo(ctx.state.user.id, 'id');
-
-  ctx.body = userInfo;
-  ctx.status = 200;
-
-  await next();
-
-}
-
 export async function getUserInfo(ctx: Context, next: () => Promise<any>) {
+
+  if (!ctx.params.username) {
+    ctx.params.username = ctx.state.user.username;
+  }
 
   // Retrieve user info.
   const userInfo = await UserModel.getUserInfo(ctx.params.username, 'username');
@@ -59,10 +47,13 @@ export async function postUser(ctx: Context, next: () => Promise<any>) {
     ctx.throw(400, 'Please log out first.');
   }
 
+  ctx.request.body.id = undefined;
+
   // Validate request.
-  if (ctx.request.body.id || !await UserModel.validateUserInfo(ctx.request.body)) {
-    ctx.throw(400);
+  if (!(ctx.request.body.email && ctx.request.body.username && ctx.request.body.password)) {
+    ctx.throw(400, 'Required fields are missing.');
   }
+  await UserModel.validateUserInfo(ctx.request.body);
 
   // Post user.
   const userInfo = await UserModel.postUser(ctx.request.body);
@@ -81,14 +72,31 @@ export async function updateUser(ctx: Context, next: () => Promise<any>) {
     ctx.throw(401);
   }
 
-  ctx.request.body.id = ctx.state.user.id;
+  // Check privilege.
+  if (checkPrivilege(UserPrivilege.editUser, ctx.state.user.privilege)) {
+    if (ctx.params.username && ctx.params.username !== ctx.state.user.username) {
+      const tempUserInfo = await UserModel.getUserInfo(ctx.params.username, 'username');
+      if (!tempUserInfo) {
+        ctx.throw(400, 'User does not exist.');
+      }
+      ctx.request.body.id = tempUserInfo.id;
+    } else {
+      ctx.request.body.id = ctx.state.user.id;
+    }
+  } else {
+    ctx.request.body.privilege = undefined;
+    if (ctx.params.username && ctx.params.username !== ctx.state.user.username) {
+      ctx.throw(403);
+    } else {
+      ctx.request.body.id = ctx.state.user.id;
+    }
+  }
 
   // Validate request.
-  const isValid = await UserModel.validateUserInfo(ctx.request.body);
-
-  if (isValid !== true) {
-    ctx.throw(400);
+  if (ctx.method === 'POST' && !(ctx.request.body.email && ctx.request.body.username && ctx.request.body.password)) {
+    ctx.throw(400, 'Required fields are missing.');
   }
+  await UserModel.validateUserInfo(ctx.request.body);
 
   // Post user.
   const userInfo = await UserModel.postUser(ctx.request.body);

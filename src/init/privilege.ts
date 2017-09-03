@@ -31,3 +31,7 @@ export const enum UserPrivilege {
   editUser = 8,
   editGroup = 16,
 }
+
+export function checkPrivilege(operationPrivilege: number, userPrivilege: number) {
+  return (userPrivilege & operationPrivilege) === 1 ? true : false;
+}

@@ -6,12 +6,16 @@ import * as User from './../../controllers/user';
 
 const user = new Router();
 
-user.get('/', User.getCurrentInfo);
+user.get('/', User.getUserInfo);
 user.get('/:username', User.getUserInfo);
 
 user.post('/', User.postUser);
 
 user.put('/', User.updateUser);
+user.put('/:username', User.updateUser);
+
+user.patch('/', User.updateUser);
+user.patch('/:username', User.updateUser);
 
 // Unimplemented:
 
