@@ -26,10 +26,12 @@ export const enum ProblemPrivilege {
 
 export const enum UserPrivilege {
   isEnabled = 1,
-  viewSource = 2,
-  editContent = 4,
-  editUser = 8,
-  editGroup = 16,
+  emailVerified = 2,
+  viewSource = 4,
+  editContent = 8,
+  editUser = 16,
+  editGroup = 32,
+  editSystem = 64,
 }
 
 export function checkPrivilege(operationPrivilege: number, userPrivilege: number) {
