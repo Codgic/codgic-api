@@ -1,7 +1,10 @@
 # codgic-api
 
 [![Build status][travis-image]][travis-url]
+[![GitHub license][license-image]][license-url]
 
+[license-image]: https://img.shields.io/badge/license-LGPL-blue.svg?style=flat-square
+[license-url]: https://raw.githubusercontent.com/codgician/codgic-api/master/LICENSE
 [travis-image]: https://img.shields.io/travis/codgician/codgic-api/master.svg?style=flat-square
 [travis-url]: https://travis-ci.org/codgician/codgic-api
 

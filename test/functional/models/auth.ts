@@ -7,9 +7,9 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as jwt from 'jsonwebtoken';
 import { createConnection, getConnectionManager } from 'typeorm';
 
-import { config } from './../../../src/init/config';
 import * as Utils from './../../utils/utils';
 
+import { config } from './../../../src/init/config';
 import * as AuthModel from './../../../src/models/auth';
 
 chai.use(chaiAsPromised);
@@ -114,4 +114,18 @@ describe('Generate token', async () => {
       });
     });
   });
+
+  it('should throw error if jwt secret is not valid', async () => {
+
+    config.api.jwt.secret = '';
+
+    return chai.expect(AuthModel.generateToken(1, 'zk', 'fuckzk@codgi.cc', 1))
+      .to.be.rejected.and.eventually.deep.include({
+        status: 500,
+        expose: false,
+        message: 'Invalid jwt secret.',
+      });
+
+  });
+
 });
