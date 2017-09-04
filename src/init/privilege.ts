@@ -27,39 +27,39 @@ export const enum ProblemPrivilege {
 
 export const enum UserPrivilege {
   isEnabled = 1,
-  emailVerified = 2,
-  viewSource = 4,
-  editContent = 8,
-  editUser = 16,
-  editGroup = 32,
-  editSystem = 64,
+  viewHidden = 2,
+  editContent = 4,
+  editUser = 8,
+  editGroup = 16,
+  editSystem = 32,
 }
 
+// Check privilege (bitwise).
 export async function checkPrivilege(operation: number, privilege: number) {
   return (operation & privilege) === 0 ? false : true;
 }
 
-// Verify problem privilege.
+// Verify content privilege.
 export async function checkContentPrivilege(
   operation: number,
   userid: number | undefined,
-  userPrivilege: number,
-  contentPrivilegeInfo: {
+  contentInfo: {
     owner: number,
     group: number,
     ownerPrivilege: number,
     groupPrivilege: number,
     worldPrivilege: number,
-}) {
+  },
+) {
 
   // Validate parameters.
   if (!(
     operation &&
-    contentPrivilegeInfo.owner &&
-    contentPrivilegeInfo.group &&
-    contentPrivilegeInfo.ownerPrivilege &&
-    contentPrivilegeInfo.groupPrivilege &&
-    contentPrivilegeInfo.worldPrivilege)
+    contentInfo.owner &&
+    contentInfo.group &&
+    contentInfo.ownerPrivilege &&
+    contentInfo.groupPrivilege &&
+    contentInfo.worldPrivilege)
   ) {
     throw createError(500, 'Invalid parameters.');
   }
@@ -67,20 +67,17 @@ export async function checkContentPrivilege(
   let result: boolean = false;
 
   if (userid) {
-    if (userPrivilege & operation) {
-      // Check user's admin privilege first.
-      result = true;
-    } else if (userid === contentPrivilegeInfo.owner) {
+    if (userid === contentInfo.owner) {
       // If user is the problem owner.
-      result = (contentPrivilegeInfo.ownerPrivilege & operation) === 0 ? false : true;
-    } else if (isInGroup(userid, contentPrivilegeInfo.group)) {
+      result = (contentInfo.ownerPrivilege & operation) === 0 ? false : true;
+    } else if (isInGroup(userid, contentInfo.group)) {
       // If user belongs to the problem owner group.
-      result = (contentPrivilegeInfo.groupPrivilege & operation) === 0 ? false : true;
+      result = (contentInfo.groupPrivilege & operation) === 0 ? false : true;
     } else {
-      result = (contentPrivilegeInfo.worldPrivilege & operation) === 0 ? false : true;
+      result = (contentInfo.worldPrivilege & operation) === 0 ? false : true;
     }
   } else {
-    result = (contentPrivilegeInfo.worldPrivilege & operation) === 0 ? false : true;
+    result = (contentInfo.worldPrivilege & operation) === 0 ? false : true;
   }
 
   return result;

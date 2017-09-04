@@ -3,7 +3,7 @@
 import { Context } from 'koa';
 
 import { config } from './../init/config';
-import { checkContentPrivilege, ProblemPrivilege, UserPrivilege } from './../init/privilege';
+import { checkContentPrivilege, checkPrivilege, ProblemPrivilege, UserPrivilege } from './../init/privilege';
 import * as ProblemModel from './../models/problem';
 
 export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
@@ -16,18 +16,15 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
   // Retrieve problem info.
   const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemid);
 
-  // Verify privilege.
-  const hasPrivilege = await checkContentPrivilege(
-    ProblemPrivilege.read,
-    ctx.state.user.id,
-    ctx.state.user.privilege, {
+  // Check privilege.
+  const hasPrivilege = checkPrivilege(UserPrivilege.viewHidden, ctx.state.user.privilege) ? true :
+    await checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, {
       owner: problemInfo.owner,
       group: problemInfo.group,
       ownerPrivilege: problemInfo.ownerPrivilege,
       groupPrivilege: problemInfo.groupPrivilege,
       worldPrivilege: problemInfo.worldPrivilege,
-    },
-  );
+    });
 
   if (!hasPrivilege) {
     if (ctx.state.user) {
@@ -49,15 +46,16 @@ export async function getProblemList(ctx: Context, next: () => Promise<any>) {
   const problemList = await ProblemModel.getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num);
 
   // Filter.
-  ctx.body = problemList.filter((element) => {
-    return !checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, ctx.state.user.privilege, {
-      owner: element.owner,
-      group: element.group,
-      ownerPrivilege: element.ownerPrivilege,
-      groupPrivilege: element.groupPrivilege,
-      worldPrivilege: element.worldPrivilege,
+  ctx.body = checkPrivilege(UserPrivilege.viewHidden, ctx.state.user.privilege) ? problemList :
+    problemList.filter((element) => {
+      return !checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, {
+        owner: element.owner,
+        group: element.group,
+        ownerPrivilege: element.ownerPrivilege,
+        groupPrivilege: element.groupPrivilege,
+        worldPrivilege: element.worldPrivilege,
+      });
     });
-  });
   ctx.status = 200;
 
   await next();
@@ -76,15 +74,16 @@ export async function searchProblem(ctx: Context, next: () => Promise<any>) {
     );
 
   // Filter.
-  ctx.body = searchResult.filter((element) => {
-    return !checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, ctx.state.user.privilege, {
-      owner: element.owner,
-      group: element.group,
-      ownerPrivilege: element.ownerPrivilege,
-      groupPrivilege: element.groupPrivilege,
-      worldPrivilege: element.worldPrivilege,
+  ctx.body = checkPrivilege(UserPrivilege.viewHidden, ctx.state.user.privilege) ? searchResult :
+    searchResult.filter((element) => {
+      return !checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, {
+        owner: element.owner,
+        group: element.group,
+        ownerPrivilege: element.ownerPrivilege,
+        groupPrivilege: element.groupPrivilege,
+        worldPrivilege: element.worldPrivilege,
+      });
     });
-  });
   ctx.status = 200;
 
   await next();
@@ -126,18 +125,15 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   // Retrieve problem info.
   const problemInfo: any = await ProblemModel.getProblemInfo(ctx.params.problemid);
 
-  // Verify privilege.
-  const hasPrivilege = await checkContentPrivilege(
-      ProblemPrivilege.write,
-      ctx.state.user.id,
-      ctx.state.user.privilege, {
-        owner: problemInfo.owner,
-        group: problemInfo.group,
-        ownerPrivilege: problemInfo.ownerPrivilege,
-        groupPrivilege: problemInfo.groupPrivilege,
-        worldPrivilege: problemInfo.worldPrivilege,
-      },
-    );
+  // Check privilege.
+  const hasPrivilege = checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege) ? true :
+    await checkContentPrivilege(ProblemPrivilege.write, ctx.state.user.privilege, {
+      owner: problemInfo.owner,
+      group: problemInfo.group,
+      ownerPrivilege: problemInfo.ownerPrivilege,
+      groupPrivilege: problemInfo.groupPrivilege,
+      worldPrivilege: problemInfo.worldPrivilege,
+    });
 
   if (!hasPrivilege) {
       ctx.throw(401);
@@ -155,7 +151,7 @@ async function routePost(ctx: Context) {
 
     let result;
 
-    if (ctx.state.user.privilege & UserPrivilege.editContent) {
+    if (checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege)) {
       result = await ProblemModel.postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
     } else {
       if (config.oj.policy.content.common_user_can_post) {
