@@ -42,8 +42,7 @@ export async function getGroupMembers(groupid: number) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const groupMapRepository = getRepository(GroupMap);
-  const groupMapInfo = await groupMapRepository
+  const groupMapInfo = await getRepository(GroupMap)
     .find({
       where: {
         groupid,
@@ -80,8 +79,8 @@ export async function searchGroup(
   }
 
   const firstResult = (page - 1) * num;
-  const groupRepository = getRepository(Group);
-  const searchResult = await groupRepository
+
+  const searchResult = await getRepository(Group)
     .createQueryBuilder('group')
     .where('problem.name LIKE :keyword')
     .orWhere('problem.description LIKE :keyword')
@@ -111,8 +110,7 @@ export async function isInGroup(userid: number, groupid: number) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const groupMapRepository = getRepository(GroupMap);
-  const groupMapInfo = await groupMapRepository
+  const groupMapInfo = await getRepository(GroupMap)
     .findOne({
       where: {
         userid,
@@ -124,12 +122,11 @@ export async function isInGroup(userid: number, groupid: number) {
       throw createError(500, 'Database operation failed.');
     });
 
-  let result: boolean = false;
   if (groupMapInfo && (groupMapInfo.privilege & GroupMemberPrivilege.isMember)) {
-    result = true;
+    return true;
+  } else {
+    return false;
   }
-
-  return result;
 
 }
 
@@ -146,9 +143,7 @@ export async function addToGroup(userid: number, groupid: number, privilege: num
   groupMap.groupid = groupid;
   groupMap.privilege = privilege;
 
-  const groupMapRepository = getRepository(GroupMap);
-
-  await groupMapRepository
+  await getRepository(GroupMap)
     .persist(groupMap)
     .catch((err) => {
       console.error(err);
@@ -173,9 +168,7 @@ export async function postGroup(data: Group, userid: number) {
   group.description = data.description;
   group.owner = userid;
 
-  const groupRepository = getRepository(Group);
-
-  await groupRepository
+  await getRepository(Group)
     .persist(group)
     .catch((err) => {
       console.error(err);

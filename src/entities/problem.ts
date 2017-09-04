@@ -74,18 +74,14 @@ export class Problem {
   @Column('tinyint', {
     default: ProblemPrivilege.submit
              + ProblemPrivilege.write
-             + ProblemPrivilege.read
-             + ProblemPrivilege.downloadData
-             + ProblemPrivilege.uploadData,
+             + ProblemPrivilege.read,
   })
   public ownerPrivilege: number;
 
   @Column('tinyint', {
     default: ProblemPrivilege.submit
              + ProblemPrivilege.write
-             + ProblemPrivilege.read
-             + ProblemPrivilege.downloadData
-             + ProblemPrivilege.uploadData,
+             + ProblemPrivilege.read,
   })
   public groupPrivilege: number;
 
@@ -93,7 +89,7 @@ export class Problem {
     default: ProblemPrivilege.submit
              + ProblemPrivilege.read,
   })
-  public othersPrivilege: number;
+  public worldPrivilege: number;
 
   @Column('int', {
     nullable: true,

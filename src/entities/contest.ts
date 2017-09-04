@@ -69,7 +69,7 @@ export class Contest {
     default: ContestPrivilege.join
             + ContestPrivilege.read,
   })
-  public othersPrivilege: number;
+  public worldPrivilege: number;
 
   @Column('int', {
     nullable: true,

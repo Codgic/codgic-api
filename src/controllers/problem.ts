@@ -3,7 +3,7 @@
 import { Context } from 'koa';
 
 import { config } from './../init/config';
-import { ProblemPrivilege, UserPrivilege } from './../init/privilege';
+import { checkContentPrivilege, ProblemPrivilege, UserPrivilege } from './../init/privilege';
 import * as ProblemModel from './../models/problem';
 
 export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
@@ -17,8 +17,7 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
   const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemid);
 
   // Verify privilege.
-  const hasPrivilege = await ProblemModel
-    .verifyProblemPrivilege(
+  const hasPrivilege = await checkContentPrivilege(
     ProblemPrivilege.read,
     ctx.state.user.id,
     ctx.state.user.privilege, {
@@ -26,7 +25,7 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
       group: problemInfo.group,
       ownerPrivilege: problemInfo.ownerPrivilege,
       groupPrivilege: problemInfo.groupPrivilege,
-      othersPrivilege: problemInfo.othersPrivilege,
+      worldPrivilege: problemInfo.worldPrivilege,
     },
   );
 
@@ -47,8 +46,18 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
 
 export async function getProblemList(ctx: Context, next: () => Promise<any>) {
 
-  ctx.body = await ProblemModel.getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num);
+  const problemList = await ProblemModel.getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num);
 
+  // Filter.
+  ctx.body = problemList.filter((element) => {
+    return !checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, ctx.state.user.privilege, {
+      owner: element.owner,
+      group: element.group,
+      ownerPrivilege: element.ownerPrivilege,
+      groupPrivilege: element.groupPrivilege,
+      worldPrivilege: element.worldPrivilege,
+    });
+  });
   ctx.status = 200;
 
   await next();
@@ -57,7 +66,7 @@ export async function getProblemList(ctx: Context, next: () => Promise<any>) {
 
 export async function searchProblem(ctx: Context, next: () => Promise<any>) {
 
-  ctx.body = await ProblemModel
+  const searchResult = await ProblemModel
     .searchProblem(
       ctx.query.sort,
       ctx.query.order,
@@ -65,6 +74,17 @@ export async function searchProblem(ctx: Context, next: () => Promise<any>) {
       ctx.query.page,
       ctx.query.num,
     );
+
+  // Filter.
+  ctx.body = searchResult.filter((element) => {
+    return !checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, ctx.state.user.privilege, {
+      owner: element.owner,
+      group: element.group,
+      ownerPrivilege: element.ownerPrivilege,
+      groupPrivilege: element.groupPrivilege,
+      worldPrivilege: element.worldPrivilege,
+    });
+  });
   ctx.status = 200;
 
   await next();
@@ -107,8 +127,7 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   const problemInfo: any = await ProblemModel.getProblemInfo(ctx.params.problemid);
 
   // Verify privilege.
-  const hasPrivilege = await ProblemModel
-    .verifyProblemPrivilege(
+  const hasPrivilege = await checkContentPrivilege(
       ProblemPrivilege.write,
       ctx.state.user.id,
       ctx.state.user.privilege, {
@@ -116,7 +135,7 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
         group: problemInfo.group,
         ownerPrivilege: problemInfo.ownerPrivilege,
         groupPrivilege: problemInfo.groupPrivilege,
-        othersPrivilege: problemInfo.othersPrivilege,
+        worldPrivilege: problemInfo.worldPrivilege,
       },
     );
 
