@@ -369,7 +369,7 @@ describe('Post user', async () => {
     const userInfo = await UserModel.postUser(data);
 
     chai.expect(userInfo)
-      .to.be.fulfilled.and.eventually.deep.include({
+      .to.deep.include({
         email: 'fuckzk@codgi.cc',
         username: 'zk',
         privilege: 0,

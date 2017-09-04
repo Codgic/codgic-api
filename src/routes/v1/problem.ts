@@ -13,6 +13,8 @@ problem.post('/', Problem.postProblem);
 
 problem.put('/:problemid', Problem.updateProblem);
 
+problem.patch('/:problemid', Problem.updateProblem);
+
 // Unimplemented:
 
 // problem.delete('/', Problem.deleteProblem);

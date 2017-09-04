@@ -55,7 +55,7 @@ export async function postGroup(ctx: Context, next: () => Promise<any>) {
   const groupInfo = await GroupModel.postGroup(ctx.request.body, ctx.state.user.id);
 
   ctx.body = groupInfo;
-  ctx.status = 200;
+  ctx.status = 201;
 
   await next();
 
