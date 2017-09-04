@@ -8,7 +8,6 @@ import { config } from './../init/config';
 export async function hi(ctx: Context, next: () => Promise<any>) {
 
   ctx.status = 200;
-
   ctx.body = {
     name: config.oj.name,
     timezone: config.oj.timezone,

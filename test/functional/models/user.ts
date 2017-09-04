@@ -338,13 +338,16 @@ describe('Post user', async () => {
       password: 'CorrectPassword',
     };
 
+    const userInfo = await UserModel.postUser(data);
+
+    chai.expect(userInfo)
+      .to.deep.include({
+        email: 'fuckzk@codgi.cc',
+        username: 'zk',
+        privilege: 1,
+      });
+
     return Promise.all([
-      await chai.expect(UserModel.postUser(data))
-        .to.be.fulfilled.and.eventually.deep.include({
-          email: 'fuckzk@codgi.cc',
-          username: 'zk',
-          privilege: 1,
-        }),
       chai.expect(Utils.verifyUserPassword('zk', 'CorrectPassword'))
         .to.be.fulfilled.and.eventually.equal(true),
       chai.expect(Utils.verifyUserPassword('zk', 'WrongPassword'))
@@ -363,13 +366,16 @@ describe('Post user', async () => {
       password: 'CorrectPassword',
     };
 
+    const userInfo = await UserModel.postUser(data);
+
+    chai.expect(userInfo)
+      .to.be.fulfilled.and.eventually.deep.include({
+        email: 'fuckzk@codgi.cc',
+        username: 'zk',
+        privilege: 0,
+    });
+
     return Promise.all([
-      await chai.expect(UserModel.postUser(data))
-        .to.be.fulfilled.and.eventually.deep.include({
-          email: 'fuckzk@codgi.cc',
-          username: 'zk',
-          privilege: 0,
-        }),
       chai.expect(Utils.verifyUserPassword('zk', 'CorrectPassword'))
         .to.be.fulfilled.and.eventually.equal(true),
       chai.expect(Utils.verifyUserPassword('zk', 'WrongPassword'))
