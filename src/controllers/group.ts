@@ -1,6 +1,7 @@
 /* /src/controller/group.ts
   Groups promote love and friendship. */
 
+import * as createError from 'http-errors';
 import { Context } from 'koa';
 
 import * as GroupModel from './../models/group';
@@ -9,11 +10,15 @@ export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
 
   // Validate request.
   if (isNaN(ctx.params.groupid)) {
-    ctx.throw(400);
+    throw createError(400);
   }
 
   // Retrieve group info.
   const groupInfo = await GroupModel.getGroupInfo(ctx.params.groupid);
+
+  if (!groupInfo) {
+    throw createError(404, 'Group does not exist.');
+  }
 
   ctx.body = groupInfo;
   ctx.status = 200;
@@ -26,7 +31,7 @@ export async function getGroupMembers(ctx: Context, next: () => Promise<any>) {
 
   // Validate request.
   if (isNaN(ctx.params.groupid)) {
-    ctx.throw(400, 'Invalid group id.');
+    throw createError(400, 'Invalid group id.');
   }
 
   // Retrieve group members.
@@ -43,12 +48,12 @@ export async function postGroup(ctx: Context, next: () => Promise<any>) {
 
   // Check login.
   if (!ctx.state.user) {
-    ctx.throw(401);
+    throw createError(401);
   }
 
   // Validate request.
   if (!ctx.request.body.name) {
-    ctx.throw(400);
+    throw createError(400);
   }
 
   // Create group.

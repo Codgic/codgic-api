@@ -2,7 +2,10 @@
 
 [![Build status][travis-image]][travis-url]
 [![GitHub license][license-image]][license-url]
+[![Gitter][gitter-image]][gitter-url]
 
+[gitter-image]: https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square
+[gitter-url]: https://gitter.im/Codgic/codgic-api
 [license-image]: https://img.shields.io/badge/license-LGPL-blue.svg?style=flat-square
 [license-url]: https://raw.githubusercontent.com/codgician/codgic-api/master/LICENSE
 [travis-image]: https://img.shields.io/travis/codgician/codgic-api/master.svg?style=flat-square

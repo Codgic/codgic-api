@@ -27,10 +27,6 @@ export async function getUserInfo(data: number | string, by: 'id' | 'username' |
       throw createError(500, 'Database operation failed.');
     });
 
-  if (!userInfo) {
-    throw createError(404, 'User not found.');
-  }
-
   return userInfo;
 
 }

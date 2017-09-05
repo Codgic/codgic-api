@@ -13,7 +13,7 @@ import * as UserModel from './../../../src/models/user';
 
 chai.use(chaiAsPromised);
 
-describe('Get user info', async () => {
+describe('UserModel: Get user info', async () => {
 
   before(async () => {
     await createConnection(Utils.testConnectionOptions);
@@ -59,11 +59,7 @@ describe('Get user info', async () => {
   it('should throw error if user does not exist', async () => {
     await Utils.deleteTestUser();
     return chai.expect(UserModel.getUserInfo('zk', 'username'))
-      .to.be.rejected.and.eventually.deep.include({
-        status: 404,
-        expose: true,
-        message: 'User not found.',
-      })
+      .to.be.fulfilled.and.eventually.equal(undefined)
       .then(async () => {
         await Utils.initTestUser();
       });
@@ -80,7 +76,7 @@ describe('Get user info', async () => {
 
 });
 
-describe('Get user list', async () => {
+describe('UserModel: Get user list', async () => {
 
   before(async () => {
     await createConnection(Utils.testConnectionOptions);
@@ -191,7 +187,7 @@ describe('Get user list', async () => {
   });
 });
 
-describe('Search user', async () => {
+describe('UserModel: Search user', async () => {
 
   before(async () => {
     await createConnection(Utils.testConnectionOptions);
@@ -318,7 +314,7 @@ describe('Search user', async () => {
   });
 });
 
-describe('Post user', async () => {
+describe('UserModel: Post user', async () => {
 
   before(async () => {
     await createConnection(Utils.testConnectionOptions);
@@ -491,7 +487,7 @@ describe('Post user', async () => {
   });
 
 /* Not ready.
-describe('Validate user info', async () => {
+describe('UserModel: Validate user info', async () => {
 });
 */
 

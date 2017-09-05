@@ -27,10 +27,6 @@ export async function getGroupInfo(groupId: number) {
       throw createError(500, 'Database operation failed.');
     });
 
-  if (!groupInfo) {
-    throw createError(404, 'Group not found.');
-  }
-
   return groupInfo;
 
 }
@@ -52,10 +48,6 @@ export async function getGroupMembers(groupId: number) {
       console.error(err);
       throw createError(500, 'Database operation failed.');
     });
-
-  if (!groupMapInfo) {
-      throw createError(404, 'Group not found.');
-  }
 
   return groupMapInfo;
 

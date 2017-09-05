@@ -1,12 +1,14 @@
 /* /test/functional/middlewares/error.ts */
 
 import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import chaiHttp = require('chai-http');
 import * as createError from 'http-errors';
 import * as Koa from 'koa';
 
 import { errorHandler } from './../../../src/middlewares/error';
 
+chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 
 describe('Error handler middleware', async () => {
@@ -26,30 +28,27 @@ describe('Error handler middleware', async () => {
       throw createError(400, 'You should be fucking zk!');
     });
 
-    chai.request(app.listen())
-      .get('/')
-      .then((res) => {
-        chai.expect(res.type).to.equal('application/json');
-        chai.expect(res.status).to.equal(400);
-        chai.expect(res.body.error).to.equal('You should be fucking zk!');
-      })
-      .catch((err) => {
-        chai.expect(err.message).to.equal('Bad Request');
-      });
+    return chai.expect(chai.request(app.listen()).get('/').catch((err) => {
+      return err.response;
+    })).to.be.fulfilled.and.eventually.deep.include({
+      status: 400,
+      body: {
+        error: 'You should be fucking zk!',
+      },
+    });
 
   });
 
   it('should handle error 404 successfully', async () => {
 
-    chai.request(app.listen())
-      .get('/i/do/not/exist')
-      .then((res) => {
-        chai.expect(res.status).to.equal(404);
-        chai.expect(res.body.error).to.equal('Not Found');
-      })
-      .catch((err) => {
-        chai.expect(err.message).to.equal('Not Found');
-      });
+    return chai.expect(chai.request(app.listen()).get('/i/do/not/exist').catch((err) => {
+      return err.response;
+    })).to.be.fulfilled.and.eventually.deep.include({
+      status: 404,
+      body: {
+        error: 'Not Found',
+      },
+    });
 
   });
 
@@ -59,15 +58,14 @@ describe('Error handler middleware', async () => {
       throw createError(500, 'Server failed to fuck zk.');
     });
 
-    chai.request(app.listen())
-      .get('/')
-      .then((res) => {
-        chai.expect(res.status).to.equal(500);
-        chai.expect(res.body.error).to.equal('Internal Server Error');
-      })
-      .catch((err) => {
-        chai.expect(err.message).to.equal('Internal Server Error');
-      });
+    return chai.expect(chai.request(app.listen()).get('/').catch((err) => {
+      return err.response;
+    })).to.be.fulfilled.and.eventually.deep.include({
+      status: 500,
+      body: {
+        error: 'Internal Server Error',
+      },
+    });
 
   });
 
@@ -77,15 +75,14 @@ describe('Error handler middleware', async () => {
       throw createError();
     });
 
-    chai.request(app.listen())
-      .get('/')
-      .then((res) => {
-        chai.expect(res.status).to.equal(500);
-        chai.expect(res.body.error).to.equal('Internal Server Error');
-      })
-      .catch((err) => {
-        chai.expect(err.message).to.equal('Internal Server Error');
-      });
+    return chai.expect(chai.request(app.listen()).get('/').catch((err) => {
+      return err.response;
+    })).to.be.fulfilled.and.eventually.deep.include({
+      status: 500,
+      body: {
+        error: 'Internal Server Error',
+      },
+    });
 
   });
 

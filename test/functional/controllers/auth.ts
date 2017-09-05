@@ -8,6 +8,7 @@ import * as bodyParser from 'koa-bodyparser';
 import * as sinon from 'sinon';
 
 import * as AuthController from './../../../src/controllers/auth';
+import { errorHandler } from './../../../src/middlewares/error';
 import * as AuthModel from './../../../src/models/auth';
 import * as UserModel from './../../../src/models/user';
 
@@ -17,15 +18,15 @@ import * as UserStub from './../../utils/stubs/models/user';
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 
-describe('Verify authentication information', async () => {
+describe('AuthController: Verify authentication information', async () => {
 
-  let app: Koa;
+  const app = new Koa();
   let stubGetUserInfoWithAuth: sinon.SinonStub;
   let stubGenerateToken: sinon.SinonStub;
 
   before(async () => {
 
-    app = new Koa();
+    app.use(errorHandler);
     app.use(bodyParser());
 
     // Stub getUserInfoWithAuth()
@@ -55,7 +56,8 @@ describe('Verify authentication information', async () => {
       .send({
         username: 'zk',
         password: 'CorrectPassword',
-      })).to.be.fulfilled.and.eventually.deep.include({
+      }))
+      .to.be.fulfilled.and.eventually.deep.include({
         status: 200,
         body: {
           token: 'ValidToken',
@@ -71,9 +73,15 @@ describe('Verify authentication information', async () => {
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .send({
         password: 'CorrectPassword',
-      })).to.be.rejected.and.eventually.deep.include({
+      })
+      .catch((err) => {
+        return err.response;
+      }))
+      .to.be.fulfilled.and.eventually.deep.include({
         status: 400,
-        message: 'Bad Request',
+        body: {
+          error: 'Bad Request',
+        },
       });
 
   });
@@ -85,16 +93,22 @@ describe('Verify authentication information', async () => {
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .send({
         username: 'zk',
-      })).to.be.rejected.and.eventually.deep.include({
+      })
+      .catch((err) => {
+        return err.response;
+      }))
+      .to.be.fulfilled.and.eventually.deep.include({
         status: 400,
-        message: 'Bad Request',
+        body: {
+          error: 'Bad Request',
+        },
       });
 
   });
 
 });
 
-describe('Refresh token', async () => {
+describe('AuthController: Refresh token', async () => {
 
   let app: Koa;
   let stubGetUserInfo: sinon.SinonStub;
@@ -113,8 +127,12 @@ describe('Refresh token', async () => {
   });
 
   beforeEach(async () => {
+
     app = new Koa();
+
+    app.use(errorHandler);
     app.use(bodyParser());
+
   });
 
   after (async () => {
@@ -125,9 +143,12 @@ describe('Refresh token', async () => {
   });
 
   it('should return a new jwt if given token is valid', async () => {
+
     // We don't really have to provide a valid jwt here.
     // Validating jwt is koa-jwt's job, and koa-jwt has passed his own tests.
     // So let's assume koa-jwt has successfully decrypted the given jwt.
+    // Here we simply mock koa-jwt's work.
+
     app.use(async (ctx, next) => {
       ctx.state.user = {
         id: 1,
@@ -147,16 +168,20 @@ describe('Refresh token', async () => {
           token: 'ValidToken',
         },
       });
+
   });
 
   it('should throw error if given token is invalid or has expired', async () => {
 
     app.use(AuthController.refreshToken);
 
-    return chai.expect(chai.request(app.listen()).get('/'))
-      .to.be.rejected.and.eventually.deep.include({
+    return chai.expect(chai.request(app.listen()).get('/').catch((err) => {
+      return err.response;
+    })).to.be.fulfilled.and.eventually.deep.include({
         status: 401,
-        message: 'Unauthorized',
+        body: {
+          error: 'Unauthorized',
+        },
       });
   });
 

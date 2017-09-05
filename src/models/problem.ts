@@ -45,10 +45,6 @@ export async function getProblemInfo(problemId: number) {
       throw createError(500, 'Database operation failed.');
     });
 
-  if (!problemInfo) {
-    throw createError(404, 'Problem not found.');
-  }
-
   return problemInfo;
 
 }

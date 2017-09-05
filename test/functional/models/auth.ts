@@ -14,7 +14,7 @@ import * as AuthModel from './../../../src/models/auth';
 
 chai.use(chaiAsPromised);
 
-describe('Get user info with Authentication', async () => {
+describe('AuthModel: Get user info with Authentication', async () => {
 
   before(async () => {
     await createConnection(Utils.testConnectionOptions);
@@ -98,7 +98,7 @@ describe('Get user info with Authentication', async () => {
 
 });
 
-describe('Generate token', async () => {
+describe('AuthModel: Generate token', async () => {
   it('should return a valid json web token', async () => {
     // Generate token.
     const accessToken = await AuthModel.generateToken(1, 'zk', 'fuckzk@codgi.cc', 1);

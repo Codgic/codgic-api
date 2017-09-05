@@ -7,12 +7,18 @@ export function fakeGetUserInfoWithAuth(username: string, password: string) {
   }
   // We don't have to test error throwing situations here.
   // Controller doesn't handdle them, middleware errorHandler does.
-  return {
-    id: 1,
-    email: 'fuckzk@codgi.cc',
-    username: 'zk',
-    privilege: 1,
-  };
+
+  if (username === 'zk' && password === 'CorrectPassword') {
+    return {
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      privilege: 1,
+    };
+  } else {
+    return undefined;
+  }
+
 }
 
 export function fakeGenerateToken(userid: number, username: string, email: string, privilege: number) {

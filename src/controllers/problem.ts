@@ -1,5 +1,6 @@
 /* /src/controllers/problem.ts */
 
+import * as createError from 'http-errors';
 import { Context } from 'koa';
 
 import { config } from './../init/config';
@@ -10,11 +11,15 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
 
   // Validate request.
   if (isNaN(ctx.params.problemid)) {
-    ctx.throw(400);
+    throw createError(400);
   }
 
   // Retrieve problem info.
   const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemid);
+
+  if (!problemInfo) {
+    throw createError(404, 'Problem not found.');
+  }
 
   // Check privilege.
   const hasPrivilege = checkPrivilege(UserPrivilege.viewHidden, ctx.state.user.privilege) ? true :
@@ -109,6 +114,10 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
 
   // Retrieve problem info.
   const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemid);
+
+  if (!problemInfo) {
+    throw createError(400, 'Problem does not exist.');
+  }
 
   // Check privilege.
   const hasPrivilege = checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege) ? true :

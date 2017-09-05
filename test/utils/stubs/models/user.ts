@@ -5,10 +5,19 @@ export function fakeGetUserInfo(data: number | string, by: 'id' | 'username' | '
   if (!data || (by !== 'id' && by !== 'username' && by !== 'email')) {
     throw new Error('Invalid parameters.');
   }
-  return {
-    id: 1,
-    email: 'fuckzk@codgi.cc',
-    username: 'zk',
-    privilege: 1,
-  };
+
+  if (
+    (data === 'zk' && by === 'username') ||
+    (data === 1 && by === 'id') ||
+    (data === 'fuckzk@codgi.cc' && by === 'email')
+  ) {
+    return {
+      id: 1,
+      email: 'fuckzk@codgi.cc',
+      username: 'zk',
+      privilege: 1,
+    };
+  } else {
+    return undefined;
+  }
 }
