@@ -28,9 +28,9 @@ export async function searchUser(ctx: Context, next: () => Promise<any>) {
     .searchUser(
       ctx.query.keyword,
       ctx.query.sort,
-      ctx.query.order,
+      ctx.query.direction,
       ctx.query.page,
-      ctx.query.num,
+      ctx.query.pre_page,
     );
 
   ctx.body = userList;

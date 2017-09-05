@@ -9,8 +9,7 @@ import { config } from './../init/config';
 // Get maxium problem id.
 export async function getMaxProblemId() {
 
-  const problemRepository = getRepository(Problem);
-  const maxProblemInfo = await problemRepository
+  const maxProblemInfo = await getRepository(Problem)
     .createQueryBuilder('problem')
     .select([
       'problem.id',
@@ -35,8 +34,7 @@ export async function getProblemInfo(problemid: number) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const problemRepository = getRepository(Problem);
-  const problemInfo = await problemRepository
+  const problemInfo = await getRepository(Problem)
     .findOne({
       where: {
         problemid,
@@ -56,20 +54,22 @@ export async function getProblemInfo(problemid: number) {
 }
 
 // Get problem list
+// To-do: add affiliation.
 export async function getProblemList(
-  orderBy: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
-  order: 'ASC' | 'DESC' = 'ASC',
+  sort: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
+  direction: 'ASC' | 'DESC' = 'ASC',
   page: number = 1,
-  num: number = config.oj.default.page.problem || 50) {
+  perPage: number = config.oj.default.page.problem || 50,
+) {
 
   // Validate parameters.
-  if (page < 1 || num < 1) {
+  if (page < 1 || perPage < 1) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const firstResult = (page - 1) * num;
-  const problemRepository = getRepository(Problem);
-  const problemList = await problemRepository
+  const firstResult = (page - 1) * perPage;
+
+  const problemList = await getRepository(Problem)
     .createQueryBuilder('problem')
     .select([
       'problem.id',
@@ -77,8 +77,8 @@ export async function getProblemList(
       'problem.title',
     ])
     .setFirstResult(firstResult)
-    .setMaxResults(num)
-    .orderBy(`problem.${orderBy}`, order)
+    .setMaxResults(perPage)
+    .orderBy(`problem.${sort}`, direction)
     .getMany()
     .catch((err) => {
       console.error(err);
@@ -94,20 +94,19 @@ export async function getProblemList(
 }
 
 export async function searchProblem(
-  orderBy: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
-  order: 'ASC' | 'DESC'  = 'ASC',
+  sort: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
+  direction: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
   page: number = 1,
-  num: number = config.oj.default.page.problem || 50) {
+  perPage: number = config.oj.default.page.problem || 50) {
 
   // Validate parameters.
-  if (page < 1 || num < 1 || !keyword) {
+  if (page < 1 || perPage < 1 || !keyword) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const firstResult = (page - 1) * num;
-  const problemRepository = getRepository(Problem);
-  const searchResult = await problemRepository
+  const firstResult = (page - 1) * perPage;
+  const searchResult = await getRepository(Problem)
     .createQueryBuilder('problem')
     .select([
       'problem.id',
@@ -118,8 +117,8 @@ export async function searchProblem(
     .orWhere('problem.description LIKE :keyword')
     .setParameter('keyword', `%${keyword}%`)
     .setFirstResult(firstResult)
-    .setMaxResults(num)
-    .orderBy(`problem.${orderBy}`, order)
+    .setMaxResults(perPage)
+    .orderBy(`problem.${sort}`, direction)
     .getMany()
     .catch((err) => {
       console.error(err);

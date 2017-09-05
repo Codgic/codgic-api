@@ -18,7 +18,7 @@ export async function errorHandler(ctx: Context, next: () => Promise<any>) {
       err.status = 500;
     } else if (err.status === 500) {
       console.error(err);
-      err.message = err.expose ? err.message : 'Internal Server Error';
+      err.message = 'Internal Server Error';
     }
 
     ctx.body = {

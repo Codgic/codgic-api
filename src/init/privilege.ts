@@ -3,6 +3,24 @@
 import * as createError from 'http-errors';
 import { isInGroup } from './../models/group';
 
+export const enum ArticleOption {
+  isSticky = 1,
+  isBulletin = 2,
+}
+
+export const enum ArticleType {
+  global = 0,
+  problemDiscussion = 1,
+  problemSolution = 2,  // problemSolution needs to be binded with sourcecode.
+  contestDiscussion = 3,
+}
+
+export const enum ArticlePrivilege {
+  comment = 1,
+  write = 2,
+  read = 4,
+}
+
 export const enum ContestPrivilege {
   join = 1,
   write = 2,
@@ -25,6 +43,12 @@ export const enum ProblemPrivilege {
   read = 4,
 }
 
+export const enum PrivilegeLevel {
+  world = 1,
+  group = 2,
+  owner = 4,
+}
+
 export const enum UserPrivilege {
   isEnabled = 1,
   viewHidden = 2,
@@ -37,6 +61,27 @@ export const enum UserPrivilege {
 // Check privilege (bitwise).
 export async function checkPrivilege(operation: number, privilege: number) {
   return (operation & privilege) === 0 ? false : true;
+}
+
+export async function getPrivilegeLevel(owner: number, group: number, userid: number) {
+
+  if (!(owner && group)) {
+    throw createError(500, 'Invalid parameters.');
+  }
+
+  let privilegeLevel: number = PrivilegeLevel.world;
+
+  if (userid) {
+    if (userid === owner) {
+      privilegeLevel += PrivilegeLevel.owner;
+    }
+    if (isInGroup(userid, group)) {
+      privilegeLevel += PrivilegeLevel.group;
+    }
+  }
+
+  return privilegeLevel;
+
 }
 
 // Verify content privilege.
@@ -64,22 +109,18 @@ export async function checkContentPrivilege(
     throw createError(500, 'Invalid parameters.');
   }
 
-  let result: boolean = false;
+  let actualPrivilege = contentInfo.worldPrivilege;
 
   if (userid) {
     if (userid === contentInfo.owner) {
       // If user is the problem owner.
-      result = (contentInfo.ownerPrivilege & operation) === 0 ? false : true;
+      actualPrivilege = contentInfo.ownerPrivilege;
     } else if (isInGroup(userid, contentInfo.group)) {
       // If user belongs to the problem owner group.
-      result = (contentInfo.groupPrivilege & operation) === 0 ? false : true;
-    } else {
-      result = (contentInfo.worldPrivilege & operation) === 0 ? false : true;
+      actualPrivilege = contentInfo.groupPrivilege;
     }
-  } else {
-    result = (contentInfo.worldPrivilege & operation) === 0 ? false : true;
   }
 
-  return result;
+  return checkPrivilege(operation, actualPrivilege);
 
 }

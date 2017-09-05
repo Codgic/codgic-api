@@ -43,19 +43,14 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
 
 export async function getProblemList(ctx: Context, next: () => Promise<any>) {
 
-  const problemList = await ProblemModel.getProblemList(ctx.query.sort, ctx.query.order, ctx.query.page, ctx.query.num);
+  const problemList = await ProblemModel.getProblemList(
+    ctx.query.sort,
+    ctx.query.direction,
+    ctx.query.page,
+    ctx.query.pre_page,
+  );
 
-  // Filter.
-  ctx.body = checkPrivilege(UserPrivilege.viewHidden, ctx.state.user.privilege) ? problemList :
-    problemList.filter((element) => {
-      return !checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, {
-        owner: element.owner,
-        group: element.group,
-        ownerPrivilege: element.ownerPrivilege,
-        groupPrivilege: element.groupPrivilege,
-        worldPrivilege: element.worldPrivilege,
-      });
-    });
+  ctx.body = problemList;
   ctx.status = 200;
 
   await next();
@@ -67,23 +62,13 @@ export async function searchProblem(ctx: Context, next: () => Promise<any>) {
   const searchResult = await ProblemModel
     .searchProblem(
       ctx.query.sort,
-      ctx.query.order,
+      ctx.query.direction,
       ctx.query.keyword,
       ctx.query.page,
-      ctx.query.num,
+      ctx.query.pre_page,
     );
 
-  // Filter.
-  ctx.body = checkPrivilege(UserPrivilege.viewHidden, ctx.state.user.privilege) ? searchResult :
-    searchResult.filter((element) => {
-      return !checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, {
-        owner: element.owner,
-        group: element.group,
-        ownerPrivilege: element.ownerPrivilege,
-        groupPrivilege: element.groupPrivilege,
-        worldPrivilege: element.worldPrivilege,
-      });
-    });
+  ctx.body = searchResult;
   ctx.status = 200;
 
   await next();
@@ -123,7 +108,7 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve problem info.
-  const problemInfo: any = await ProblemModel.getProblemInfo(ctx.params.problemid);
+  const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemid);
 
   // Check privilege.
   const hasPrivilege = checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege) ? true :
