@@ -13,16 +13,16 @@ import {
 import { GroupMemberPrivilege } from './../init/privilege';
 
 @Entity()
-@Index('userid_groupid', ['userid', 'groupid'])
+@Index('userid_groupid', ['userId', 'groupId'])
 export class GroupMap {
 
   @PrimaryColumn('int')
   @Index()
-  public groupid: number;
+  public groupId: number;
 
   @PrimaryColumn('int')
   @Index()
-  public userid: number;
+  public userId: number;
 
   @Column('tinyint', {
     default: GroupMemberPrivilege.isMember || 0,

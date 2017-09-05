@@ -44,10 +44,10 @@ export async function getUserInfoWithAuth(data: string, retrievedPassword: strin
 
 }
 
-export async function generateToken(userid: number, username: string, email: string, privilege: number) {
+export async function generateToken(userId: number, username: string, email: string, privilege: number) {
 
   // Validate parameters.
-  if (!(username && email) || isNaN(userid) || isNaN(privilege)) {
+  if (!(username && email) || isNaN(userId) || isNaN(privilege)) {
     throw createError(500, 'Invalid parameters');
   }
 
@@ -57,7 +57,7 @@ export async function generateToken(userid: number, username: string, email: str
 
   // Sign jwt token.
   const accessToken = jwt.sign({
-    id: userid,
+    id: userId,
     username,
     email,
     privilege,

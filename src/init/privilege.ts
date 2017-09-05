@@ -21,6 +21,10 @@ export const enum ArticlePrivilege {
   read = 4,
 }
 
+export const enum CommentOption {
+  isPrivate = 1,
+}
+
 export const enum ContestPrivilege {
   join = 1,
   write = 2,

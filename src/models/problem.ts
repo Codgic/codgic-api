@@ -13,31 +13,31 @@ export async function getMaxProblemId() {
     .createQueryBuilder('problem')
     .select([
       'problem.id',
-      'problem.problemid',
+      'problem.problemId',
     ])
-    .orderBy('problem.problemid', 'DESC')
+    .orderBy('problem.problemId', 'DESC')
     .getOne()
     .catch((err) => {
       console.error(err);
       throw createError(500, 'Database operation failed.');
     });
 
-  return maxProblemInfo ? maxProblemInfo.problemid : null;
+  return maxProblemInfo ? maxProblemInfo.problemId : null;
 
 }
 
 // Get problem info
-export async function getProblemInfo(problemid: number) {
+export async function getProblemInfo(problemId: number) {
 
   // Validate parameters.
-  if (!problemid) {
+  if (!problemId) {
     throw createError(500, 'Invalid parameters.');
   }
 
   const problemInfo = await getRepository(Problem)
     .findOne({
       where: {
-        problemid,
+        problemId,
       },
     })
     .catch((err) => {
@@ -56,7 +56,7 @@ export async function getProblemInfo(problemid: number) {
 // Get problem list
 // To-do: add affiliation.
 export async function getProblemList(
-  sort: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
+  sort: 'problemId' | 'title' | 'createdAt' | 'updatedAt' = 'problemId',
   direction: 'ASC' | 'DESC' = 'ASC',
   page: number = 1,
   perPage: number = config.oj.default.page.problem || 50,
@@ -73,7 +73,7 @@ export async function getProblemList(
     .createQueryBuilder('problem')
     .select([
       'problem.id',
-      'problem.problemid',
+      'problem.problemId',
       'problem.title',
     ])
     .setFirstResult(firstResult)
@@ -94,7 +94,7 @@ export async function getProblemList(
 }
 
 export async function searchProblem(
-  sort: 'problemid' | 'title' | 'createdAt' | 'updatedAt' = 'problemid',
+  sort: 'problemId' | 'title' | 'createdAt' | 'updatedAt' = 'problemId',
   direction: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
   page: number = 1,
@@ -110,7 +110,7 @@ export async function searchProblem(
     .createQueryBuilder('problem')
     .select([
       'problem.id',
-      'problem.problemid',
+      'problem.problemId',
       'problem.title',
     ])
     .where('problem.title LIKE :keyword')
@@ -134,10 +134,10 @@ export async function searchProblem(
 }
 
 // Post or update problem to temporary table.
-export async function postProblemTemp(problemid: number, data: Problem, userid: number) {
+export async function postProblemTemp(problemId: number, data: Problem, userId: number) {
 
   // Validate parameters.
-  if (!(problemid && data.title && data.memoryLimit && data.timeLimit && userid)) {
+  if (!(problemId && data.title && data.memoryLimit && data.timeLimit && userId)) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -146,10 +146,10 @@ export async function postProblemTemp(problemid: number, data: Problem, userid: 
 }
 
 // Post or update problem directly.
-export async function postProblem(problemid: number, data: Problem, userid: number) {
+export async function postProblem(problemId: number, data: Problem, userId: number) {
 
   // Validate parameters.
-  if (!(problemid && data.title && data.memoryLimit && data.timeLimit && userid)) {
+  if (!(problemId && data.title && data.memoryLimit && data.timeLimit && userId)) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -157,7 +157,7 @@ export async function postProblem(problemid: number, data: Problem, userid: numb
   const problemInfo = await problemRepository
     .findOne({
       where: {
-        problemid,
+        problemId,
       },
     })
     .catch((err) => {
@@ -167,7 +167,7 @@ export async function postProblem(problemid: number, data: Problem, userid: numb
 
   const problem = problemInfo ? problemInfo : new Problem();
 
-  problem.problemid = problemid;
+  problem.problemId = problemId;
   problem.title = data.title;
   problem.description = data.description;
   problem.inputFormat = data.inputFormat;
@@ -176,8 +176,8 @@ export async function postProblem(problemid: number, data: Problem, userid: numb
   problem.additionalInfo = data.additionalInfo;
   problem.timeLimit = data.timeLimit;
   problem.memoryLimit = data.memoryLimit;
-  problem.createdBy = userid;
-  problem.owner = userid;
+  problem.createdBy = userId;
+  problem.owner = userId;
 
   await problemRepository
     .persist(problem)

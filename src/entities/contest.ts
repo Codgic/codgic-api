@@ -24,7 +24,7 @@ export class Contest {
     unique: true,
   })
   @Index()
-  public contestid: number;
+  public contestId: number;
 
   @Column('varchar')
   public title: string;

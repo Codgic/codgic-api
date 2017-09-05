@@ -8,10 +8,10 @@ import { GroupMap } from './../entities/group_map';
 import { config } from './../init/config';
 import { GroupMemberPrivilege } from './../init/privilege';
 
-export async function getGroupInfo(groupid: number) {
+export async function getGroupInfo(groupId: number) {
 
   // Validate parameters.
-  if (!groupid) {
+  if (!groupId) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -19,7 +19,7 @@ export async function getGroupInfo(groupid: number) {
   const groupInfo = await groupRepository
     .findOne({
       where: {
-        id: groupid,
+        id: groupId,
       },
     })
     .catch((err) => {
@@ -35,17 +35,17 @@ export async function getGroupInfo(groupid: number) {
 
 }
 
-export async function getGroupMembers(groupid: number) {
+export async function getGroupMembers(groupId: number) {
 
   // Validate parameters.
-  if (!groupid) {
+  if (!groupId) {
     throw createError(500, 'Invalid parameters.');
   }
 
   const groupMapInfo = await getRepository(GroupMap)
     .find({
       where: {
-        groupid,
+        groupId,
       },
     })
     .catch((err) => {
@@ -103,18 +103,18 @@ export async function searchGroup(
 }
 
 // Judge whether user is in group.
-export async function isInGroup(userid: number, groupid: number) {
+export async function isInGroup(userId: number, groupId: number) {
 
   // Validate parameters.
-  if (isNaN(userid) || isNaN(groupid)) {
+  if (isNaN(userId) || isNaN(groupId)) {
     throw createError(500, 'Invalid parameters.');
   }
 
   const groupMapInfo = await getRepository(GroupMap)
     .findOne({
       where: {
-        userid,
-        groupid,
+        userId,
+        groupId,
       },
     })
     .catch((err) => {
@@ -130,17 +130,17 @@ export async function isInGroup(userid: number, groupid: number) {
 
 }
 
-export async function addToGroup(userid: number, groupid: number, privilege: number) {
+export async function addToGroup(userId: number, groupId: number, privilege: number) {
 
   // Validate parameters.
-  if (!(userid && !groupid)) {
+  if (!(userId && !groupId)) {
     throw createError(500, 'Invalid parameters.');
   }
 
   const groupMap = new GroupMap();
 
-  groupMap.userid = userid;
-  groupMap.groupid = groupid;
+  groupMap.userId = userId;
+  groupMap.groupId = groupId;
   groupMap.privilege = privilege;
 
   await getRepository(GroupMap)
@@ -155,10 +155,10 @@ export async function addToGroup(userid: number, groupid: number, privilege: num
 }
 
 // Create or update group.
-export async function postGroup(data: Group, userid: number) {
+export async function postGroup(data: Group, userId: number) {
 
   // Validate parameters.
-  if (!(data.name && userid)) {
+  if (!(data.name && userId)) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -166,7 +166,7 @@ export async function postGroup(data: Group, userid: number) {
 
   group.name = data.name;
   group.description = data.description;
-  group.owner = userid;
+  group.owner = userId;
 
   await getRepository(Group)
     .persist(group)

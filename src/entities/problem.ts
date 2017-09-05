@@ -25,7 +25,7 @@ export class Problem {
     unique: true,
   })
   @Index()
-  public problemid: number;
+  public problemId: number;
 
   @Column('varchar')
   public title: string;
