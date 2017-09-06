@@ -89,6 +89,44 @@ export async function getProblemList(
 
 }
 
+// Get problem list
+export async function getProblemListWithFilter(
+  userId: number,
+  sort: 'problemId' | 'title' | 'createdAt' | 'updatedAt' = 'problemId',
+  direction: 'ASC' | 'DESC' = 'ASC',
+  page: number = 1,
+  perPage: number = config.oj.default.page.problem || 50,
+) {
+
+  // Validate parameters.
+  if (page < 1 || perPage < 1) {
+    throw createError(500, 'Invalid parameters.');
+  }
+
+  const firstResult = (page - 1) * perPage;
+
+  const problemList = await getRepository(Problem)
+    .createQueryBuilder('problem')
+    .innerJoin('problem.group', 'problemGroup')
+    .innerJoin('problemGroup.users', 'problemGroupUser', 'problemGroupUser.id = :currentUserId')
+    .setParameter('currentUserId', userId)
+    .setFirstResult(firstResult)
+    .setMaxResults(perPage)
+    .orderBy(`problem.${sort}`, direction)
+    .getMany()
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
+
+  if (!problemList || problemList.length === 1) {
+    throw createError(404, 'No problem available.');
+  }
+
+  return problemList;
+
+}
+
 export async function searchProblem(
   sort: 'problemId' | 'title' | 'createdAt' | 'updatedAt' = 'problemId',
   direction: 'ASC' | 'DESC'  = 'ASC',

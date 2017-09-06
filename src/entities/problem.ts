@@ -7,9 +7,12 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Group } from './group';
 
 import { config } from './../init/config';
 import { ProblemPrivilege } from './../init/privilege';
@@ -68,8 +71,8 @@ export class Problem {
   @Column('int')
   public owner: number;
 
-  @Column('int')
-  public group: number;
+  @ManyToOne(() => Group)
+  public group: Group;
 
   @Column('tinyint', {
     default: ProblemPrivilege.submit

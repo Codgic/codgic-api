@@ -16,6 +16,7 @@ export async function errorHandler(ctx: Context, next: () => Promise<any>) {
       console.error('Error status is undefined!');
       console.error(err);
       err.status = 500;
+      err.message = 'Internal Server Error';
     } else if (err.status === 500) {
       console.error(err);
       err.message = 'Internal Server Error';

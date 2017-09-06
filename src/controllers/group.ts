@@ -14,7 +14,7 @@ export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve group info.
-  const groupInfo = await GroupModel.getGroupInfo(ctx.params.groupid);
+  const groupInfo = await GroupModel.getGroupInfo(ctx.params.groupid, 'id');
 
   if (!groupInfo) {
     throw createError(404, 'Group does not exist.');
@@ -27,18 +27,15 @@ export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
 
 }
 
-export async function getGroupMembers(ctx: Context, next: () => Promise<any>) {
+export async function addToGroup(ctx: Context, next: () => Promise<any>) {
 
   // Validate request.
-  if (isNaN(ctx.params.groupid)) {
-    throw createError(400, 'Invalid group id.');
+  if (!ctx.state.user) {
+    throw createError(401);
   }
 
-  // Retrieve group members.
-  const groupMembers = await GroupModel.getGroupMembers(ctx.params.groupid);
-
-  ctx.body = groupMembers;
-  ctx.status = 200;
+  ctx.body = await GroupModel.addToGroup(ctx.request.body.userid, ctx.request.body.groupid);
+  ctx.status = 201;
 
   await next();
 

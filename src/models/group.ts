@@ -3,23 +3,22 @@
 import * as createError from 'http-errors';
 import { getRepository } from 'typeorm';
 
-import { Group } from './../entities/group';
-import { GroupMap } from './../entities/group_map';
-import { config } from './../init/config';
-import { GroupMemberPrivilege } from './../init/privilege';
+import { getUserInfo } from './user';
 
-export async function getGroupInfo(groupId: number) {
+import { Group } from './../entities/group';
+import { config } from './../init/config';
+
+export async function getGroupInfo(data: number, by: 'id' | 'name' = 'id') {
 
   // Validate parameters.
-  if (!groupId) {
+  if (!data || (by !== 'id' && 'name')) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const groupRepository = getRepository(Group);
-  const groupInfo = await groupRepository
+  const groupInfo = await getRepository(Group)
     .findOne({
       where: {
-        id: groupId,
+        [by]: data,
       },
     })
     .catch((err) => {
@@ -28,28 +27,6 @@ export async function getGroupInfo(groupId: number) {
     });
 
   return groupInfo;
-
-}
-
-export async function getGroupMembers(groupId: number) {
-
-  // Validate parameters.
-  if (!groupId) {
-    throw createError(500, 'Invalid parameters.');
-  }
-
-  const groupMapInfo = await getRepository(GroupMap)
-    .find({
-      where: {
-        groupId,
-      },
-    })
-    .catch((err) => {
-      console.error(err);
-      throw createError(500, 'Database operation failed.');
-    });
-
-  return groupMapInfo;
 
 }
 
@@ -102,47 +79,37 @@ export async function isInGroup(userId: number, groupId: number) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const groupMapInfo = await getRepository(GroupMap)
-    .findOne({
-      where: {
-        userId,
-        groupId,
-      },
-    })
-    .catch((err) => {
-      console.error(err);
-      throw createError(500, 'Database operation failed.');
-    });
-
-  if (groupMapInfo && (groupMapInfo.privilege & GroupMemberPrivilege.isMember)) {
-    return true;
-  } else {
-    return false;
-  }
+  return true;
 
 }
 
-export async function addToGroup(userId: number, groupId: number, privilege: number) {
+export async function addToGroup(userId: number, groupId: number) {
 
   // Validate parameters.
-  if (!(userId && !groupId)) {
+  if (!(userId && groupId)) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const groupMap = new GroupMap();
+  const user = await getUserInfo(userId, 'id');
 
-  groupMap.userId = userId;
-  groupMap.groupId = groupId;
-  groupMap.privilege = privilege;
+  if (!user) {
+    throw createError(400, 'User does not exist.');
+  }
 
-  await getRepository(GroupMap)
-    .persist(groupMap)
+  const group = await getGroupInfo(groupId, 'id');
+
+  if (!group) {
+    throw createError(400, 'Group does not exist.');
+  }
+
+  group.users = [ user ];
+
+  return getRepository(Group)
+    .save(group)
     .catch((err) => {
       console.error(err);
       throw createError(500, 'Database operation failed.');
     });
-
-  return groupMap;
 
 }
 
@@ -156,11 +123,19 @@ export async function postGroup(data: Group, userId: number) {
 
   const group = new Group();
 
+  const user = await getUserInfo(userId, 'id');
+  if (!user) {
+    throw createError(500, 'User does not exist.');
+  }
+
   group.name = data.name;
   group.description = data.description;
   group.owner = userId;
 
-  await getRepository(Group)
+  // Add owner as group users.
+  group.users = [ user ];
+
+  return getRepository(Group)
     .persist(group)
     .catch((err) => {
       console.error(err);
@@ -169,7 +144,5 @@ export async function postGroup(data: Group, userId: number) {
       }
       throw createError (500, 'Database operation failed.');
     });
-
-  return group;
 
 }

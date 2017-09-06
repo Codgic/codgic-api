@@ -11,7 +11,7 @@ import { errorHandler } from './../../../src/middlewares/error';
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 
-describe('Error handler middleware', async () => {
+describe('Middleware: errorHandler', async () => {
 
   let app: Koa;
 

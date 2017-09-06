@@ -91,7 +91,7 @@ export async function getPrivilegeLevel(owner: number, group: number, userid: nu
 // Verify content privilege.
 export async function checkContentPrivilege(
   operation: number,
-  userid: number | undefined,
+  userId: number | undefined,
   contentInfo: {
     owner: number,
     group: number,
@@ -115,11 +115,11 @@ export async function checkContentPrivilege(
 
   let actualPrivilege = contentInfo.worldPrivilege;
 
-  if (userid) {
-    if (userid === contentInfo.owner) {
+  if (userId) {
+    if (userId === contentInfo.owner) {
       // If user is the problem owner.
       actualPrivilege = contentInfo.ownerPrivilege;
-    } else if (isInGroup(userid, contentInfo.group)) {
+    } else if (isInGroup(userId, contentInfo.group)) {
       // If user belongs to the problem owner group.
       actualPrivilege = contentInfo.groupPrivilege;
     }

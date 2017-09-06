@@ -6,9 +6,13 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Group } from './group';
 
 import { UserPrivilege } from './../init/privilege';
 
@@ -56,6 +60,10 @@ export class User {
   })
   @Index()
   public privilege: number;
+
+  @ManyToMany(() => Group)
+  @JoinTable()
+  public groups: Group[];
 
   @CreateDateColumn()
   public createdAt: string;
