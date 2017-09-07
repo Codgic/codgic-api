@@ -7,12 +7,13 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  JoinTable,
-  ManyToMany,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+import { GroupMap } from './group_map';
 import { User } from './user';
 
 @Entity()
@@ -33,18 +34,20 @@ export class Group {
   })
   public description: string;
 
-  @Column('varchar')
+  @ManyToOne(() => User)
   @Index()
-  public owner: number;
+  public owner: User;
 
   @Column('tinyint', {
     default: 0,
   })
   public privilege: number;
 
-  @ManyToMany(() => User)
-  @JoinTable()
-  public users: User[];
+  @OneToMany(() => GroupMap, (groupMap) => groupMap.group, {
+    cascadeInsert: true,
+    cascadeUpdate: true,
+  })
+  public users: GroupMap[];
 
   @CreateDateColumn()
   public createdAt: string;

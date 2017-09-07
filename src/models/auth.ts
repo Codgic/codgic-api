@@ -5,21 +5,20 @@ import * as jwt from 'jsonwebtoken';
 import { getRepository } from 'typeorm';
 
 import { User } from './../entities/user';
+import { UserCredential } from './../entities/user_credential';
 import { config } from './../init/config';
 import { UserPrivilege } from './../init/privilege';
 
-export async function getUserInfoWithAuth(data: string, retrievedPassword: string) {
+export async function validateUserCredential(data: string, retrievedPassword: string) {
 
   // Validate parameters.
   if (!(retrievedPassword && data)) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const userRepository = getRepository(User);
-  const userInfo = await userRepository
-    .createQueryBuilder('user')
-    .where('user.username = :data')
-    .orWhere('user.email = :data')
+  const userCredentialInfo = await getRepository(UserCredential)
+    .createQueryBuilder('user_credential')
+    .innerJoinAndSelect('user_credential.user', 'user', 'user.email = :data OR user.username = :data')
     .setParameter('data', data)
     .getOne()
     .catch((err) => {
@@ -27,18 +26,20 @@ export async function getUserInfoWithAuth(data: string, retrievedPassword: strin
       throw createError(500, 'Database operation failed.');
     });
 
-  if (!userInfo) {
+  if (!userCredentialInfo) {
     // For security purposes, return 'Incorrect username or password.'.
     throw createError(403, 'Incorrect username or password.');
   }
 
-  if (!(userInfo.privilege & UserPrivilege.isEnabled)) {
+  if (!(userCredentialInfo.user.privilege & UserPrivilege.isEnabled)) {
     throw createError(403, 'User is disabled.');
   }
 
-  if (!userInfo.verifyPassword(retrievedPassword)) {
+  if (!userCredentialInfo.verifyPassword(retrievedPassword)) {
     throw createError(403, 'Incorrect username or password.');
   }
+
+  const userInfo: User = userCredentialInfo.user;
 
   return userInfo;
 

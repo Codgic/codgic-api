@@ -42,7 +42,7 @@ export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   // Auth and get user info.
-  const userInfo = await AuthModel.getUserInfoWithAuth(ctx.request.body.username, ctx.request.body.password);
+  const userInfo = await AuthModel.validateUserCredential(ctx.request.body.username, ctx.request.body.password);
 
   // Generate Token.
   const token = await AuthModel.generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege);

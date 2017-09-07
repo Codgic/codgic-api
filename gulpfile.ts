@@ -67,7 +67,7 @@ export class Gulpfile {
     ], {read: false})
         .pipe(mocha({
           bail: true,
-          timeout: 15000,
+          timeout: 20000,
         }));
   }
 

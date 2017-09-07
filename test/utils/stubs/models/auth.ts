@@ -1,7 +1,7 @@
 /* /test/utils/stubs/models/auth.ts
   Fake auth model functions for testing. */
 
-export function fakeGetUserInfoWithAuth(username: string, password: string) {
+export function fakevalidateUserCredential(username: string, password: string) {
   if (!(username && password)) {
     throw new Error('Invalid parameters.');
   }

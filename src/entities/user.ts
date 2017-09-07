@@ -1,18 +1,16 @@
 /* /src/entities/user.ts */
 
-import * as crypto from 'crypto';
 import {
   Column,
   CreateDateColumn,
   Entity,
   Index,
-  JoinTable,
-  ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Group } from './group';
+import { GroupMap } from './group_map';
 
 import { UserPrivilege } from './../init/privilege';
 
@@ -61,48 +59,13 @@ export class User {
   @Index()
   public privilege: number;
 
-  @ManyToMany(() => Group)
-  @JoinTable()
-  public groups: Group[];
+  @OneToMany(() => GroupMap, (groupMap) => groupMap.user)
+  public groups: GroupMap[];
 
   @CreateDateColumn()
   public createdAt: string;
 
   @UpdateDateColumn()
   public updatedAt: string;
-
-  @Column('varchar')
-  private password: string;
-
-  @Column('varchar')
-  private salt: string;
-
-  public verifyPassword(retrievedPassword: string) {
-
-    return this.password === crypto
-      .createHash('sha512')
-      .update(retrievedPassword + this.salt)
-      .digest('hex');
-
-  }
-
-  public async updatePassword(retrievedPassword: string) {
-
-      crypto.randomBytes(32, (err, buf) => {
-        if (err) {
-          console.error(err);
-          throw new Error('Failed to generate salt.');
-        } else {
-          this.salt = buf.toString('hex');
-          this.password = crypto
-            .createHash('sha512')
-            .update(retrievedPassword + this.salt)
-            .digest('hex');
-        }
-      });
-
-      return true;
-
-  }
 
 }

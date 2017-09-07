@@ -21,7 +21,7 @@ chai.use(chaiHttp);
 describe('AuthController: Verify authentication information', async () => {
 
   const app = new Koa();
-  let stubGetUserInfoWithAuth: sinon.SinonStub;
+  let stubvalidateUserCredential: sinon.SinonStub;
   let stubGenerateToken: sinon.SinonStub;
 
   before(async () => {
@@ -29,9 +29,9 @@ describe('AuthController: Verify authentication information', async () => {
     app.use(errorHandler);
     app.use(bodyParser());
 
-    // Stub getUserInfoWithAuth()
-    stubGetUserInfoWithAuth = await sinon.stub(AuthModel, 'getUserInfoWithAuth')
-      .callsFake(AuthStub.fakeGetUserInfoWithAuth);
+    // Stub validateUserCredential()
+    stubvalidateUserCredential = await sinon.stub(AuthModel, 'validateUserCredential')
+      .callsFake(AuthStub.fakevalidateUserCredential);
 
     // Stub generateToken()
     stubGenerateToken = await sinon.stub(AuthModel, 'generateToken')
@@ -43,7 +43,7 @@ describe('AuthController: Verify authentication information', async () => {
 
   after (async () => {
 
-    await stubGetUserInfoWithAuth.restore();
+    await stubvalidateUserCredential.restore();
     await stubGenerateToken.restore();
 
   });
@@ -116,7 +116,7 @@ describe('AuthController: Refresh token', async () => {
 
   before(async () => {
 
-    // Stub getUserInfoWithAuth()
+    // Stub validateUserCredential()
     stubGetUserInfo = await sinon.stub(UserModel, 'getUserInfo')
       .callsFake(UserStub.fakeGetUserInfo);
 

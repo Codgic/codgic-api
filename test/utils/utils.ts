@@ -4,6 +4,7 @@
 import { ConnectionOptions, getRepository } from 'typeorm';
 
 import { User } from './../../src/entities/user';
+import { UserCredential } from './../../src/entities/user_credential';
 import { config } from './../../src/init/config';
 
 export const testConnectionOptions: ConnectionOptions = {
@@ -32,62 +33,63 @@ export const testConnectionOptions: ConnectionOptions = {
 export async function initTestUser() {
 
   const user = new User();
-
-  user.updatePassword('CorrectPassword');
+  const userCredential = new UserCredential();
 
   user.id = 1;
   user.username = 'zk';
   user.email = 'fuckzk@codgi.cc';
   user.privilege = 1;
 
-  const userRepository = getRepository(User);
+  userCredential.user = user;
+  userCredential.updatePassword('CorrectPassword');
 
-  await userRepository.persist(user);
+  await getRepository(UserCredential).persist(userCredential);
 
 }
 
 export async function initAllUsers() {
 
-  const userRepository = getRepository(User);
-
   const user = new User();
-
-  user.updatePassword('CorrectPassword');
+  const userCredential = new UserCredential();
 
   user.id = 1;
   user.username = 'zk';
   user.email = 'fuckzk@codgi.cc';
   user.privilege = 1;
 
-  await userRepository.persist(user);
+  userCredential.user = user;
+  userCredential.updatePassword('CorrectPassword');
+
+  await getRepository(UserCredential).persist(userCredential);
 
   user.id = 2;
   user.username = 'gzf';
   user.email = 'fuckgzf@codgi.cc';
   user.privilege = 1;
 
-  await userRepository.persist(user);
+  userCredential.user = user;
+  userCredential.updatePassword('CorrectPassword');
+
+  await getRepository(UserCredential).persist(userCredential);
 
   user.id = 3;
   user.username = 'yyd';
   user.email = 'fuckyyd@codgi.cc';
   user.privilege = 1;
 
-  await userRepository.persist(user);
+  userCredential.user = user;
+  userCredential.updatePassword('CorrectPassword');
 
-}
-
-export async function deleteTestUser() {
-
-  await getRepository(User)
-    .createQueryBuilder('user')
-    .delete()
-    .where('user.username = \'zk\'')
-    .execute();
+  await getRepository(UserCredential).persist(userCredential);
 
 }
 
 export async function deleteAllUsers() {
+
+  await getRepository(UserCredential)
+    .createQueryBuilder('user_credential')
+    .delete()
+    .execute();
 
   await getRepository(User)
     .createQueryBuilder('user')
@@ -111,16 +113,16 @@ export async function updateTestUserPrivilege(username: string, privilege: numbe
 
 export async function verifyUserPassword(username: string, retrievedPassword: string) {
 
-  const userInfo = await getRepository(User)
-    .createQueryBuilder('user')
-    .where('user.username = :username')
+  const userCredentialInfo = await getRepository(UserCredential)
+    .createQueryBuilder('user_credential')
+    .innerJoinAndSelect('user_credential.user', 'user', 'user.username = :username')
     .setParameter('username', username)
     .getOne();
 
-  if (!userInfo) {
+  if (!userCredentialInfo) {
     throw new Error('User does not exist.');
   }
 
-  return userInfo.verifyPassword(retrievedPassword);
+  return userCredentialInfo.verifyPassword(retrievedPassword);
 
 }

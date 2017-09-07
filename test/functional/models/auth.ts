@@ -14,7 +14,7 @@ import * as AuthModel from './../../../src/models/auth';
 
 chai.use(chaiAsPromised);
 
-describe('AuthModel: Get user info with Authentication', async () => {
+describe('AuthModel: Validate user credentials', async () => {
 
   before(async () => {
     await createConnection(Utils.testConnectionOptions);
@@ -28,7 +28,7 @@ describe('AuthModel: Get user info with Authentication', async () => {
   });
 
   it('should return user info if password is correct (by email)', async () => {
-    return chai.expect(AuthModel.getUserInfoWithAuth('fuckzk@codgi.cc', 'CorrectPassword'))
+    return chai.expect(AuthModel.validateUserCredential('fuckzk@codgi.cc', 'CorrectPassword'))
       .to.eventually.deep.include({
         id: 1,
         username: 'zk',
@@ -38,7 +38,7 @@ describe('AuthModel: Get user info with Authentication', async () => {
   });
 
   it('should return user info if password is correct (by username)', async () => {
-    return chai.expect(AuthModel.getUserInfoWithAuth('zk', 'CorrectPassword'))
+    return chai.expect(AuthModel.validateUserCredential('zk', 'CorrectPassword'))
       .to.eventually.deep.include({
         id: 1,
         username: 'zk',
@@ -48,7 +48,7 @@ describe('AuthModel: Get user info with Authentication', async () => {
   });
 
   it('should throw error if user does not exist', async () => {
-    return chai.expect(AuthModel.getUserInfoWithAuth('hellozk', 'CorrectPassword'))
+    return chai.expect(AuthModel.validateUserCredential('hellozk', 'CorrectPassword'))
       .to.be.rejected.and.eventually.deep.include({
         status: 403,
         expose: true,
@@ -57,7 +57,7 @@ describe('AuthModel: Get user info with Authentication', async () => {
   });
 
   it('should throw error if password is incorrect', async () => {
-    return chai.expect(AuthModel.getUserInfoWithAuth('zk', 'WrongPassword'))
+    return chai.expect(AuthModel.validateUserCredential('zk', 'WrongPassword'))
       .to.be.rejected.and.eventually.deep.include({
         status: 403,
         expose: true,
@@ -67,7 +67,8 @@ describe('AuthModel: Get user info with Authentication', async () => {
 
   it('should throw error if user is disabled', async () => {
     await Utils.updateTestUserPrivilege('zk', 0);
-    return chai.expect(AuthModel.getUserInfoWithAuth('zk', 'CorrectPassword'))
+
+    return chai.expect(AuthModel.validateUserCredential('zk', 'CorrectPassword'))
       .to.be.rejected.and.eventually.deep.include({
         status: 403,
         expose: true,
@@ -79,7 +80,7 @@ describe('AuthModel: Get user info with Authentication', async () => {
   });
 
   it('should throw error if username is missing', async () => {
-    chai.expect(AuthModel.getUserInfoWithAuth('', 'CorrectPassword'))
+    chai.expect(AuthModel.validateUserCredential('', 'CorrectPassword'))
       .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,
@@ -88,7 +89,7 @@ describe('AuthModel: Get user info with Authentication', async () => {
   });
 
   it('should throw error if password is missing', async () => {
-    chai.expect(AuthModel.getUserInfoWithAuth('zk', ''))
+    chai.expect(AuthModel.validateUserCredential('zk', ''))
       .to.be.rejected.and.eventually.deep.include({
         status: 500,
         expose: false,

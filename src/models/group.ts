@@ -6,6 +6,8 @@ import { getRepository } from 'typeorm';
 import { getUserInfo } from './user';
 
 import { Group } from './../entities/group';
+import { GroupMap } from './../entities/group_map';
+
 import { config } from './../init/config';
 
 export async function getGroupInfo(data: number, by: 'id' | 'name' = 'id') {
@@ -27,6 +29,27 @@ export async function getGroupInfo(data: number, by: 'id' | 'name' = 'id') {
     });
 
   return groupInfo;
+
+}
+
+export async function getGroupMember(data: number, by: 'id' | 'name' = 'id') {
+
+  // Validate parameters.
+  if (!data || (by !== 'id' && 'name')) {
+    throw createError(500, 'Invalid parameters.');
+  }
+
+  const groupMember = await getRepository(GroupMap)
+    .createQueryBuilder('group_map')
+    .innerJoinAndSelect('group_map.group', 'groupInfo', `groupInfo.${by} = :data`)
+    .setParameter('data', data)
+    .getMany()
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
+
+  return groupMember;
 
 }
 
@@ -102,14 +125,18 @@ export async function addToGroup(userId: number, groupId: number) {
     throw createError(400, 'Group does not exist.');
   }
 
-  group.users = [ user ];
+  const groupMap = new GroupMap();
 
-  return getRepository(Group)
-    .save(group)
+  groupMap.user = user;
+  groupMap.group = group;
+
+  const groupMapInfo = getRepository(GroupMap).save(groupMap)
     .catch((err) => {
       console.error(err);
       throw createError(500, 'Database operation failed.');
     });
+
+  return groupMapInfo;
 
 }
 
@@ -121,28 +148,35 @@ export async function postGroup(data: Group, userId: number) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const group = new Group();
-
   const user = await getUserInfo(userId, 'id');
+
   if (!user) {
     throw createError(500, 'User does not exist.');
   }
 
+  const group = new Group();
+  const groupMap = new GroupMap();
+
   group.name = data.name;
   group.description = data.description;
-  group.owner = userId;
+  group.owner = user;
+
+  groupMap.group = group;
+  groupMap.user = user;
 
   // Add owner as group users.
-  group.users = [ user ];
+  group.users = [ groupMap ];
 
-  return getRepository(Group)
-    .persist(group)
+  const groupInfo = await getRepository(Group).persist(group)
     .catch((err) => {
-      console.error(err);
       if (err.errno === 1062) {
         throw createError(400, 'Group name taken.');
+      } else {
+        console.error(err);
+        throw createError (500, 'Database operation failed.');
       }
-      throw createError (500, 'Database operation failed.');
     });
+
+  return groupInfo;
 
 }

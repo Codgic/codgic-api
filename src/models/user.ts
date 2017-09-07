@@ -5,6 +5,7 @@ import * as createError from 'http-errors';
 import { getRepository } from 'typeorm';
 
 import { User } from './../entities/user';
+import { UserCredential } from './../entities/user_credential';
 import { config } from './../init/config';
 import { UserPrivilege } from './../init/privilege';
 
@@ -126,10 +127,29 @@ export async function postUser(data: any) {
   }
 
   let user = new User();
+  let userCredential = new UserCredential();
 
   const userRepository = getRepository(User);
+  const userCredentialRepository = getRepository(UserCredential);
 
   if (data.id) {
+
+    const userCredentialInfo = await userCredentialRepository
+      .findOne({
+        join: {
+          alias: 'user_credential',
+          innerJoinAndSelect: {
+            user: 'user_credential.user',
+          },
+        },
+        where: {
+          user: data.id,
+        },
+      })
+      .catch((err) => {
+        console.error(err);
+        throw createError(500, 'Database operation failed.');
+      });
 
     const userInfo = await userRepository
       .findOne({
@@ -146,20 +166,25 @@ export async function postUser(data: any) {
       throw createError(400, 'User does not exist.');
     }
 
+    if (!userCredentialInfo) {
+      throw createError(400, 'User credential does not exist.');
+    }
+
     // Update privilege.
-    user.privilege = data.privilege === undefined ? user.privilege : data.privilege;
+    user.privilege = data.privilege ===
+      undefined ? userCredentialInfo.user.privilege : data.privilege;
 
     user = userInfo;
+    userCredential = userCredentialInfo;
 
   } else {
-
-    user.privilege = config.oj.policy.signup.need_confirmation && !user.createdAt ? 0 : UserPrivilege.isEnabled;
-
+    user.privilege =
+      (config.oj.policy.signup.need_confirmation && !user.createdAt) ? 0 : UserPrivilege.isEnabled;
   }
 
   // Update password.
   if (data.password) {
-    user
+    userCredential
       .updatePassword(data.password)
       .catch((err) => {
         console.error(err);
@@ -174,8 +199,10 @@ export async function postUser(data: any) {
   user.motto = data.motto === undefined ? user.motto : data.motto;
   user.description = data.description === undefined ? user.description : data.description;
 
-  await userRepository
-    .persist(user)
+  userCredential.user = user;
+
+  await userCredentialRepository
+    .persist(userCredential)
     .catch((err) => {
       if (err.errno === 1062) {
         throw createError(400, 'Username or email taken.');

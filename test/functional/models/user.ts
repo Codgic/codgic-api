@@ -57,7 +57,7 @@ describe('UserModel: Get user info', async () => {
   });
 
   it('should throw error if user does not exist', async () => {
-    await Utils.deleteTestUser();
+    await Utils.deleteAllUsers();
     return chai.expect(UserModel.getUserInfo('zk', 'username'))
       .to.be.fulfilled.and.eventually.equal(undefined)
       .then(async () => {
