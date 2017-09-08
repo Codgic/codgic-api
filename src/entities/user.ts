@@ -5,12 +5,9 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-import { GroupMap } from './group_map';
 
 import { UserPrivilege } from './../init/privilege';
 
@@ -58,9 +55,6 @@ export class User {
   })
   @Index()
   public privilege: number;
-
-  @OneToMany(() => GroupMap, (groupMap) => groupMap.user)
-  public groups: GroupMap[];
 
   @CreateDateColumn()
   public createdAt: string;

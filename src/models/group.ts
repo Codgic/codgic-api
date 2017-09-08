@@ -41,7 +41,11 @@ export async function getGroupMember(data: number, by: 'id' | 'name' = 'id') {
 
   const groupMember = await getRepository(GroupMap)
     .createQueryBuilder('group_map')
-    .innerJoinAndSelect('group_map.group', 'groupInfo', `groupInfo.${by} = :data`)
+    .innerJoinAndSelect('group_map.group', 'group', `group.${by} = :data`)
+    .innerJoinAndSelect('group_map.user', 'user')
+    .select([
+      'user',
+    ])
     .setParameter('data', data)
     .getMany()
     .catch((err) => {
@@ -130,13 +134,45 @@ export async function addToGroup(userId: number, groupId: number) {
   groupMap.user = user;
   groupMap.group = group;
 
-  const groupMapInfo = getRepository(GroupMap).save(groupMap)
+  await getRepository(GroupMap)
+    .persist(groupMap)
+    .catch((err) => {
+      if (err.errno === 1062) {
+        throw createError(400, 'Relationship already exists.');
+      } else {
+        console.error(err);
+        throw createError(500, 'Database operation failed.');
+      }
+    });
+
+  return groupMap;
+
+}
+
+export async function removeFromGroup(userId: number, groupId: number) {
+
+  // Validate parameters.
+  if (!(userId && groupId)) {
+    throw createError(500, 'Invalid parameters.');
+  }
+  const groupMapRepository = getRepository(GroupMap);
+
+  await groupMapRepository
+    .createQueryBuilder('group_map')
+    .innerJoinAndSelect('group_map.group', 'group', 'group.id = :groupId')
+    .innerJoinAndSelect('group_map.user', 'user', 'user.id = :userId')
+    .setParameters({
+      groupId,
+      userId,
+    })
+    .delete()
+    .execute()
     .catch((err) => {
       console.error(err);
       throw createError(500, 'Database operation failed.');
     });
 
-  return groupMapInfo;
+  return null;
 
 }
 
@@ -164,10 +200,8 @@ export async function postGroup(data: Group, userId: number) {
   groupMap.group = group;
   groupMap.user = user;
 
-  // Add owner as group users.
-  group.users = [ groupMap ];
-
-  const groupInfo = await getRepository(Group).persist(group)
+  await getRepository(Group)
+    .persist(group)
     .catch((err) => {
       if (err.errno === 1062) {
         throw createError(400, 'Group name taken.');
@@ -177,6 +211,22 @@ export async function postGroup(data: Group, userId: number) {
       }
     });
 
-  return groupInfo;
+  await getRepository(GroupMap)
+    .persist(groupMap)
+    .catch(async (err) => {
+      console.log(err);
+
+      // Revert adding group.
+      await getRepository(Group)
+        .remove(group)
+        .catch((e) => {
+          console.log(e);
+          throw createError(500, 'Database operation failed. Reverting failed as well.');
+        });
+
+      throw createError(500, 'Database operation failed.');
+    });
+
+  return group;
 
 }

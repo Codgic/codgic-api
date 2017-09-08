@@ -7,13 +7,15 @@ import * as Group from './../../controllers/group';
 const group = new Router();
 
 // group.get('/', Group.getGroupList);
-group.get('/:groupid', Group.getGroupInfo);
-group.get('/:groupid/member', Group.getGroupMember);
+group.get('/:groupId', Group.getGroupInfo);
+group.get('/:groupId/member', Group.getGroupMember);
 
 group.post('/', Group.postGroup);
 group.post('/:groupid/member', Group.addToGroup);
 
-// group.put('/', group.updateProfile);
-// group.delete('/', group.deleteProfile);
+// group.put('/', group.updateGroup);
+
+// group.delete('/', group.deleteGroup);
+group.delete('/:groupId/member/:userId', Group.removeFromGroup);
 
 export { group };

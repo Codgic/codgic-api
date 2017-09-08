@@ -9,12 +9,12 @@ import * as GroupModel from './../models/group';
 export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
 
   // Validate request.
-  if (isNaN(ctx.params.groupid)) {
+  if (isNaN(ctx.params.groupId)) {
     throw createError(400);
   }
 
   // Retrieve group info.
-  const groupInfo = await GroupModel.getGroupInfo(ctx.params.groupid, 'id');
+  const groupInfo = await GroupModel.getGroupInfo(ctx.params.groupId, 'id');
 
   if (!groupInfo) {
     throw createError(404, 'Group does not exist.');
@@ -30,12 +30,12 @@ export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
 export async function getGroupMember(ctx: Context, next: () => Promise<any>) {
 
   // Validate request.
-  if (isNaN(ctx.params.groupid)) {
+  if (isNaN(ctx.params.groupId)) {
     throw createError(400);
   }
 
   // Retrieve group info.
-  const groupMember = await GroupModel.getGroupMember(ctx.params.groupid, 'id');
+  const groupMember = await GroupModel.getGroupMember(ctx.params.groupId, 'id');
 
   ctx.body = groupMember;
   ctx.status = 200;
@@ -46,13 +46,37 @@ export async function getGroupMember(ctx: Context, next: () => Promise<any>) {
 
 export async function addToGroup(ctx: Context, next: () => Promise<any>) {
 
-  // Validate request.
+  // Check login.
   if (!ctx.state.user) {
     throw createError(401);
   }
 
+  // Validate request.
+  if (!(ctx.request.body.userid && ctx.request.body.groupid)) {
+    throw createError(400);
+  }
+
   ctx.body = await GroupModel.addToGroup(ctx.request.body.userid, ctx.request.body.groupid);
   ctx.status = 201;
+
+  await next();
+
+}
+
+export async function removeFromGroup(ctx: Context, next: () => Promise<any>) {
+
+  // Check login.
+  if (!ctx.state.user) {
+    throw createError(401);
+  }
+
+  // Validate request.
+  if (!(ctx.params.userId && ctx.params.groupId)) {
+    throw createError(400);
+  }
+
+  ctx.body = await GroupModel.removeFromGroup(ctx.params.userId, ctx.params.groupId);
+  ctx.status = 204;
 
   await next();
 

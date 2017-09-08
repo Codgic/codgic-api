@@ -20,17 +20,23 @@ import { GroupMemberPrivilege } from './../init/privilege';
 @Index('user_group', ['user', 'group'])
 export class GroupMap {
 
-  @ManyToOne(() => Group, (group) => group.users, {
+  @ManyToOne(() => Group, {
     primary: true,
   })
-  @JoinColumn()
+  @JoinColumn({
+    name: 'user',
+    referencedColumnName: 'id',
+  })
   @Index()
   public group: Group;
 
-  @ManyToOne(() => User, (user) => user.groups, {
+  @ManyToOne(() => User, {
     primary: true,
   })
-  @JoinColumn()
+  @JoinColumn({
+    name: 'group',
+    referencedColumnName: 'id',
+  })
   @Index()
   public user: User;
 

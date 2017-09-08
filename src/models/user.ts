@@ -126,15 +126,15 @@ export async function postUser(data: any) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  let user: User | undefined;
-  let userCredential: UserCredential | undefined;
+  let user: User;
+  let userCredential: UserCredential;
 
   const userRepository = getRepository(User);
   const userCredentialRepository = getRepository(UserCredential);
 
   if (data.id) {
 
-    userCredential = await userCredentialRepository
+    const userCredentialInfo = await userCredentialRepository
       .findOne({
         join: {
           alias: 'user_credential',
@@ -151,10 +151,11 @@ export async function postUser(data: any) {
         throw createError(500, 'Database operation failed.');
       });
 
-    if (!userCredential) {
+    if (!userCredentialInfo) {
       throw createError(400, 'User does not exist.');
     }
 
+    userCredential = userCredentialInfo;
     user = userCredential.user;
 
     // Update privilege.
@@ -201,8 +202,17 @@ export async function postUser(data: any) {
 
   await userCredentialRepository
     .persist(userCredential)
-    .catch((err) => {
+    .catch(async (err) => {
       console.error(err);
+
+      // Revert adding user.
+      await userRepository
+        .remove(user)
+        .catch((e) => {
+          console.error(e);
+          throw createError(500, 'Database operation failed. Reverting failed as well.');
+        });
+
       throw createError(500, 'Database operation failed.');
     });
 

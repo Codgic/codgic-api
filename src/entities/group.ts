@@ -8,12 +8,10 @@ import {
   Entity,
   Index,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { GroupMap } from './group_map';
 import { User } from './user';
 
 @Entity()
@@ -42,12 +40,6 @@ export class Group {
     default: 0,
   })
   public privilege: number;
-
-  @OneToMany(() => GroupMap, (groupMap) => groupMap.group, {
-    cascadeInsert: true,
-    cascadeUpdate: true,
-  })
-  public users: GroupMap[];
 
   @CreateDateColumn()
   public createdAt: string;
