@@ -22,9 +22,6 @@ export class GroupMap {
 
   @ManyToOne(() => Group, (group) => group.users, {
     primary: true,
-    cascadeInsert: true,
-    cascadeUpdate: true,
-    cascadeRemove: true,
   })
   @JoinColumn()
   @Index()
@@ -32,9 +29,6 @@ export class GroupMap {
 
   @ManyToOne(() => User, (user) => user.groups, {
     primary: true,
-    cascadeInsert: true,
-    cascadeUpdate: true,
-    cascadeRemove: true,
   })
   @JoinColumn()
   @Index()
@@ -51,4 +45,5 @@ export class GroupMap {
 
   @UpdateDateColumn()
   public updatedAt: string;
+
 }

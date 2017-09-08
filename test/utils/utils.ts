@@ -40,9 +40,11 @@ export async function initTestUser() {
   user.email = 'fuckzk@codgi.cc';
   user.privilege = 1;
 
+  userCredential.id = 1;
   userCredential.user = user;
   userCredential.updatePassword('CorrectPassword');
 
+  await getRepository(User).persist(user);
   await getRepository(UserCredential).persist(userCredential);
 
 }
@@ -57,9 +59,11 @@ export async function initAllUsers() {
   user.email = 'fuckzk@codgi.cc';
   user.privilege = 1;
 
+  userCredential.id = 1;
   userCredential.user = user;
   userCredential.updatePassword('CorrectPassword');
 
+  await getRepository(User).persist(user);
   await getRepository(UserCredential).persist(userCredential);
 
   user.id = 2;
@@ -67,9 +71,11 @@ export async function initAllUsers() {
   user.email = 'fuckgzf@codgi.cc';
   user.privilege = 1;
 
+  userCredential.id = 2;
   userCredential.user = user;
   userCredential.updatePassword('CorrectPassword');
 
+  await getRepository(User).persist(user);
   await getRepository(UserCredential).persist(userCredential);
 
   user.id = 3;
@@ -77,9 +83,11 @@ export async function initAllUsers() {
   user.email = 'fuckyyd@codgi.cc';
   user.privilege = 1;
 
+  userCredential.id = 3;
   userCredential.user = user;
   userCredential.updatePassword('CorrectPassword');
 
+  await getRepository(User).persist(user);
   await getRepository(UserCredential).persist(userCredential);
 
 }

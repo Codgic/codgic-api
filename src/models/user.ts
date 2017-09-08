@@ -122,19 +122,19 @@ export async function searchUser(
 export async function postUser(data: any) {
 
   // Verify parameters.
-  if (!(data.email && data.username && data.password)) {
+  if (!(data.email && data.username)) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  let user = new User();
-  let userCredential = new UserCredential();
+  let user: User | undefined;
+  let userCredential: UserCredential | undefined;
 
   const userRepository = getRepository(User);
   const userCredentialRepository = getRepository(UserCredential);
 
   if (data.id) {
 
-    const userCredentialInfo = await userCredentialRepository
+    userCredential = await userCredentialRepository
       .findOne({
         join: {
           alias: 'user_credential',
@@ -151,33 +151,20 @@ export async function postUser(data: any) {
         throw createError(500, 'Database operation failed.');
       });
 
-    const userInfo = await userRepository
-      .findOne({
-        where: {
-          id: data.id,
-        },
-      })
-      .catch((err) => {
-        console.error(err);
-        throw createError(500, 'Database operation failed.');
-      });
-
-    if (!userInfo) {
+    if (!userCredential) {
       throw createError(400, 'User does not exist.');
     }
 
-    if (!userCredentialInfo) {
-      throw createError(400, 'User credential does not exist.');
-    }
+    user = userCredential.user;
 
     // Update privilege.
     user.privilege = data.privilege ===
-      undefined ? userCredentialInfo.user.privilege : data.privilege;
-
-    user = userInfo;
-    userCredential = userCredentialInfo;
+      undefined ? user.privilege : data.privilege;
 
   } else {
+    user = new User();
+    userCredential = new UserCredential();
+
     user.privilege =
       (config.oj.policy.signup.need_confirmation && !user.createdAt) ? 0 : UserPrivilege.isEnabled;
   }
@@ -199,10 +186,8 @@ export async function postUser(data: any) {
   user.motto = data.motto === undefined ? user.motto : data.motto;
   user.description = data.description === undefined ? user.description : data.description;
 
-  userCredential.user = user;
-
-  await userCredentialRepository
-    .persist(userCredential)
+  await userRepository
+    .persist(user)
     .catch((err) => {
       if (err.errno === 1062) {
         throw createError(400, 'Username or email taken.');
@@ -210,6 +195,15 @@ export async function postUser(data: any) {
         console.error(err);
         throw createError(500, 'Database operation failed.');
       }
+    });
+
+  userCredential.user = user;
+
+  await userCredentialRepository
+    .persist(userCredential)
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
     });
 
   return user;

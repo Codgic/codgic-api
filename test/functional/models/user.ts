@@ -471,24 +471,9 @@ describe('UserModel: Post user', async () => {
 
   });
 
-  it('should throw error if password is missing', async () => {
-
-    const data = {
-      username: 'zk',
-      email: 'fuckzk@codgi.cc',
-    };
-
-    return chai.expect(UserModel.postUser(data))
-      .to.be.rejected.and.eventually.deep.include({
-        status: 500,
-        expose: false,
-        message: 'Invalid parameters.',
-      });
-  });
+});
 
 /* Not ready.
 describe('UserModel: Validate user info', async () => {
 });
 */
-
-});

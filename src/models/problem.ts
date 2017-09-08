@@ -171,7 +171,7 @@ export async function searchProblem(
 export async function postProblemTemp(problemId: number, data: Problem, userId: number) {
 
   // Validate parameters.
-  if (!(problemId && data.title && data.memoryLimit && data.timeLimit && userId)) {
+  if (!(problemId && data.title && userId)) {
     throw createError(500, 'Invalid parameters.');
   }
 
