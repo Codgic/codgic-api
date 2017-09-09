@@ -1,9 +1,12 @@
 # codgic-api
 
 [![Build status][travis-image]][travis-url]
+[![David][david-image]][david-url]
 [![GitHub license][license-image]][license-url]
 [![Gitter][gitter-image]][gitter-url]
 
+[david-image]: https://img.shields.io/david/codgician/codgic-api.svg?style=flat-square
+[david-url]: https://david-dm.org/codgician/codgic-api
 [gitter-image]: https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square
 [gitter-url]: https://gitter.im/Codgic/codgic-api
 [license-image]: https://img.shields.io/badge/license-LGPL-blue.svg?style=flat-square
