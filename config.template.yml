@@ -57,6 +57,4 @@ database:
   username: codgic
   password: YOURPASSWORD
   type: mysql
-  log:
-    queries: true
-    failed_query_error: true
+  logging: true

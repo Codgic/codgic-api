@@ -13,10 +13,7 @@ export const connectionOptions: ConnectionOptions = {
   database: config.database.database,
   username: config.database.username,
   password: config.database.password,
-  logging: {
-    logQueries: config.database.log.queries || false,
-    logFailedQueryError: config.database.log.failed_query_error || false,
-  },
+  logging: config.database.logging,
   autoSchemaSync: true,
   entities: [
     __dirname + '/../entities/*.ts',

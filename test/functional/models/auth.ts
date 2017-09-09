@@ -105,15 +105,14 @@ describe('AuthModel: Generate token', async () => {
     const accessToken = await AuthModel.generateToken(1, 'zk', 'fuckzk@codgi.cc', 1);
 
     // Verify token.
-    jwt.verify(accessToken, config.api.jwt.secret, (err: any, decoded: any) => {
-      chai.expect(err).to.equal(undefined);
-      chai.expect(decoded).to.deep.include({
+    chai.expect(jwt.verify(accessToken, config.api.jwt.secret))
+      .to.deep.include({
         id: 1,
         email: 'fuckzk@codgi.cc',
         username: 'zk',
         privilege: 1,
       });
-    });
+
   });
 
   it('should throw error if jwt secret is not valid', async () => {
@@ -128,5 +127,4 @@ describe('AuthModel: Generate token', async () => {
       });
 
   });
-
 });

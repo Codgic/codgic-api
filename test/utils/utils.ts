@@ -15,10 +15,7 @@ export const testConnectionOptions: ConnectionOptions = {
   database: config.database.database + '_test',
   username: config.database.username,
   password: config.database.password,
-  logging: {
-    logQueries: false,
-    logFailedQueryError: false,
-  },
+  logging: false,
   autoSchemaSync: true,
   entities: [
     __dirname + '/../../src/entities/*.js',

@@ -70,10 +70,7 @@ export interface IConfigStructure {
     username: string,
     password: string,
     type: 'mysql',  // Currently only mysql is tested.
-    log: {
-      queries: boolean,
-      failed_query_error: boolean,
-    },
+    logging: boolean,
   };
 
 }
