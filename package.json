@@ -11,12 +11,9 @@
     "start": "ts-node ./src/index.ts",
     "test": "gulp test"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Codgic/codgic-api.git"
-  },
-  "author": "codgician",
-  "license": "GPL-3.0",
+  "repository": "https://github.com/Codgic/codgic-api",
+  "author": "Jimmy Zhang <codgician@users.noreply.github.com>",
+  "license": "LGPL-3.0",
   "bugs": {
     "url": "https://github.com/Codgic/codgic-api/issues"
   },

@@ -78,12 +78,12 @@ export async function searchGroup(
 
   const searchResult = await getRepository(Group)
     .createQueryBuilder('group')
-    .where('problem.name LIKE :keyword')
-    .orWhere('problem.description LIKE :keyword')
+    .where('group.name LIKE :keyword')
+    .orWhere('group.description LIKE :keyword')
     .setParameter('keyword', `%${keyword}%`)
     .setFirstResult(firstResult)
     .setMaxResults(num)
-    .orderBy(`problem.${orderBy}`, order)
+    .orderBy(`group.${orderBy}`, order)
     .getMany()
     .catch((err) => {
       console.error(err);

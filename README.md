@@ -35,9 +35,8 @@ Recent changes will be pushed to [Codgic/codgic-api](https://github.com/codgic/c
 - [ ] Probably more...
 
 # Known problems (Reminder)
-- Password and salt are revealed when retrieving user info (because private fields aren't really private. See [Issue #564 - Microsoft/TypeScript](https://github.com/Microsoft/TypeScript/issues/564)).
 - Post user with taken username / email will trigger auto increment with InnoDB (not my fault, but what if some clown keeps sending faulty requests to overflow the primary key?).
-- Serval Database Injection vulnerabilities.
+- Serval possible Database Injection vulnerabilities.
 
 # Priorities
 - Finish writing tests.

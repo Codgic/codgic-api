@@ -3,6 +3,8 @@
 
 import { ConnectionOptions, getRepository } from 'typeorm';
 
+import { Group } from './../../src/entities/group';
+import { GroupMap } from './../../src/entities/group_map';
 import { User } from './../../src/entities/user';
 import { UserCredential } from './../../src/entities/user_credential';
 import { config } from './../../src/init/config';
@@ -27,6 +29,52 @@ export const testConnectionOptions: ConnectionOptions = {
 
 };
 
+// ====================
+//  Groups
+// ====================
+
+export async function initTestGroup() {
+
+  // Should initialize an user as group owner first.
+
+  const user = await initTestUser();
+
+  const group = new Group();
+  const groupMap = new GroupMap();
+
+  group.id = 1;
+  group.name = 'ZKWaterQueen';
+  group.description = 'All hail the Queen.';
+  group.owner = user;
+
+  groupMap.group = group;
+  groupMap.user = user;
+
+  await getRepository(Group).persist(group);
+  await getRepository(GroupMap).persist(groupMap);
+
+  return group;
+
+}
+
+export async function deleteAllGroups() {
+
+  await getRepository(GroupMap)
+    .createQueryBuilder('group_map')
+    .delete()
+    .execute();
+
+  await getRepository(Group)
+    .createQueryBuilder('group')
+    .delete()
+    .execute();
+
+}
+
+// ====================
+//  Users
+// ====================
+
 export async function initTestUser() {
 
   const user = new User();
@@ -43,6 +91,8 @@ export async function initTestUser() {
 
   await getRepository(User).persist(user);
   await getRepository(UserCredential).persist(userCredential);
+
+  return user;
 
 }
 
