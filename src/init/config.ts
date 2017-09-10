@@ -40,6 +40,7 @@ export interface IConfigStructure {
       page: {
         contest: number,
         group: number,
+        group_member: number,
         problem: number,
         user: number,
       },

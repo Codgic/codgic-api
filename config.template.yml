@@ -32,6 +32,7 @@ oj:
     page:
       contest: 50
       group: 20
+      group_member: 20
       problem: 50
       user: 20
     contest:

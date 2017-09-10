@@ -57,7 +57,8 @@ describe('AuthController: Verify authentication information', async () => {
         username: 'zk',
         password: 'CorrectPassword',
       }))
-      .to.be.fulfilled.and.eventually.deep.include({
+      .to.be.fulfilled
+      .and.eventually.deep.include({
         status: 200,
         body: {
           token: 'ValidToken',
@@ -77,7 +78,8 @@ describe('AuthController: Verify authentication information', async () => {
       .catch((err) => {
         return err.response;
       }))
-      .to.be.fulfilled.and.eventually.deep.include({
+      .to.be.fulfilled
+      .and.eventually.deep.include({
         status: 400,
         body: {
           error: 'Bad Request',
@@ -97,7 +99,8 @@ describe('AuthController: Verify authentication information', async () => {
       .catch((err) => {
         return err.response;
       }))
-      .to.be.fulfilled.and.eventually.deep.include({
+      .to.be.fulfilled
+      .and.eventually.deep.include({
         status: 400,
         body: {
           error: 'Bad Request',
@@ -162,7 +165,8 @@ describe('AuthController: Refresh token', async () => {
     app.use(AuthController.refreshToken);
 
     return chai.expect(chai.request(app.listen()).get('/'))
-      .to.be.fulfilled.and.eventually.deep.include({
+      .to.be.fulfilled
+      .and.eventually.deep.include({
         status: 200,
         body: {
           token: 'ValidToken',
@@ -177,7 +181,8 @@ describe('AuthController: Refresh token', async () => {
 
     return chai.expect(chai.request(app.listen()).get('/').catch((err) => {
       return err.response;
-    })).to.be.fulfilled.and.eventually.deep.include({
+    })).to.be.fulfilled
+    .and.eventually.deep.include({
         status: 401,
         body: {
           error: 'Unauthorized',

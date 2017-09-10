@@ -35,7 +35,7 @@ export async function validateUserCredential(data: string, retrievedPassword: st
     throw createError(403, 'User is disabled.');
   }
 
-  if (!userCredentialInfo.verifyPassword(retrievedPassword)) {
+  if (!await userCredentialInfo.verifyPassword(retrievedPassword)) {
     throw createError(403, 'Incorrect username or password.');
   }
 

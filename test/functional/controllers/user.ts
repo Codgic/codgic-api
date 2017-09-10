@@ -54,7 +54,8 @@ describe('UserController: Get user info', async () => {
     app.use(UserController.getUserInfo);
 
     return chai.expect(chai.request(app.listen()).get('/'))
-      .to.be.fulfilled.and.eventually.deep.include({
+      .to.be.fulfilled
+      .and.eventually.deep.include({
         status: 200,
         body: {
           id: 1,
@@ -79,7 +80,8 @@ describe('UserController: Get user info', async () => {
     app.use(UserController.getUserInfo);
 
     return chai.expect(chai.request(app.listen()).get('/'))
-      .to.be.fulfilled.and.eventually.deep.include({
+      .to.be.fulfilled
+      .and.eventually.deep.include({
         status: 200,
         body: {
           id: 1,
@@ -105,7 +107,8 @@ describe('UserController: Get user info', async () => {
 
     return chai.expect(chai.request(app.listen()).get('/zml').catch((err) => {
       return err.response;
-    })).to.be.fulfilled.and.eventually.deep.include({
+    })).to.be.fulfilled
+    .and.eventually.deep.include({
       status: 404,
       body: {
         error: 'User not found.',

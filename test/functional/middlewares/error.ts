@@ -30,7 +30,8 @@ describe('Middleware: errorHandler', async () => {
 
     return chai.expect(chai.request(app.listen()).get('/').catch((err) => {
       return err.response;
-    })).to.be.fulfilled.and.eventually.deep.include({
+    })).to.be.fulfilled
+    .and.eventually.deep.include({
       status: 400,
       body: {
         error: 'You should be fucking zk!',
@@ -43,7 +44,8 @@ describe('Middleware: errorHandler', async () => {
 
     return chai.expect(chai.request(app.listen()).get('/i/do/not/exist').catch((err) => {
       return err.response;
-    })).to.be.fulfilled.and.eventually.deep.include({
+    })).to.be.fulfilled
+    .and.eventually.deep.include({
       status: 404,
       body: {
         error: 'Not Found',
@@ -60,7 +62,8 @@ describe('Middleware: errorHandler', async () => {
 
     return chai.expect(chai.request(app.listen()).get('/').catch((err) => {
       return err.response;
-    })).to.be.fulfilled.and.eventually.deep.include({
+    })).to.be.fulfilled
+    .and.eventually.deep.include({
       status: 500,
       body: {
         error: 'Internal Server Error',
@@ -77,7 +80,8 @@ describe('Middleware: errorHandler', async () => {
 
     return chai.expect(chai.request(app.listen()).get('/').catch((err) => {
       return err.response;
-    })).to.be.fulfilled.and.eventually.deep.include({
+    })).to.be.fulfilled
+    .and.eventually.deep.include({
       status: 500,
       body: {
         error: 'Internal Server Error',

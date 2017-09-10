@@ -29,7 +29,8 @@ describe('AuthModel: Validate user credentials', async () => {
 
   it('should return user info if password is correct (by email)', async () => {
     return chai.expect(AuthModel.validateUserCredential('fuckzk@codgi.cc', 'CorrectPassword'))
-      .to.eventually.deep.include({
+      .to.be.fulfilled
+      .and.eventually.deep.include({
         id: 1,
         username: 'zk',
         email: 'fuckzk@codgi.cc',
@@ -39,7 +40,8 @@ describe('AuthModel: Validate user credentials', async () => {
 
   it('should return user info if password is correct (by username)', async () => {
     return chai.expect(AuthModel.validateUserCredential('zk', 'CorrectPassword'))
-      .to.eventually.deep.include({
+      .to.be.fulfilled
+      .and.eventually.deep.include({
         id: 1,
         username: 'zk',
         email: 'fuckzk@codgi.cc',
@@ -49,7 +51,8 @@ describe('AuthModel: Validate user credentials', async () => {
 
   it('should throw error if user does not exist', async () => {
     return chai.expect(AuthModel.validateUserCredential('hellozk', 'CorrectPassword'))
-      .to.be.rejected.and.eventually.deep.include({
+      .to.be.rejected
+      .and.eventually.deep.include({
         status: 403,
         expose: true,
         message: 'Incorrect username or password.',
@@ -58,7 +61,8 @@ describe('AuthModel: Validate user credentials', async () => {
 
   it('should throw error if password is incorrect', async () => {
     return chai.expect(AuthModel.validateUserCredential('zk', 'WrongPassword'))
-      .to.be.rejected.and.eventually.deep.include({
+      .to.be.rejected
+      .and.eventually.deep.include({
         status: 403,
         expose: true,
         message: 'Incorrect username or password.',
@@ -69,7 +73,8 @@ describe('AuthModel: Validate user credentials', async () => {
     await Utils.updateTestUserPrivilege('zk', 0);
 
     return chai.expect(AuthModel.validateUserCredential('zk', 'CorrectPassword'))
-      .to.be.rejected.and.eventually.deep.include({
+      .to.be.rejected
+      .and.eventually.deep.include({
         status: 403,
         expose: true,
         message: 'User is disabled.',
@@ -81,7 +86,8 @@ describe('AuthModel: Validate user credentials', async () => {
 
   it('should throw error if username is missing', async () => {
     chai.expect(AuthModel.validateUserCredential('', 'CorrectPassword'))
-      .to.be.rejected.and.eventually.deep.include({
+      .to.be.rejected
+      .and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
@@ -90,7 +96,8 @@ describe('AuthModel: Validate user credentials', async () => {
 
   it('should throw error if password is missing', async () => {
     chai.expect(AuthModel.validateUserCredential('zk', ''))
-      .to.be.rejected.and.eventually.deep.include({
+      .to.be.rejected
+      .and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid parameters.',
@@ -120,7 +127,8 @@ describe('AuthModel: Generate token', async () => {
     config.api.jwt.secret = '';
 
     return chai.expect(AuthModel.generateToken(1, 'zk', 'fuckzk@codgi.cc', 1))
-      .to.be.rejected.and.eventually.deep.include({
+      .to.be.rejected
+      .and.eventually.deep.include({
         status: 500,
         expose: false,
         message: 'Invalid jwt secret.',

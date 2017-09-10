@@ -38,12 +38,37 @@ export async function getGroupInfo(data: number | string, by: 'id' | 'name' = 'i
 
 }
 
-export async function getGroupMember(data: number, by: 'id' | 'name' = 'id') {
+export async function getGroupMemberList(
+  data: number,
+  by: 'id' | 'name' = 'id',
+  sort: 'id' | 'username' | 'joinedAt' = 'joinedAt',
+  direction: 'ASC' | 'DESC' = 'ASC',
+  page: number = 1,
+  perPage: number = config.oj.default.page.group_member || 20,
+) {
 
   // Validate parameters.
-  if (!data || (by !== 'id' && by !== 'name')) {
+  if (
+    !data ||
+    (by !== 'id' && by !== 'name') ||
+    (direction !== 'ASC' && direction !== 'DESC') ||
+    page < 1 ||
+    perPage < 1
+  ) {
     throw createError(500, 'Invalid parameters.');
   }
+
+  let orderBy: string;
+
+  if (sort === 'joinedAt') {
+    orderBy = 'group_map.createdAt';
+  } else if (sort === 'id' || sort === 'username') {
+    orderBy = `group_map.user.${sort}`;
+  } else {
+    throw createError(500, 'Invalid parameters.');
+  }
+
+  const firstResult = (page - 1) * perPage;
 
   const groupMember = await getRepository(GroupMap)
     .createQueryBuilder('group_map')
@@ -53,13 +78,23 @@ export async function getGroupMember(data: number, by: 'id' | 'name' = 'id') {
       'user',
     ])
     .setParameter('data', data)
+    .offset(firstResult)
+    .limit(perPage)
+    .orderBy(orderBy, direction)
     .getMany()
     .catch((err) => {
       console.error(err);
       throw createError(500, 'Database operation failed.');
     });
 
-  return groupMember;
+  // Re-format it.
+  const memberList = new Array();
+
+  groupMember.forEach((element) => {
+    memberList.push(element.user);
+  });
+
+  return memberList;
 
 }
 
@@ -68,27 +103,27 @@ export async function searchGroup(
   order: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
   page: number = 1,
-  num: number = config.oj.default.page.group || 20) {
+  perPage: number = config.oj.default.page.group || 20) {
 
   // Validate parameters.
   if (
     page < 1 ||
-    num < 1 ||
+    perPage < 1 ||
     keyword !== ('id' || 'name' || 'createdAt' || 'updatedAt') ||
     order !== ('ASC' || 'DESC')
   ) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const firstResult = (page - 1) * num;
+  const firstResult = (page - 1) * perPage;
 
   const searchResult = await getRepository(Group)
     .createQueryBuilder('group')
     .where('group.name LIKE :keyword')
     .orWhere('group.description LIKE :keyword')
     .setParameter('keyword', `%${keyword}%`)
-    .setFirstResult(firstResult)
-    .setMaxResults(num)
+    .offset(firstResult)
+    .limit(perPage)
     .orderBy(`group.${orderBy}`, order)
     .getMany()
     .catch((err) => {

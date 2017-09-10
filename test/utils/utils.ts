@@ -36,7 +36,6 @@ export const testConnectionOptions: ConnectionOptions = {
 export async function initTestGroup() {
 
   // Should initialize an user as group owner first.
-
   const user = await initTestUser();
 
   const group = new Group();
@@ -51,6 +50,27 @@ export async function initTestGroup() {
   groupMap.user = user;
 
   await getRepository(Group).persist(group);
+  await getRepository(GroupMap).persist(groupMap);
+
+  return group;
+
+}
+
+export async function initTestGroupWithMember() {
+
+  const users = await initAllUsers();
+
+  const group = await initTestGroup();
+  const groupMap = new GroupMap();
+
+  groupMap.group = group;
+  groupMap.user = users[1];
+
+  await getRepository(GroupMap).persist(groupMap);
+
+  groupMap.group = group;
+  groupMap.user = users[2];
+
   await getRepository(GroupMap).persist(groupMap);
 
   return group;
@@ -85,11 +105,12 @@ export async function initTestUser() {
   user.email = 'fuckzk@codgi.cc';
   user.privilege = 1;
 
+  await getRepository(User).persist(user);
+
   userCredential.id = 1;
   userCredential.user = user;
   userCredential.updatePassword('CorrectPassword');
 
-  await getRepository(User).persist(user);
   await getRepository(UserCredential).persist(userCredential);
 
   return user;
@@ -98,44 +119,57 @@ export async function initTestUser() {
 
 export async function initAllUsers() {
 
-  const user = new User();
-  const userCredential = new UserCredential();
+  const users: User[] = new Array();
 
-  user.id = 1;
-  user.username = 'zk';
-  user.email = 'fuckzk@codgi.cc';
-  user.privilege = 1;
+  const zk = new User();
+  const zkCredential = new UserCredential();
 
-  userCredential.id = 1;
-  userCredential.user = user;
-  userCredential.updatePassword('CorrectPassword');
+  zk.id = 1;
+  zk.username = 'zk';
+  zk.email = 'fuckzk@codgi.cc';
+  zk.privilege = 1;
 
-  await getRepository(User).persist(user);
-  await getRepository(UserCredential).persist(userCredential);
+  users[0] = await getRepository(User).persist(zk);
 
-  user.id = 2;
-  user.username = 'gzf';
-  user.email = 'fuckgzf@codgi.cc';
-  user.privilege = 1;
+  zkCredential.id = 1;
+  zkCredential.user = zk;
+  zkCredential.updatePassword('CorrectPassword');
 
-  userCredential.id = 2;
-  userCredential.user = user;
-  userCredential.updatePassword('CorrectPassword');
+  await getRepository(UserCredential).persist(zkCredential);
 
-  await getRepository(User).persist(user);
-  await getRepository(UserCredential).persist(userCredential);
+  const gzf = new User();
+  const gzfCredential = new UserCredential();
 
-  user.id = 3;
-  user.username = 'yyd';
-  user.email = 'fuckyyd@codgi.cc';
-  user.privilege = 1;
+  gzf.id = 2;
+  gzf.username = 'gzf';
+  gzf.email = 'fuckgzf@codgi.cc';
+  gzf.privilege = 1;
 
-  userCredential.id = 3;
-  userCredential.user = user;
-  userCredential.updatePassword('CorrectPassword');
+  users[1] = await getRepository(User).persist(gzf);
 
-  await getRepository(User).persist(user);
-  await getRepository(UserCredential).persist(userCredential);
+  gzfCredential.id = 2;
+  gzfCredential.user = gzf;
+  gzfCredential.updatePassword('CorrectPassword');
+
+  await getRepository(UserCredential).persist(gzfCredential);
+
+  const yyd = new User();
+  const yydCredential = new UserCredential();
+
+  yyd.id = 3;
+  yyd.username = 'yyd';
+  yyd.email = 'fuckyyd@codgi.cc';
+  yyd.privilege = 1;
+
+  users[2] = await getRepository(User).persist(yyd);
+
+  yydCredential.id = 3;
+  yydCredential.user = yyd;
+  yydCredential.updatePassword('CorrectPassword');
+
+  await getRepository(UserCredential).persist(yydCredential);
+
+  return users;
 
 }
 

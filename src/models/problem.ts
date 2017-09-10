@@ -72,8 +72,8 @@ export async function getProblemList(
       'problem.problemId',
       'problem.title',
     ])
-    .setFirstResult(firstResult)
-    .setMaxResults(perPage)
+    .offset(firstResult)
+    .limit(perPage)
     .orderBy(`problem.${sort}`, direction)
     .getMany()
     .catch((err) => {
@@ -110,8 +110,8 @@ export async function getProblemListWithFilter(
     .innerJoin('problem.group', 'problemGroup')
     .innerJoin('problemGroup.users', 'problemGroupUser', 'problemGroupUser.id = :currentUserId')
     .setParameter('currentUserId', userId)
-    .setFirstResult(firstResult)
-    .setMaxResults(perPage)
+    .offset(firstResult)
+    .limit(perPage)
     .orderBy(`problem.${sort}`, direction)
     .getMany()
     .catch((err) => {
@@ -150,8 +150,8 @@ export async function searchProblem(
     .where('problem.title LIKE :keyword')
     .orWhere('problem.description LIKE :keyword')
     .setParameter('keyword', `%${keyword}%`)
-    .setFirstResult(firstResult)
-    .setMaxResults(perPage)
+    .offset(firstResult)
+    .limit(perPage)
     .orderBy(`problem.${sort}`, direction)
     .getMany()
     .catch((err) => {

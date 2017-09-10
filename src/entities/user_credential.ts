@@ -42,7 +42,7 @@ export class UserCredential {
   @Column('varchar')
   private salt: string;
 
-  public verifyPassword(retrievedPassword: string) {
+  public async verifyPassword(retrievedPassword: string) {
     return this.password === crypto
       .createHash('sha512')
       .update(retrievedPassword + this.salt)

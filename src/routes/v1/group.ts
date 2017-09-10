@@ -8,7 +8,7 @@ const group = new Router();
 
 // group.get('/', Group.getGroupList);
 group.get('/:groupId', Group.getGroupInfo);
-group.get('/:groupId/member', Group.getGroupMember);
+group.get('/:groupId/member', Group.getGroupMemberList);
 
 group.post('/', Group.postGroup);
 group.post('/:groupid/member', Group.addToGroup);

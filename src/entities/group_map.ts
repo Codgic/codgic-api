@@ -24,7 +24,7 @@ export class GroupMap {
     primary: true,
   })
   @JoinColumn({
-    name: 'user',
+    name: 'group',
     referencedColumnName: 'id',
   })
   @Index()
@@ -34,7 +34,7 @@ export class GroupMap {
     primary: true,
   })
   @JoinColumn({
-    name: 'group',
+    name: 'user',
     referencedColumnName: 'id',
   })
   @Index()

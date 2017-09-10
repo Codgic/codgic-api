@@ -27,7 +27,7 @@ export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
 
 }
 
-export async function getGroupMember(ctx: Context, next: () => Promise<any>) {
+export async function getGroupMemberList(ctx: Context, next: () => Promise<any>) {
 
   // Validate request.
   if (isNaN(ctx.params.groupId)) {
@@ -35,7 +35,14 @@ export async function getGroupMember(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve group info.
-  const groupMember = await GroupModel.getGroupMember(ctx.params.groupId, 'id');
+  const groupMember = await GroupModel.getGroupMemberList(
+    ctx.params.groupId,
+    'id',
+    ctx.query.sort,
+    ctx.query.direction,
+    ctx.query.page,
+    ctx.query.pre_page,
+  );
 
   ctx.body = groupMember;
   ctx.status = 200;

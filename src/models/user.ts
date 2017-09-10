@@ -56,8 +56,8 @@ export async function getUserList(
       'user.sex',
       'user.privilege',
     ])
-    .setFirstResult(firstResult)
-    .setMaxResults(num)
+    .offset(firstResult)
+    .limit(num)
     .orderBy(`user.${orderBy}`, order)
     .getMany()
     .catch((err) => {
@@ -87,8 +87,8 @@ export async function searchUser(
   }
 
   const firstResult = (page - 1) * num;
-  const userRepository = getRepository(User);
-  const searchResult = await userRepository
+
+  const searchResult = await getRepository(User)
     .createQueryBuilder('user')
     .select([
       'user.id',
@@ -102,8 +102,8 @@ export async function searchUser(
     .orWhere('user.email LIKE :keyword')
     .orWhere('user.nickname LIKE :keyword')
     .setParameter('keyword', `%${keyword}%`)
-    .setFirstResult(firstResult)
-    .setMaxResults(num)
+    .offset(firstResult)
+    .limit(num)
     .orderBy(`user.${orderBy}`, order)
     .getMany()
     .catch((err) => {
