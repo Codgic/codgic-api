@@ -10,15 +10,21 @@ import { GroupMap } from './../entities/group_map';
 
 import { config } from './../init/config';
 
-export async function getGroupInfo(data: number, by: 'id' | 'name' = 'id') {
+export async function getGroupInfo(data: number | string, by: 'id' | 'name' = 'id') {
 
   // Validate parameters.
-  if (!data || (by !== 'id' && 'name')) {
+  if (!data || (by !== 'id' && by !== 'name')) {
     throw createError(500, 'Invalid parameters.');
   }
 
   const groupInfo = await getRepository(Group)
     .findOne({
+      join: {
+        alias: 'group',
+        innerJoinAndSelect: {
+          owner: 'group.owner',
+        },
+      },
       where: {
         [by]: data,
       },
@@ -35,7 +41,7 @@ export async function getGroupInfo(data: number, by: 'id' | 'name' = 'id') {
 export async function getGroupMember(data: number, by: 'id' | 'name' = 'id') {
 
   // Validate parameters.
-  if (!data || (by !== 'id' && 'name')) {
+  if (!data || (by !== 'id' && by !== 'name')) {
     throw createError(500, 'Invalid parameters.');
   }
 

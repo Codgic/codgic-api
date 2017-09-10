@@ -27,7 +27,7 @@ describe('UserModel: Get user info', async () => {
   });
 
   it('should return user info if user exists (by id)', async () => {
-    return chai.expect(UserModel.getUserInfo(1, 'id'))
+    return chai.expect(UserModel.getUserInfo(1))
       .to.be.fulfilled.and.eventually.deep.include({
         id: 1,
         email: 'fuckzk@codgi.cc',
@@ -56,7 +56,7 @@ describe('UserModel: Get user info', async () => {
       });
   });
 
-  it('should throw error if user does not exist', async () => {
+  it('should return undefined if user does not exist', async () => {
     await Utils.deleteAllUsers();
     return chai.expect(UserModel.getUserInfo('zk', 'username'))
       .to.be.fulfilled.and.eventually.equal(undefined)
