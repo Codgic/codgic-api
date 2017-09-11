@@ -53,7 +53,7 @@ export async function getProblemList(ctx: Context, next: () => Promise<any>) {
     ctx.query.sort,
     ctx.query.direction,
     ctx.query.page,
-    ctx.query.pre_page,
+    ctx.query.per_page,
   );
 
   ctx.body = problemList;
@@ -71,7 +71,7 @@ export async function searchProblem(ctx: Context, next: () => Promise<any>) {
       ctx.query.direction,
       ctx.query.keyword,
       ctx.query.page,
-      ctx.query.pre_page,
+      ctx.query.per_page,
     );
 
   ctx.body = searchResult;

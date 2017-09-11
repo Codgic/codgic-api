@@ -65,11 +65,13 @@ export async function initTestGroupWithMember() {
 
   groupMap.group = group;
   groupMap.user = users[1];
+  groupMap.privilege = 1;
 
   await getRepository(GroupMap).persist(groupMap);
 
   groupMap.group = group;
   groupMap.user = users[2];
+  groupMap.privilege = 1;
 
   await getRepository(GroupMap).persist(groupMap);
 

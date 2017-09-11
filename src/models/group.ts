@@ -38,6 +38,44 @@ export async function getGroupInfo(data: number | string, by: 'id' | 'name' = 'i
 
 }
 
+export async function getGroupMemberInfo(userId: number, groupId: number) {
+
+  // Validate parameters.
+  if (!(userId && groupId)) {
+    throw createError(500, 'Invalid parameters.');
+  }
+
+  const user = await getUserInfo(userId, 'id');
+
+  if (!user) {
+    throw createError(400, 'User does not exist.');
+  }
+
+  const group = await getGroupInfo(groupId, 'id');
+
+  if (!group) {
+    throw createError(400, 'Group does not exist.');
+  }
+
+  const groupMapRepository = getRepository(GroupMap);
+  const groupMember = await groupMapRepository
+    .createQueryBuilder('group_map')
+    .innerJoinAndSelect('group_map.group', 'group', `group.id = :groupId`)
+    .innerJoinAndSelect('group_map.user', 'user', `user.id = :userId`)
+    .setParameters({
+      groupId,
+      userId,
+    })
+    .getOne()
+    .catch((err) => {
+      console.error(err);
+      throw createError(500, 'Database operation failed.');
+    });
+
+  return groupMember;
+
+}
+
 export async function getGroupMemberList(
   data: number,
   by: 'id' | 'name' = 'id',
@@ -76,6 +114,9 @@ export async function getGroupMemberList(
     .innerJoinAndSelect('group_map.user', 'user')
     .select([
       'user',
+      'group_map.privilege',
+      'group_map.createdAt',
+      'group_map.updatedAt',
     ])
     .setParameter('data', data)
     .offset(firstResult)
@@ -87,14 +128,7 @@ export async function getGroupMemberList(
       throw createError(500, 'Database operation failed.');
     });
 
-  // Re-format it.
-  const memberList = new Array();
-
-  groupMember.forEach((element) => {
-    memberList.push(element.user);
-  });
-
-  return memberList;
+  return groupMember;
 
 }
 
@@ -151,10 +185,10 @@ export async function isInGroup(userId: number, groupId: number) {
 
 }
 
-export async function addToGroup(userId: number, groupId: number) {
+export async function addToGroup(userId: number, groupId: number, privilege: number = 1) {
 
   // Validate parameters.
-  if (!(userId && groupId)) {
+  if (!(userId && groupId) || privilege < 0) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -174,6 +208,7 @@ export async function addToGroup(userId: number, groupId: number) {
 
   groupMap.user = user;
   groupMap.group = group;
+  groupMap.privilege = privilege;
 
   await getRepository(GroupMap)
     .persist(groupMap)

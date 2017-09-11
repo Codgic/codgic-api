@@ -86,6 +86,21 @@ describe('GroupModel: Get group member.', async () => {
 
     chai.expect(groupMemberList[0])
       .to.deep.include({
+        privilege: 1,
+      });
+
+    chai.expect(groupMemberList[1])
+      .to.deep.include({
+        privilege: 1,
+      });
+
+    chai.expect(groupMemberList[2])
+      .to.deep.include({
+        privilege: 1,
+      });
+
+    chai.expect(groupMemberList[0].user)
+      .to.deep.include({
         id: 1,
         email: 'fuckzk@codgi.cc',
         username: 'zk',
@@ -94,7 +109,7 @@ describe('GroupModel: Get group member.', async () => {
         privilege: 1,
       });
 
-    chai.expect(groupMemberList[1])
+    chai.expect(groupMemberList[1].user)
       .to.deep.include({
         id: 2,
         email: 'fuckgzf@codgi.cc',
@@ -104,7 +119,7 @@ describe('GroupModel: Get group member.', async () => {
         privilege: 1,
       });
 
-    chai.expect(groupMemberList[2])
+    chai.expect(groupMemberList[2].user)
       .to.deep.include({
         id: 3,
         email: 'fuckyyd@codgi.cc',

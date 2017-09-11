@@ -4,6 +4,7 @@
 import * as createError from 'http-errors';
 import { Context } from 'koa';
 
+import { checkPrivilege, GroupMemberPrivilege } from './../init/privilege';
 import * as GroupModel from './../models/group';
 
 export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
@@ -41,7 +42,7 @@ export async function getGroupMemberList(ctx: Context, next: () => Promise<any>)
     ctx.query.sort,
     ctx.query.direction,
     ctx.query.page,
-    ctx.query.pre_page,
+    ctx.query.per_page,
   );
 
   ctx.body = groupMember;
@@ -63,7 +64,15 @@ export async function addToGroup(ctx: Context, next: () => Promise<any>) {
     throw createError(400);
   }
 
-  ctx.body = await GroupModel.addToGroup(ctx.request.body.userid, ctx.request.body.groupid);
+  // Check privilege.
+  const groupMemberInfo = await GroupModel.getGroupMemberInfo(ctx.state.user.id, ctx.request.body.groupid);
+
+  if (!groupMemberInfo || !checkPrivilege(GroupMemberPrivilege.editUser, groupMemberInfo.privilege)) {
+    throw createError(403);
+  }
+
+  // Add to group.
+  ctx.body = await GroupModel.addToGroup(ctx.request.body.userid, ctx.request.body.groupid, ctx.request.body.privilege);
   ctx.status = 201;
 
   await next();
