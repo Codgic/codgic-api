@@ -10,12 +10,12 @@ import * as ProblemModel from './../models/problem';
 export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
 
   // Validate request.
-  if (isNaN(ctx.params.problemid)) {
+  if (isNaN(ctx.params.problemId)) {
     throw createError(400);
   }
 
   // Retrieve problem info.
-  const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemid);
+  const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemId);
 
   if (!problemInfo) {
     throw createError(404, 'Problem not found.');
@@ -88,18 +88,31 @@ export async function postProblem(ctx: Context, next: () => Promise<any>) {
     ctx.throw(401);
   }
 
-  // Get maximum problem id.
-  const maxProblemId: number | null = await ProblemModel.getMaxProblemId();
+  if (ctx.request.body.problemId) {
 
-  // Generate next id (default: 1000).
-  let nextProblemId: number = config.oj.default.problem.first_problem_id || 1000;
+    // UserPrivilege.editContent is needed to customize problemId.
+    if (!checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege)) {
+      throw createError(403);
+    }
 
-  if (maxProblemId) {
-    nextProblemId = maxProblemId + 1;
+    // Check if the problem id is already taken.
+    if (await ProblemModel.getProblemInfo(ctx.request.body.problemId)) {
+      throw createError('Problem id has been taken.');
+    }
+
+  } else {
+
+    // Generate problem id (default: 1000).
+    ctx.request.body.problemId = config.oj.default.problem.first_problem_id || 1000;
+
+    const maxProblemId: number | null = await ProblemModel.getMaxProblemId();
+    if (maxProblemId) {
+      ctx.request.body.problemId = maxProblemId + 1;
+    }
   }
 
   // Post problem.
-  ctx.body = await routePost(ctx);
+  ctx.body = await routePostProblem(ctx);
 
   ctx.status = 201;
 
@@ -113,8 +126,13 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
     ctx.throw(401);
   }
 
+  // Validate request.
+  if (isNaN(ctx.params.problemId)) {
+    ctx.throw(400);
+  }
+
   // Retrieve problem info.
-  const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemid);
+  const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemId);
 
   if (!problemInfo) {
     throw createError(400, 'Problem does not exist.');
@@ -135,25 +153,25 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   }
 
   // Post problem.
-  ctx.body = await routePost(ctx);
+  ctx.body = await routePostProblem(ctx);
 
   ctx.status = 201;
 
   await next();
 }
 
-async function routePost(ctx: Context) {
+async function routePostProblem(ctx: Context) {
 
     let result;
 
     if (checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege)) {
-      result = await ProblemModel.postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
+      result = await ProblemModel.postProblem(ctx.request.body, ctx.state.user.id);
     } else {
       if (config.oj.policy.content.common_user_can_post) {
         if (config.oj.policy.content.common_user_post_need_confirmation) {
-          result = await ProblemModel.postProblemTemp(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
+          result = await ProblemModel.postProblemTemp(ctx.request.body, ctx.state.user.id);
         } else {
-          result = await ProblemModel.postProblem(ctx.params.problemid, ctx.request.body, ctx.state.user.id);
+          result = await ProblemModel.postProblem(ctx.request.body, ctx.state.user.id);
         }
       } else {
         ctx.throw(403);

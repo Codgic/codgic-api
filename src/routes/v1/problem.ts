@@ -7,13 +7,13 @@ import * as Problem from './../../controllers/problem';
 const problem = new Router();
 
 problem.get('/', Problem.getProblemList);
-problem.get('/:problemid', Problem.getProblemInfo);
+problem.get('/:problemId', Problem.getProblemInfo);
 
 problem.post('/', Problem.postProblem);
 
-problem.put('/:problemid', Problem.updateProblem);
+problem.put('/:problemId', Problem.updateProblem);
 
-problem.patch('/:problemid', Problem.updateProblem);
+problem.patch('/:problemId', Problem.updateProblem);
 
 // Unimplemented:
 

@@ -267,14 +267,10 @@ export async function postGroup(data: Group, userId: number) {
   }
 
   const group = new Group();
-  const groupMap = new GroupMap();
 
   group.name = data.name;
   group.description = data.description;
   group.owner = user;
-
-  groupMap.group = group;
-  groupMap.user = user;
 
   await getRepository(Group)
     .persist(group)
@@ -285,22 +281,6 @@ export async function postGroup(data: Group, userId: number) {
         console.error(err);
         throw createError (500, 'Database operation failed.');
       }
-    });
-
-  await getRepository(GroupMap)
-    .persist(groupMap)
-    .catch(async (err) => {
-      console.log(err);
-
-      // Revert adding group.
-      await getRepository(Group)
-        .remove(group)
-        .catch((e) => {
-          console.log(e);
-          throw createError(500, 'Database operation failed. Reverting failed as well.');
-        });
-
-      throw createError(500, 'Database operation failed.');
     });
 
   return group;

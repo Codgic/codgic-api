@@ -108,7 +108,7 @@ export async function getProblemListWithFilter(
   const problemList = await getRepository(Problem)
     .createQueryBuilder('problem')
     .innerJoin('problem.group', 'problemGroup')
-    .innerJoin('problemGroup.member', 'problemGroupMember', 'problemGroupMember.id = :currentUserId')
+    .innerJoin('problemGroup.member', 'problemGroupMember', 'problemGroupMember.user = :currentUserId')
     .setParameter('currentUserId', userId)
     .offset(firstResult)
     .limit(perPage)
@@ -118,10 +118,6 @@ export async function getProblemListWithFilter(
       console.error(err);
       throw createError(500, 'Database operation failed.');
     });
-
-  if (!problemList || problemList.length === 1) {
-    throw createError(404, 'No problem available.');
-  }
 
   return problemList;
 
@@ -168,10 +164,10 @@ export async function searchProblem(
 }
 
 // Post or update problem to temporary table.
-export async function postProblemTemp(problemId: number, data: Problem, userId: number) {
+export async function postProblemTemp(data: Problem, userId: number) {
 
   // Validate parameters.
-  if (!(problemId && data.title && userId)) {
+  if (!(data.title && userId)) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -180,10 +176,12 @@ export async function postProblemTemp(problemId: number, data: Problem, userId: 
 }
 
 // Post or update problem directly.
-export async function postProblem(problemId: number, data: Problem, userId: number) {
+export async function postProblem(data: Problem, userId: number) {
+
+  console.log(data);
 
   // Validate parameters.
-  if (!(problemId && data.title && userId)) {
+  if (!(data.problemId && data.title && userId)) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -191,7 +189,7 @@ export async function postProblem(problemId: number, data: Problem, userId: numb
   const problemInfo = await problemRepository
     .findOne({
       where: {
-        problemId,
+        problemId: data.problemId,
       },
     })
     .catch((err) => {
@@ -201,17 +199,20 @@ export async function postProblem(problemId: number, data: Problem, userId: numb
 
   const problem = problemInfo ? problemInfo : new Problem();
 
-  problem.problemId = problemId;
-  problem.title = data.title;
-  problem.description = data.description;
-  problem.inputFormat = data.inputFormat;
-  problem.outputFormat = data.outputFormat;
-  problem.sample = data.sample;
-  problem.additionalInfo = data.additionalInfo;
-  problem.timeLimit = data.timeLimit;
-  problem.memoryLimit = data.memoryLimit;
-  problem.createdBy = userId;
-  problem.owner = userId;
+  // Set owner.
+  if (!problemInfo) {
+    problem.owner = userId;
+  }
+
+  problem.problemId = data.problemId || problem.problemId;
+  problem.title = data.title || problem.title;
+  problem.description = data.description || problem.description;
+  problem.inputFormat = data.inputFormat || problem.inputFormat;
+  problem.outputFormat = data.outputFormat || problem.outputFormat;
+  problem.sample = data.sample || problem.sample;
+  problem.additionalInfo = data.additionalInfo || problem.additionalInfo;
+  problem.timeLimit = data.timeLimit || problem.timeLimit;
+  problem.memoryLimit = data.memoryLimit || problem.memoryLimit;
 
   await problemRepository
     .persist(problem)

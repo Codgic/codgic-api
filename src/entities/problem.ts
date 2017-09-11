@@ -94,16 +94,6 @@ export class Problem {
   })
   public worldPrivilege: number;
 
-  @Column('int', {
-    nullable: true,
-  })
-  public createdBy: number;
-
-  @Column('int', {
-    nullable: true,
-  })
-  public updatedBy: number;
-
   @CreateDateColumn()
   public createdAt: string;
 

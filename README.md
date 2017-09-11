@@ -29,12 +29,13 @@ Recent changes will be pushed to [Codgic/codgic-api](https://github.com/codgic/c
 - [x] Hello TypeORM.
 - [x] Hello JWT.
 - [x] Hello Gulp.
-- [ ] **Hello Mocha, Chai.**
+- [x] Hello Mocha, Chai.
 - [x] Hello Travis CI.
 - [ ] Hello Socket.io?
 - [ ] Probably more...
 
 # Known problems (Reminder)
+- Countless bugs in problem controller and model.
 - Post user with taken username / email will trigger auto increment with InnoDB (not my fault, but what if some clown keeps sending faulty requests to overflow the primary key?).
 - Serval possible Database Injection vulnerabilities.
 

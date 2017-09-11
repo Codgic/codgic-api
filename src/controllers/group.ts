@@ -113,6 +113,16 @@ export async function postGroup(ctx: Context, next: () => Promise<any>) {
   // Create group.
   const groupInfo = await GroupModel.postGroup(ctx.request.body, ctx.state.user.id);
 
+  // Add owner to group.
+  await GroupModel.addToGroup(
+    ctx.state.user.id,
+    groupInfo.id,
+    GroupMemberPrivilege.isMember + GroupMemberPrivilege.editInfo + GroupMemberPrivilege.editUser,
+  ).catch((err) => {
+      // await GroupModel.deleteGroup(groupInfo.id);
+      throw createError(500, err);
+    });
+
   ctx.body = groupInfo;
   ctx.status = 201;
 
