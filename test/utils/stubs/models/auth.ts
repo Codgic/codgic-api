@@ -2,11 +2,10 @@
   Fake auth model functions for testing. */
 
 export function fakevalidateUserCredential(username: string, password: string) {
+
   if (!(username && password)) {
     throw new Error('Invalid parameters.');
   }
-  // We don't have to test error throwing situations here.
-  // Controller doesn't handdle them, middleware errorHandler does.
 
   if (username === 'zk' && password === 'CorrectPassword') {
     return {

@@ -2,6 +2,7 @@
   Fake user model functions for testing. */
 
 export function fakeGetUserInfo(data: number | string, by: 'id' | 'username' | 'email' = 'id') {
+
   if (!data || (by !== 'id' && by !== 'username' && by !== 'email')) {
     throw new Error('Invalid parameters.');
   }
@@ -20,4 +21,5 @@ export function fakeGetUserInfo(data: number | string, by: 'id' | 'username' | '
   } else {
     return undefined;
   }
+
 }

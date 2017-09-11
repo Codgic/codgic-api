@@ -27,17 +27,13 @@ describe('UserController: Get user info', async () => {
   });
 
   beforeEach(async () => {
-
     app = new Koa();
     app.use(errorHandler);
     app.use(bodyParser());
-
   });
 
   after(async () => {
-
     await stubGetUserInfo.restore();
-
   });
 
   it('should return current user info if no username is provided', async () => {
@@ -105,7 +101,7 @@ describe('UserController: Get user info', async () => {
 
     app.use(UserController.getUserInfo);
 
-    return chai.expect(chai.request(app.listen()).get('/zml').catch((err) => {
+    return chai.expect(chai.request(app.listen()).get('/').catch((err) => {
       return err.response;
     })).to.be.fulfilled
     .and.eventually.deep.include({

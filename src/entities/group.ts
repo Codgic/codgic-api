@@ -8,10 +8,12 @@ import {
   Entity,
   Index,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+import { GroupMap } from './group_map';
 import { User } from './user';
 
 @Entity()
@@ -35,6 +37,9 @@ export class Group {
   @ManyToOne(() => User)
   @Index()
   public owner: User;
+
+  @OneToMany(() => GroupMap, (groupMap) => groupMap.group)
+  public member: GroupMap;
 
   @Column('tinyint', {
     default: 0,

@@ -108,7 +108,7 @@ export async function getProblemListWithFilter(
   const problemList = await getRepository(Problem)
     .createQueryBuilder('problem')
     .innerJoin('problem.group', 'problemGroup')
-    .innerJoin('problemGroup.users', 'problemGroupUser', 'problemGroupUser.id = :currentUserId')
+    .innerJoin('problemGroup.member', 'problemGroupMember', 'problemGroupMember.id = :currentUserId')
     .setParameter('currentUserId', userId)
     .offset(firstResult)
     .limit(perPage)
@@ -183,7 +183,7 @@ export async function postProblemTemp(problemId: number, data: Problem, userId: 
 export async function postProblem(problemId: number, data: Problem, userId: number) {
 
   // Validate parameters.
-  if (!(problemId && data.title && data.memoryLimit && data.timeLimit && userId)) {
+  if (!(problemId && data.title && userId)) {
     throw createError(500, 'Invalid parameters.');
   }
 
