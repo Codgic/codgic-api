@@ -109,7 +109,6 @@ export async function initTestUser() {
 
   await getRepository(User).persist(user);
 
-  userCredential.id = 1;
   userCredential.user = user;
   userCredential.updatePassword('CorrectPassword');
 
@@ -133,7 +132,6 @@ export async function initAllUsers() {
 
   users[0] = await getRepository(User).persist(zk);
 
-  zkCredential.id = 1;
   zkCredential.user = zk;
   zkCredential.updatePassword('CorrectPassword');
 
@@ -149,7 +147,6 @@ export async function initAllUsers() {
 
   users[1] = await getRepository(User).persist(gzf);
 
-  gzfCredential.id = 2;
   gzfCredential.user = gzf;
   gzfCredential.updatePassword('CorrectPassword');
 
@@ -165,7 +162,6 @@ export async function initAllUsers() {
 
   users[2] = await getRepository(User).persist(yyd);
 
-  yydCredential.id = 3;
   yydCredential.user = yyd;
   yydCredential.updatePassword('CorrectPassword');
 

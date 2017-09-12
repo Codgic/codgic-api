@@ -7,15 +7,18 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Group } from './group';
-
 import { config } from './../init/config';
 import { ProblemPrivilege } from './../init/privilege';
+
+import { Group } from './group';
+import { User } from './user';
 
 @Entity()
 export class Problem {
@@ -68,10 +71,18 @@ export class Problem {
   })
   public memoryLimit: number;
 
-  @Column('int')
-  public owner: number;
+  @OneToOne(() => User)
+  @JoinColumn({
+    name: 'owner',
+    referencedColumnName: 'id',
+  })
+  public owner: User;
 
   @ManyToOne(() => Group)
+  @JoinColumn({
+    name: 'group',
+    referencedColumnName: 'id',
+  })
   public group: Group;
 
   @Column('tinyint', {

@@ -45,7 +45,7 @@
     "koa-router": "^7.2.1",
     "mysql": "^2.14.1",
     "reflect-metadata": "^0.1.10",
-    "typeorm": "^0.1.0-alpha.38"
+    "typeorm": "^0.1.0-alpha.41"
   },
   "devDependencies": {
     "@types/chai": "^4.0.4",

@@ -24,7 +24,7 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
   // Check privilege.
   const hasPrivilege = checkPrivilege(UserPrivilege.viewHidden, ctx.state.user.privilege) ? true :
     await checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, {
-      owner: problemInfo.owner,
+      owner: problemInfo.owner.id,
       group: problemInfo.group.id,
       ownerPrivilege: problemInfo.ownerPrivilege,
       groupPrivilege: problemInfo.groupPrivilege,
@@ -48,6 +48,12 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
 
 export async function getProblemList(ctx: Context, next: () => Promise<any>) {
 
+  if (!ctx.state.user) {
+    ctx.state.user = {
+      id: undefined,
+    };
+  }
+
   const problemList = await ProblemModel.getProblemListWithFilter(
     ctx.state.user.id,
     ctx.query.sort,
@@ -65,11 +71,18 @@ export async function getProblemList(ctx: Context, next: () => Promise<any>) {
 
 export async function searchProblem(ctx: Context, next: () => Promise<any>) {
 
+  if (!ctx.state.user) {
+    ctx.state.user = {
+      id: undefined,
+    };
+  }
+
   const searchResult = await ProblemModel
-    .searchProblem(
+    .searchProblemWithFilter(
+      ctx.state.user.id,
       ctx.query.sort,
       ctx.query.direction,
-      ctx.query.keyword,
+      ctx.query.q,
       ctx.query.page,
       ctx.query.per_page,
     );
@@ -141,7 +154,7 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   // Check privilege.
   const hasPrivilege = checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege) ? true :
     await checkContentPrivilege(ProblemPrivilege.write, ctx.state.user.privilege, {
-      owner: problemInfo.owner,
+      owner: problemInfo.owner.id,
       group: problemInfo.group.id,
       ownerPrivilege: problemInfo.ownerPrivilege,
       groupPrivilege: problemInfo.groupPrivilege,

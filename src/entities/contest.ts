@@ -7,11 +7,17 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { ContestPrivilege } from './../init/privilege';
+
+import { Group } from './group';
+import { User } from './user';
 
 @Entity()
 export class Contest {
@@ -45,11 +51,19 @@ export class Contest {
   @Column('datetime')
   public endTime: number;
 
-  @Column('int')
-  public owner: number;
+  @OneToOne(() => User)
+  @JoinColumn({
+    name: 'owner',
+    referencedColumnName: 'id',
+  })
+  public owner: User;
 
-  @Column('int')
-  public group: number;
+  @ManyToOne(() => Group)
+  @JoinColumn({
+    name: 'group',
+    referencedColumnName: 'id',
+  })
+  public group: Group;
 
   @Column('tinyint', {
     default: ContestPrivilege.join

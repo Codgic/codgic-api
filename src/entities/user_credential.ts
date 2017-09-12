@@ -9,7 +9,6 @@ import {
   Index,
   JoinColumn,
   OneToOne,
-  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
@@ -18,13 +17,12 @@ import { User } from './user';
 @Entity()
 export class UserCredential {
 
-  @PrimaryGeneratedColumn()
-  public id: number;
-
   @OneToOne(() => User, {
+    primary: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({
+    name: 'id',
     referencedColumnName: 'id',
   })
   @Index()

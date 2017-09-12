@@ -31,7 +31,7 @@ export async function searchUser(ctx: Context, next: () => Promise<any>) {
 
   const userList = await UserModel
     .searchUser(
-      ctx.query.keyword,
+      ctx.query.q,
       ctx.query.sort,
       ctx.query.direction,
       ctx.query.page,
