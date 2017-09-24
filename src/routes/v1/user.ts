@@ -11,10 +11,8 @@ user.get('/:username', User.getUserInfo);
 
 user.post('/', User.postUser);
 
-user.put('/', User.updateUser);
 user.put('/:username', User.updateUser);
 
-user.patch('/', User.updateUser);
 user.patch('/:username', User.updateUser);
 
 // Unimplemented:

@@ -8,10 +8,9 @@ import { createConnection, getConnectionManager } from 'typeorm';
 
 import * as Utils from './../../utils/utils';
 
-import * as GroupModel from './../../../src/models/group';
-
 import { Group } from './../../../src/entities/group';
 import { User } from './../../../src/entities/user';
+import * as GroupModel from './../../../src/models/group';
 
 chai.use(chaiAsPromised);
 

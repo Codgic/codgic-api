@@ -15,6 +15,7 @@ group.post('/', Group.postGroup);
 group.post('/:groupId/member', Group.addToGroup);
 
 // group.put('/', group.updateGroup);
+// group.patch('/', group.updateGroup);
 
 // group.delete('/', group.deleteGroup);
 group.delete('/:groupId/member/:userId', Group.removeFromGroup);

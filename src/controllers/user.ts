@@ -77,9 +77,9 @@ export async function updateUser(ctx: Context, next: () => Promise<any>) {
     throw createError(401);
   }
 
-  // Check privilege.
+  // Check if user has the privilege to modify other users.
   if (checkPrivilege(UserPrivilege.editUser, ctx.state.user.privilege)) {
-    if (ctx.params.username && ctx.params.username !== ctx.state.user.username) {
+    if (ctx.params.username !== ctx.state.user.username) {
       const tempUserInfo = await UserModel.getUserInfo(ctx.params.username, 'username');
       if (!tempUserInfo) {
         throw createError(400, 'User does not exist.');
@@ -89,12 +89,16 @@ export async function updateUser(ctx: Context, next: () => Promise<any>) {
       ctx.request.body.id = ctx.state.user.id;
     }
   } else {
+    // Then you can only modify your own info.
+    // And you can't modify your own privilege.
     ctx.request.body.privilege = undefined;
-    if (ctx.params.username && ctx.params.username !== ctx.state.user.username) {
+
+    if (ctx.params.username !== ctx.state.user.username) {
       throw createError(403);
     } else {
       ctx.request.body.id = ctx.state.user.id;
     }
+
   }
 
   // Validate request.
