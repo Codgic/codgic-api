@@ -7,6 +7,7 @@ import { getUserInfo } from './user';
 
 import { Group } from './../entities/group';
 import { GroupMap } from './../entities/group_map';
+import { User } from './../entities/user';
 
 import { config } from './../init/config';
 
@@ -38,23 +39,11 @@ export async function getGroupInfo(data: number | string, by: 'id' | 'name' = 'i
 
 }
 
-export async function getGroupMemberInfo(userId: number, groupId: number) {
+export async function getGroupMemberInfo(user: User, group: Group) {
 
   // Validate parameters.
-  if (!(userId && groupId)) {
+  if (!(user && group)) {
     throw createError(500, 'Invalid parameters.');
-  }
-
-  const user = await getUserInfo(userId, 'id');
-
-  if (!user) {
-    throw createError(400, 'User does not exist.');
-  }
-
-  const group = await getGroupInfo(groupId, 'id');
-
-  if (!group) {
-    throw createError(400, 'Group does not exist.');
   }
 
   const groupMapRepository = getRepository(GroupMap);
@@ -63,8 +52,8 @@ export async function getGroupMemberInfo(userId: number, groupId: number) {
     .innerJoinAndSelect('group_map.group', 'group', `group.id = :groupId`)
     .innerJoinAndSelect('group_map.user', 'user', `user.id = :userId`)
     .setParameters({
-      groupId,
-      userId,
+      groupId: group.id,
+      userId: user.id,
     })
     .getOne()
     .catch((err) => {
@@ -253,17 +242,11 @@ export async function removeFromGroup(userId: number, groupId: number) {
 }
 
 // Create or update group.
-export async function postGroup(data: Group, userId: number) {
+export async function postGroup(data: Group, user: User) {
 
   // Validate parameters.
-  if (!(data.name && userId)) {
+  if (!(data.name && user)) {
     throw createError(500, 'Invalid parameters.');
-  }
-
-  const user = await getUserInfo(userId, 'id');
-
-  if (!user) {
-    throw createError(500, 'User does not exist.');
   }
 
   const group = new Group();

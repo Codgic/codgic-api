@@ -476,8 +476,3 @@ describe('UserModel: Post user', async () => {
   });
 
 });
-
-/* Not ready.
-describe('UserModel: Validate user info', async () => {
-});
-*/

@@ -56,9 +56,7 @@ export async function initTestGroup() {
 
 }
 
-export async function initTestGroupWithMember() {
-
-  const users = await initAllUsers();
+export async function initTestGroupWithMember(users: User[]) {
 
   const group = await initTestGroup();
   const groupMap = new GroupMap();

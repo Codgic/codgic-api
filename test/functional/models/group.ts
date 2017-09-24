@@ -10,6 +10,9 @@ import * as Utils from './../../utils/utils';
 
 import * as GroupModel from './../../../src/models/group';
 
+import { Group } from './../../../src/entities/group';
+import { User } from './../../../src/entities/user';
+
 chai.use(chaiAsPromised);
 
 describe('GroupModel: Get group info.', async () => {
@@ -65,13 +68,64 @@ describe('GroupModel: Get group info.', async () => {
 
 });
 
-describe('GroupModel: Get group member.', async () => {
+describe('GroupModel: Get group member info.', async () => {
+
+  let group: Group;
+  let users: User[];
 
   before(async () => {
     await createConnection(Utils.testConnectionOptions);
     await Utils.deleteAllGroups();
     await Utils.deleteAllUsers();
-    await Utils.initTestGroupWithMember();
+    users = await Utils.initAllUsers();
+    group = await Utils.initTestGroupWithMember(users);
+  });
+
+  after(async () => {
+    await Utils.deleteAllGroups();
+    await Utils.deleteAllUsers();
+    await getConnectionManager().get().close();
+  });
+
+  it('should return group member info if releationship exists', async () => {
+
+    const groupMemberInfo = await GroupModel.getGroupMemberInfo(users[1], group);
+
+    if (!groupMemberInfo) {
+      throw new Error ('Group Member Info does not exist.');
+    }
+
+    chai.expect(groupMemberInfo)
+      .to.deep.include({
+        privilege: 1,
+      });
+
+    chai.expect(groupMemberInfo.group)
+      .to.deep.include({
+        id: 1,
+        name: 'ZKWaterQueen',
+        description: 'All hail the Queen.',
+      });
+
+    chai.expect(groupMemberInfo.user)
+      .to.deep.include({
+        id: 2,
+        username: 'gzf',
+        email: 'fuckgzf@codgi.cc',
+        privilege: 1,
+      });
+  });
+
+});
+
+describe('GroupModel: Get group member list.', async () => {
+
+  before(async () => {
+    await createConnection(Utils.testConnectionOptions);
+    await Utils.deleteAllGroups();
+    await Utils.deleteAllUsers();
+    const users = await Utils.initAllUsers();
+    await Utils.initTestGroupWithMember(users);
   });
 
   after(async () => {

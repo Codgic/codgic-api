@@ -220,6 +220,7 @@ export async function postUser(data: any) {
 
 }
 
+// To be deprecated.
 export async function validateUserInfo(data: any) {
 
   // Only validate if property exists.

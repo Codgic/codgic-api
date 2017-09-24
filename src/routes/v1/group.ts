@@ -9,9 +9,10 @@ const group = new Router();
 // group.get('/', Group.getGroupList);
 group.get('/:groupId', Group.getGroupInfo);
 group.get('/:groupId/member', Group.getGroupMemberList);
+group.get('/:groupId/member/:username', Group.getGroupMemberInfo);
 
 group.post('/', Group.postGroup);
-group.post('/:groupid/member', Group.addToGroup);
+group.post('/:groupId/member', Group.addToGroup);
 
 // group.put('/', group.updateGroup);
 

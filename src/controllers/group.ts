@@ -6,6 +6,7 @@ import { Context } from 'koa';
 
 import { checkPrivilege, GroupMemberPrivilege } from './../init/privilege';
 import * as GroupModel from './../models/group';
+import * as UserModel from './../models/user';
 
 export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
 
@@ -22,6 +23,38 @@ export async function getGroupInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   ctx.body = groupInfo;
+  ctx.status = 200;
+
+  await next();
+
+}
+
+export async function getGroupMemberInfo(ctx: Context, next: () => Promise<any>) {
+
+  // Validate request.
+  if (isNaN(ctx.params.groupId) || !ctx.params.username) {
+    throw createError(400);
+  }
+
+  // Retrieve group and user.
+  const group = await GroupModel.getGroupInfo(ctx.params.groupId, 'id');
+  const user =  await UserModel.getUserInfo(ctx.params.username, 'username');
+
+  if (!group) {
+    throw createError(500, 'Group does not exist.');
+  }
+  if (!user) {
+    throw createError(500, 'User does not exist.');
+  }
+
+  // Retrieve group info.
+  const groupMemberInfo = await GroupModel.getGroupMemberInfo(user, group);
+
+  if (!groupMemberInfo) {
+    throw createError(404, 'Group does not exist.');
+  }
+
+  ctx.body = groupMemberInfo;
   ctx.status = 200;
 
   await next();
@@ -110,8 +143,15 @@ export async function postGroup(ctx: Context, next: () => Promise<any>) {
     throw createError(400);
   }
 
+  // Retrieve owner user.
+  const user =  await UserModel.getUserInfo(ctx.state.user.id, 'id');
+
+  if (!user) {
+    throw createError(500, 'User does not exist.');
+  }
+
   // Create group.
-  const groupInfo = await GroupModel.postGroup(ctx.request.body, ctx.state.user.id);
+  const groupInfo = await GroupModel.postGroup(ctx.request.body, user);
 
   // Add owner to group.
   await GroupModel.addToGroup(
