@@ -21,11 +21,13 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
     throw createError(404, 'Problem not found.');
   }
 
+  const userPrivilege = ctx.state.user ? ctx.state.user.privilege : UserPrivilege.isEnabled;
+
   // Check privilege.
-  const hasPrivilege = checkPrivilege(UserPrivilege.viewHidden, ctx.state.user.privilege) ? true :
-    await checkContentPrivilege(ProblemPrivilege.read, ctx.state.user.id, {
-      owner: problemInfo.owner.id,
-      group: problemInfo.group.id,
+  const hasPrivilege = await checkPrivilege(UserPrivilege.readEverything, userPrivilege) ? true :
+    await checkContentPrivilege(ProblemPrivilege.read, ctx.state.user, {
+      owner: problemInfo.owner,
+      group: problemInfo.group,
       ownerPrivilege: problemInfo.ownerPrivilege,
       groupPrivilege: problemInfo.groupPrivilege,
       worldPrivilege: problemInfo.worldPrivilege,
@@ -104,7 +106,7 @@ export async function postProblem(ctx: Context, next: () => Promise<any>) {
   if (ctx.request.body.problemId) {
 
     // UserPrivilege.editContent is needed to customize problemId.
-    if (!checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege)) {
+    if (!await checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege)) {
       throw createError(403);
     }
 
@@ -152,10 +154,10 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   }
 
   // Check privilege.
-  const hasPrivilege = checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege) ? true :
-    await checkContentPrivilege(ProblemPrivilege.write, ctx.state.user.privilege, {
-      owner: problemInfo.owner.id,
-      group: problemInfo.group.id,
+  const hasPrivilege = await checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege) ? true :
+    await checkContentPrivilege(ProblemPrivilege.write, ctx.state.user, {
+      owner: problemInfo.owner,
+      group: problemInfo.group,
       ownerPrivilege: problemInfo.ownerPrivilege,
       groupPrivilege: problemInfo.groupPrivilege,
       worldPrivilege: problemInfo.worldPrivilege,
@@ -177,7 +179,7 @@ async function routePostProblem(ctx: Context) {
 
     let result;
 
-    if (checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege)) {
+    if (await checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege)) {
       result = await ProblemModel.postProblem(ctx.request.body, ctx.state.user.id);
     } else {
       if (config.oj.policy.content.common_user_can_post) {

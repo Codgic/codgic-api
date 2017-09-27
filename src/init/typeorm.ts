@@ -14,7 +14,7 @@ export const connectionOptions: ConnectionOptions = {
   username: config.database.username,
   password: config.database.password,
   logging: config.database.logging,
-  autoSchemaSync: true,
+  synchronize: true,
   entities: [
     __dirname + '/../entities/*.ts',
   ],

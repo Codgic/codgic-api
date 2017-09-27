@@ -86,7 +86,7 @@ export async function getProblemList(
 }
 
 // Experimental!
-// Autal performance is untested!
+// Actual performance is untested!
 export async function getProblemListWithFilter(
   userId: number = -1,
   sort: 'problemId' | 'title' | 'createdAt' | 'updatedAt' = 'problemId',
@@ -271,7 +271,7 @@ export async function postProblem(data: Problem, userId: number) {
   problem.memoryLimit = data.memoryLimit || problem.memoryLimit;
 
   await problemRepository
-    .persist(problem)
+    .save(problem)
     .catch((err) => {
       console.error(err);
       throw createError(500, 'Database operation failed.');

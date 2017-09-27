@@ -1,7 +1,10 @@
 /* /src/init/privilege.ts */
 
 import * as createError from 'http-errors';
-import { isInGroup } from './../models/group';
+
+import { Group } from './../entities/group';
+import { User } from './../entities/user';
+import { getGroupMemberInfo } from './../models/group';
 
 export const enum ArticleOption {
   isSticky = 1,
@@ -55,7 +58,7 @@ export const enum PrivilegeLevel {
 
 export const enum UserPrivilege {
   isEnabled = 1,
-  viewHidden = 2,
+  readEverything = 2,
   editContent = 4,
   editUser = 8,
   editGroup = 16,
@@ -67,19 +70,19 @@ export async function checkPrivilege(operation: number, privilege: number) {
   return (operation & privilege) === 0 ? false : true;
 }
 
-export async function getPrivilegeLevel(owner: number, group: number, userid: number) {
+export async function getPrivilegeLevel(owner: User, group: Group | undefined, user: User | undefined) {
 
-  if (!(owner && group)) {
+  if (!owner) {
     throw createError(500, 'Invalid parameters.');
   }
 
   let privilegeLevel: number = PrivilegeLevel.world;
 
-  if (userid) {
-    if (userid === owner) {
+  if (user) {
+    if (user.id === owner.id) {
       privilegeLevel += PrivilegeLevel.owner;
     }
-    if (isInGroup(userid, group)) {
+    if (group && getGroupMemberInfo(user, group)) {
       privilegeLevel += PrivilegeLevel.group;
     }
   }
@@ -91,10 +94,10 @@ export async function getPrivilegeLevel(owner: number, group: number, userid: nu
 // Verify content privilege.
 export async function checkContentPrivilege(
   operation: number,
-  userId: number | undefined,
+  user: User | undefined,
   contentInfo: {
-    owner: number,
-    group: number,
+    owner: User,
+    group: Group | undefined,
     ownerPrivilege: number,
     groupPrivilege: number,
     worldPrivilege: number,
@@ -102,24 +105,25 @@ export async function checkContentPrivilege(
 ) {
 
   // Validate parameters.
-  if (!(
-    operation &&
-    contentInfo.owner &&
-    contentInfo.group &&
-    contentInfo.ownerPrivilege &&
-    contentInfo.groupPrivilege &&
-    contentInfo.worldPrivilege)
+  if (
+    typeof operation !== 'number' ||
+    (user !== undefined && typeof user !== 'object') ||
+    typeof contentInfo.owner !== 'object' ||
+    (contentInfo.group && typeof contentInfo.group !== 'object') ||
+    typeof contentInfo.ownerPrivilege !== 'number' ||
+    typeof contentInfo.groupPrivilege !== 'number' ||
+    typeof contentInfo.worldPrivilege !== 'number'
   ) {
     throw createError(500, 'Invalid parameters.');
   }
 
   let actualPrivilege = contentInfo.worldPrivilege;
 
-  if (userId) {
-    if (userId === contentInfo.owner) {
+  if (user) {
+    if (user.id === contentInfo.owner.id) {
       // If user is the problem owner.
       actualPrivilege = contentInfo.ownerPrivilege;
-    } else if (isInGroup(userId, contentInfo.group)) {
+    } else if (contentInfo.group && getGroupMemberInfo(user, contentInfo.group)) {
       // If user belongs to the problem owner group.
       actualPrivilege = contentInfo.groupPrivilege;
     }

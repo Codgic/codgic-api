@@ -12,9 +12,6 @@ We would love for you to join us shaping the future of Codgic Online Judge. As a
 - [Submission Guidelines.](#submission-guidelines)
 
 
-
-
-
 ## Got Questions or Problems
 
 ### Questions

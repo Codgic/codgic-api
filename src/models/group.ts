@@ -46,8 +46,7 @@ export async function getGroupMemberInfo(user: User, group: Group) {
     throw createError(500, 'Invalid parameters.');
   }
 
-  const groupMapRepository = getRepository(GroupMap);
-  const groupMember = await groupMapRepository
+  const groupMember = await getRepository(GroupMap)
     .createQueryBuilder('group_map')
     .innerJoinAndSelect('group_map.group', 'group', `group.id = :groupId`)
     .innerJoinAndSelect('group_map.user', 'user', `user.id = :userId`)
@@ -162,18 +161,6 @@ export async function searchGroup(
 
 }
 
-// Judge whether user is in group.
-export async function isInGroup(userId: number, groupId: number) {
-
-  // Validate parameters.
-  if (isNaN(userId) || isNaN(groupId)) {
-    throw createError(500, 'Invalid parameters.');
-  }
-
-  return true;
-
-}
-
 export async function addToGroup(userId: number, groupId: number, privilege: number = 1) {
 
   // Validate parameters.
@@ -200,7 +187,7 @@ export async function addToGroup(userId: number, groupId: number, privilege: num
   groupMap.privilege = privilege;
 
   await getRepository(GroupMap)
-    .persist(groupMap)
+    .save(groupMap)
     .catch((err) => {
       if (err.errno === 1062) {
         throw createError(400, 'Relationship already exists.');
@@ -256,7 +243,7 @@ export async function postGroup(data: Group, user: User) {
   group.owner = user;
 
   await getRepository(Group)
-    .persist(group)
+    .save(group)
     .catch((err) => {
       if (err.errno === 1062) {
         throw createError(400, 'Group name taken.');

@@ -18,7 +18,7 @@ export const testConnectionOptions: ConnectionOptions = {
   username: config.database.username,
   password: config.database.password,
   logging: false,
-  autoSchemaSync: true,
+  synchronize: true,
   entities: [
     __dirname + '/../../src/entities/*.js',
   ],
@@ -49,8 +49,8 @@ export async function initTestGroup() {
   groupMap.group = group;
   groupMap.user = user;
 
-  await getRepository(Group).persist(group);
-  await getRepository(GroupMap).persist(groupMap);
+  await getRepository(Group).save(group);
+  await getRepository(GroupMap).save(groupMap);
 
   return group;
 
@@ -65,13 +65,13 @@ export async function initTestGroupWithMember(users: User[]) {
   groupMap.user = users[1];
   groupMap.privilege = 1;
 
-  await getRepository(GroupMap).persist(groupMap);
+  await getRepository(GroupMap).save(groupMap);
 
   groupMap.group = group;
   groupMap.user = users[2];
   groupMap.privilege = 1;
 
-  await getRepository(GroupMap).persist(groupMap);
+  await getRepository(GroupMap).save(groupMap);
 
   return group;
 
@@ -105,12 +105,12 @@ export async function initTestUser() {
   user.email = 'fuckzk@codgi.cc';
   user.privilege = 1;
 
-  await getRepository(User).persist(user);
+  await getRepository(User).save(user);
 
   userCredential.user = user;
   userCredential.updatePassword('CorrectPassword');
 
-  await getRepository(UserCredential).persist(userCredential);
+  await getRepository(UserCredential).save(userCredential);
 
   return user;
 
@@ -128,12 +128,12 @@ export async function initAllUsers() {
   zk.email = 'fuckzk@codgi.cc';
   zk.privilege = 1;
 
-  users[0] = await getRepository(User).persist(zk);
+  users[0] = await getRepository(User).save(zk);
 
   zkCredential.user = zk;
   zkCredential.updatePassword('CorrectPassword');
 
-  await getRepository(UserCredential).persist(zkCredential);
+  await getRepository(UserCredential).save(zkCredential);
 
   const gzf = new User();
   const gzfCredential = new UserCredential();
@@ -143,12 +143,12 @@ export async function initAllUsers() {
   gzf.email = 'fuckgzf@codgi.cc';
   gzf.privilege = 1;
 
-  users[1] = await getRepository(User).persist(gzf);
+  users[1] = await getRepository(User).save(gzf);
 
   gzfCredential.user = gzf;
   gzfCredential.updatePassword('CorrectPassword');
 
-  await getRepository(UserCredential).persist(gzfCredential);
+  await getRepository(UserCredential).save(gzfCredential);
 
   const yyd = new User();
   const yydCredential = new UserCredential();
@@ -158,12 +158,12 @@ export async function initAllUsers() {
   yyd.email = 'fuckyyd@codgi.cc';
   yyd.privilege = 1;
 
-  users[2] = await getRepository(User).persist(yyd);
+  users[2] = await getRepository(User).save(yyd);
 
   yydCredential.user = yyd;
   yydCredential.updatePassword('CorrectPassword');
 
-  await getRepository(UserCredential).persist(yydCredential);
+  await getRepository(UserCredential).save(yydCredential);
 
   return users;
 

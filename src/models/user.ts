@@ -188,7 +188,7 @@ export async function postUser(data: any) {
   user.description = data.description === undefined ? user.description : data.description;
 
   await userRepository
-    .persist(user)
+    .save(user)
     .catch((err) => {
       if (err.errno === 1062) {
         throw createError(400, 'Username or email taken.');
@@ -201,7 +201,7 @@ export async function postUser(data: any) {
   userCredential.user = user;
 
   await userCredentialRepository
-    .persist(userCredential)
+    .save(userCredential)
     .catch(async (err) => {
       console.error(err);
 
