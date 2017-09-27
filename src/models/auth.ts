@@ -12,7 +12,7 @@ import { UserPrivilege } from './../init/privilege';
 export async function validateUserCredential(data: string, retrievedPassword: string) {
 
   // Validate parameters.
-  if (!(retrievedPassword && data)) {
+  if (!data || typeof data !== 'string' || !retrievedPassword || typeof retrievedPassword !== 'string') {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -45,23 +45,23 @@ export async function validateUserCredential(data: string, retrievedPassword: st
 
 }
 
-export async function generateToken(userId: number, username: string, email: string, privilege: number) {
+export async function generateToken(user: User) {
 
   // Validate parameters.
-  if (!(username && email) || isNaN(userId) || isNaN(privilege)) {
+  if (!user || typeof user !== 'object') {
     throw createError(500, 'Invalid parameters');
   }
 
-  if (!config.api.jwt.secret || typeof(config.api.jwt.secret) !== 'string') {
+  if (!config.api.jwt.secret || typeof config.api.jwt.secret !== 'string') {
     throw createError(500, 'Invalid jwt secret.');
   }
 
   // Sign jwt token.
   const accessToken = jwt.sign({
-    id: userId,
-    username,
-    email,
-    privilege,
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    privilege: user.privilege,
   }, config.api.jwt.secret, {
     expiresIn: config.api.jwt.expire_time,
   });

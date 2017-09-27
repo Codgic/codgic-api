@@ -85,7 +85,7 @@ describe('AuthModel: Validate user credentials', async () => {
   });
 
   it('should throw error if username is missing', async () => {
-    chai.expect(AuthModel.validateUserCredential('', 'CorrectPassword'))
+    return chai.expect(AuthModel.validateUserCredential('', 'CorrectPassword'))
       .to.be.rejected
       .and.eventually.deep.include({
         status: 500,
@@ -95,7 +95,7 @@ describe('AuthModel: Validate user credentials', async () => {
   });
 
   it('should throw error if password is missing', async () => {
-    chai.expect(AuthModel.validateUserCredential('zk', ''))
+    return chai.expect(AuthModel.validateUserCredential('zk', ''))
       .to.be.rejected
       .and.eventually.deep.include({
         status: 500,
@@ -107,9 +107,12 @@ describe('AuthModel: Validate user credentials', async () => {
 });
 
 describe('AuthModel: Generate token', async () => {
+
+  const user = await Utils.getUserInstance();
+
   it('should return a valid json web token', async () => {
     // Generate token.
-    const accessToken = await AuthModel.generateToken(1, 'zk', 'fuckzk@codgi.cc', 1);
+    const accessToken = await AuthModel.generateToken(user);
 
     // Verify token.
     chai.expect(jwt.verify(accessToken, config.api.jwt.secret))
@@ -126,7 +129,7 @@ describe('AuthModel: Generate token', async () => {
 
     config.api.jwt.secret = '';
 
-    return chai.expect(AuthModel.generateToken(1, 'zk', 'fuckzk@codgi.cc', 1))
+    return chai.expect(AuthModel.generateToken(user))
       .to.be.rejected
       .and.eventually.deep.include({
         status: 500,

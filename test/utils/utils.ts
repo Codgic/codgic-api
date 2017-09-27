@@ -95,15 +95,23 @@ export async function deleteAllGroups() {
 //  Users
 // ====================
 
-export async function initTestUser() {
+export async function getUserInstance() {
 
   const user = new User();
-  const userCredential = new UserCredential();
 
   user.id = 1;
   user.username = 'zk';
   user.email = 'fuckzk@codgi.cc';
   user.privilege = 1;
+
+  return user;
+
+}
+
+export async function initTestUser() {
+
+  const user = await getUserInstance();
+  const userCredential = new UserCredential();
 
   await getRepository(User).save(user);
 

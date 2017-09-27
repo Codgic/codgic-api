@@ -1,6 +1,9 @@
 /* /test/utils/stubs/models/auth.ts
   Fake auth model functions for testing. */
 
+import { User } from './../../../../src/entities/user';
+import * as Utils from './../../utils';
+
 export function fakevalidateUserCredential(username: string, password: string) {
 
   if (!(username && password)) {
@@ -8,20 +11,15 @@ export function fakevalidateUserCredential(username: string, password: string) {
   }
 
   if (username === 'zk' && password === 'CorrectPassword') {
-    return {
-      id: 1,
-      email: 'fuckzk@codgi.cc',
-      username: 'zk',
-      privilege: 1,
-    };
+    return Utils.getUserInstance();
   } else {
     return undefined;
   }
 
 }
 
-export function fakeGenerateToken(userid: number, username: string, email: string, privilege: number) {
-  if (!(userid && username && email && privilege)) {
+export function fakeGenerateToken(user: User) {
+  if (typeof user !== 'object') {
     throw new Error('Invalid parameters');
   } else {
     return 'ValidToken';

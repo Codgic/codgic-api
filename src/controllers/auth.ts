@@ -15,15 +15,15 @@ export async function refreshToken(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve user info again.
-  const userInfo = await UserModel.getUserInfo(ctx.state.user.id, 'id');
+  const user = await UserModel.getUserInfo(ctx.state.user.id, 'id');
 
-  if (!userInfo) {
+  if (!user) {
     throw createError(403, 'User does not exist.');
   }
 
   // Generate Token.
   const token = await AuthModel
-    .generateToken(ctx.state.user.id, userInfo.username, userInfo.email, userInfo.privilege);
+    .generateToken(user);
 
   ctx.body = {
     token,
@@ -42,10 +42,10 @@ export async function verifyAuthInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   // Auth and get user info.
-  const userInfo = await AuthModel.validateUserCredential(ctx.request.body.username, ctx.request.body.password);
+  const user = await AuthModel.validateUserCredential(ctx.request.body.username, ctx.request.body.password);
 
   // Generate Token.
-  const token = await AuthModel.generateToken(userInfo.id, userInfo.username, userInfo.email, userInfo.privilege);
+  const token = await AuthModel.generateToken(user);
 
   ctx.body = {
     token,
