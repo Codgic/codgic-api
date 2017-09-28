@@ -15,7 +15,7 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve problem info.
-  const problemInfo = await ProblemModel.getProblemInfo(parseInt(ctx.params.problemId, 10));
+  const problemInfo = await ProblemModel.getProblemInfo(parseInt(ctx.params.problemId, 10), 'problemId');
 
   if (!problemInfo) {
     throw createError(404, 'Problem not found.');
@@ -117,7 +117,7 @@ export async function postProblem(ctx: Context, next: () => Promise<any>) {
     }
 
     // Check if the problem id is already taken.
-    if (await ProblemModel.getProblemInfo(ctx.request.body.problemId)) {
+    if (await ProblemModel.getProblemInfo(ctx.request.body.problemId, 'problemId')) {
       throw createError('Problem id has been taken.');
     }
 
@@ -153,7 +153,7 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve problem info.
-  const problemInfo = await ProblemModel.getProblemInfo(parseInt(ctx.params.problemId, 10));
+  const problemInfo = await ProblemModel.getProblemInfo(parseInt(ctx.params.problemId, 10), 'problemId');
 
   if (!problemInfo) {
     throw createError(400, 'Problem does not exist.');

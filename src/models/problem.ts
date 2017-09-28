@@ -29,10 +29,10 @@ export async function getMaxProblemId() {
 }
 
 // Get problem info
-export async function getProblemInfo(problemId: number) {
+export async function getProblemInfo(data: number, by: 'id' | 'problemId' = 'problemId') {
 
   // Validate parameters.
-  if (!problemId) {
+  if (!data || (by !== 'id' && by !== 'problemId')) {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -40,8 +40,8 @@ export async function getProblemInfo(problemId: number) {
     .createQueryBuilder('problem')
     .leftJoinAndSelect('problem.group', 'problemGroup')
     .leftJoinAndSelect('problem.owner', 'problemOwner')
-    .where('problem.problemId = :problemId')
-    .setParameter('problemId', problemId)
+    .where(`problem.${by} = :data`)
+    .setParameter('data', data)
     .getOne()
     .catch((err) => {
       console.error(err);
