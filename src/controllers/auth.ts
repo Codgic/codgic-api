@@ -15,7 +15,7 @@ export async function refreshToken(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve user info again.
-  const user = await UserModel.getUserInfo(ctx.state.user.id, 'id');
+  const user = await UserModel.getUserInfo(parseInt(ctx.state.user.id, 10), 'id');
 
   if (!user) {
     throw createError(403, 'User does not exist.');

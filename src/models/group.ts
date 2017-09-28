@@ -3,8 +3,6 @@
 import * as createError from 'http-errors';
 import { getRepository } from 'typeorm';
 
-import { getUserInfo } from './user';
-
 import { Group } from './../entities/group';
 import { GroupMap } from './../entities/group_map';
 import { User } from './../entities/user';
@@ -161,23 +159,11 @@ export async function searchGroup(
 
 }
 
-export async function addToGroup(userId: number, groupId: number, privilege: number = 1) {
+export async function addToGroup(user: User, group: Group, privilege: number) {
 
   // Validate parameters.
-  if (!(userId && groupId) || privilege < 0) {
+  if (!(user && group) || privilege < 0) {
     throw createError(500, 'Invalid parameters.');
-  }
-
-  const user = await getUserInfo(userId, 'id');
-
-  if (!user) {
-    throw createError(400, 'User does not exist.');
-  }
-
-  const group = await getGroupInfo(groupId, 'id');
-
-  if (!group) {
-    throw createError(400, 'Group does not exist.');
   }
 
   const groupMap = new GroupMap();
@@ -201,10 +187,10 @@ export async function addToGroup(userId: number, groupId: number, privilege: num
 
 }
 
-export async function removeFromGroup(userId: number, groupId: number) {
+export async function removeFromGroup(user: User, group: Group) {
 
   // Validate parameters.
-  if (!(userId && groupId)) {
+  if (!(user && group)) {
     throw createError(500, 'Invalid parameters.');
   }
   const groupMapRepository = getRepository(GroupMap);
@@ -214,8 +200,8 @@ export async function removeFromGroup(userId: number, groupId: number) {
     .innerJoinAndSelect('group_map.group', 'group', 'group.id = :groupId')
     .innerJoinAndSelect('group_map.user', 'user', 'user.id = :userId')
     .setParameters({
-      groupId,
-      userId,
+      groupId: group.id,
+      userId: user.id,
     })
     .delete()
     .execute()

@@ -209,10 +209,10 @@ export async function searchProblemWithFilter(
 }
 
 // Post or update problem to temporary table.
-export async function postProblemTemp(data: Problem, userId: number) {
+export async function postProblemTemp(data: Problem, user: User) {
 
   // Validate parameters.
-  if (!(data.title && userId)) {
+  if (!data.title || typeof user !== 'object') {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -221,12 +221,10 @@ export async function postProblemTemp(data: Problem, userId: number) {
 }
 
 // Post or update problem directly.
-export async function postProblem(data: Problem, userId: number) {
-
-  console.log(data);
+export async function postProblem(data: Problem, user: User) {
 
   // Validate parameters.
-  if (!(data.problemId && data.title && userId)) {
+  if (isNaN(data.problemId) || !data.title || typeof user !== 'object') {
     throw createError(500, 'Invalid parameters.');
   }
 
@@ -245,18 +243,7 @@ export async function postProblem(data: Problem, userId: number) {
   const problem = problemInfo ? problemInfo : new Problem();
 
   // Set owner.
-  if (!problemInfo) {
-    const user = await getRepository(User)
-      .findOneById(userId)
-      .catch((err) => {
-        console.error(err);
-        throw createError(500, 'Database operation failed.');
-      });
-
-    if (!user) {
-      throw createError(500, 'User does not exist.');
-    }
-
+  if (problemInfo === undefined) {
     problem.owner = user;
   }
 
