@@ -18,6 +18,6 @@ group.post('/:groupId/member', Group.addToGroup);
 // group.patch('/', group.updateGroup);
 
 // group.delete('/', group.deleteGroup);
-group.delete('/:groupId/member/:userId', Group.removeFromGroup);
+group.delete('/:groupId/member/:username', Group.removeFromGroup);
 
 export { group };

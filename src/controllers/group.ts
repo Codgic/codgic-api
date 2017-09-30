@@ -130,7 +130,7 @@ export async function removeFromGroup(ctx: Context, next: () => Promise<any>) {
   }
 
   // Validate request.
-  if (isNaN(ctx.params.userId) || isNaN(ctx.params.groupId)) {
+  if (isNaN(ctx.params.username) || isNaN(ctx.params.groupId)) {
     throw createError(400);
   }
 
@@ -139,7 +139,7 @@ export async function removeFromGroup(ctx: Context, next: () => Promise<any>) {
     throw createError(400, 'Group does not exist.');
   }
 
-  const user = await UserModel.getUserInfo(parseInt(ctx.params.userId, 10), 'id');
+  const user = await UserModel.getUserInfo(ctx.params.username, 'username');
   if (!user) {
     throw createError(400, 'User does not exist.');
   }
