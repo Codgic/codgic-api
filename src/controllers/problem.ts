@@ -50,14 +50,8 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
 
 export async function getProblemList(ctx: Context, next: () => Promise<any>) {
 
-  if (!ctx.state.user) {
-    ctx.state.user = {
-      id: undefined,
-    };
-  }
-
   const problemList = await ProblemModel.getProblemListWithFilter(
-    parseInt(ctx.state.user.id, 10),
+    ctx.state.user,
     ctx.query.sort,
     ctx.query.direction,
     parseInt(ctx.query.page, 10),
@@ -73,15 +67,9 @@ export async function getProblemList(ctx: Context, next: () => Promise<any>) {
 
 export async function searchProblem(ctx: Context, next: () => Promise<any>) {
 
-  if (!ctx.state.user) {
-    ctx.state.user = {
-      id: undefined,
-    };
-  }
-
   const searchResult = await ProblemModel
     .searchProblemWithFilter(
-      parseInt(ctx.state.user.id, 10),
+      ctx.state.user,
       ctx.query.sort,
       ctx.query.direction,
       ctx.query.q,

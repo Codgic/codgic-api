@@ -88,7 +88,7 @@ export async function getProblemList(
 // Experimental!
 // Actual performance is untested!
 export async function getProblemListWithFilter(
-  userId: number = -1,
+  user: User | undefined,
   sort: 'problemId' | 'title' | 'createdAt' | 'updatedAt' = 'problemId',
   direction: 'ASC' | 'DESC' = 'ASC',
   page: number = 1,
@@ -101,18 +101,16 @@ export async function getProblemListWithFilter(
   }
 
   const firstResult = (page - 1) * perPage;
+  let problemList: Problem[];
 
-  const problemList = await getRepository(Problem)
+  if (user === undefined) {
+
+    problemList = await getRepository(Problem)
       .createQueryBuilder('problem')
       .leftJoinAndSelect('problem.group', 'problemGroup')
-      .leftJoin('problemGroup.member', 'problemGroupMember')
-      .leftJoin('problemGroupMember.user', 'problemGroupMemberUser', 'problemGroupMemberUser.id = :userId')
       .leftJoinAndSelect('problem.owner', 'problemOwner')
-      .where('(problemOwner.id = :userId AND problem.ownerPrivilege & :operation <> 0)')
-      .orWhere('(problemGroupMemberUser.id = :userId AND problem.groupPrivilege & :operation <> 0)')
-      .orWhere('(problemOwner.id <> :userId AND problemGroupMemberUser.id IS NULL AND problem.worldPrivilege & :operation <> 0)')
+      .where('problem.worldPrivilege & :operation <> 0')
       .setParameters({
-        userId,
         operation: ProblemPrivilege.read,
       })
       .offset(firstResult)
@@ -123,6 +121,32 @@ export async function getProblemListWithFilter(
         console.error(err);
         throw createError(500, 'Database operation failed.');
       });
+
+  } else {
+
+    problemList = await getRepository(Problem)
+      .createQueryBuilder('problem')
+      .leftJoinAndSelect('problem.group', 'problemGroup')
+      .leftJoin('problemGroup.member', 'problemGroupMember')
+      .leftJoin('problemGroupMember.user', 'problemGroupMemberUser', 'problemGroupMemberUser.id = :userId')
+      .leftJoinAndSelect('problem.owner', 'problemOwner')
+      .where('(problemOwner.id = :userId AND problem.ownerPrivilege & :operation <> 0)')
+      .orWhere('(problemGroupMemberUser.id = :userId AND problem.groupPrivilege & :operation <> 0)')
+      .orWhere('(problemOwner.id <> :userId AND problemGroupMemberUser.id IS NULL AND problem.worldPrivilege & :operation <> 0)')
+      .setParameters({
+        userId: user.id,
+        operation: ProblemPrivilege.read,
+      })
+      .offset(firstResult)
+      .limit(perPage)
+      .orderBy(`problem.${sort}`, direction)
+      .getMany()
+      .catch((err) => {
+        console.error(err);
+        throw createError(500, 'Database operation failed.');
+      });
+
+  }
 
   return problemList;
 
@@ -165,7 +189,7 @@ export async function searchProblem(
 // Experimental!
 // Actual performance is untested!
 export async function searchProblemWithFilter(
-  userId: number = -1,
+  user: User | undefined,
   sort: 'problemId' | 'title' | 'createdAt' | 'updatedAt' = 'problemId',
   direction: 'ASC' | 'DESC'  = 'ASC',
   keyword: string,
@@ -178,31 +202,58 @@ export async function searchProblemWithFilter(
   }
 
   const firstResult = (page - 1) * perPage;
+  let searchResult: Problem[];
 
-  const searchResult = await getRepository(Problem)
-    .createQueryBuilder('problem')
-    .leftJoinAndSelect('problem.group', 'problemGroup')
-    .leftJoin('problemGroup.member', 'problemGroupMember')
-    .leftJoin('problemGroupMember.user', 'problemGroupMemberUser', 'problemGroupMemberUser.id = :userId')
-    .leftJoinAndSelect('problem.owner', 'problemOwner')
-    .where('(problemOwner.id = :userId AND problem.ownerPrivilege & :operation <> 0)')
-    .orWhere('(problemGroupMemberUser.id = :userId AND problem.groupPrivilege & :operation <> 0)')
-    .orWhere('(problemOwner.id <> :userId AND problemGroupMemberUser.id IS NULL AND problem.worldPrivilege & :operation <> 0)')
-    .where('problem.title LIKE :keyword')
-    .orWhere('problem.description LIKE :keyword')
-    .setParameters({
-      userId,
-      operation: ProblemPrivilege.read,
-      keyword: `%${keyword}`,
-    })
-    .offset(firstResult)
-    .limit(perPage)
-    .orderBy(`problem.${sort}`, direction)
-    .getMany()
-    .catch((err) => {
-      console.error(err);
-      throw createError(500, 'Database operation failed.');
-    });
+  if (user === undefined) {
+
+    searchResult = await getRepository(Problem)
+      .createQueryBuilder('problem')
+      .leftJoinAndSelect('problem.group', 'problemGroup')
+      .leftJoinAndSelect('problem.owner', 'problemOwner')
+      .where('problem.worldPrivilege & :operation <> 0')
+      .where('problem.title LIKE :keyword')
+      .orWhere('problem.description LIKE :keyword')
+      .setParameters({
+        operation: ProblemPrivilege.read,
+        keyword: `%${keyword}`,
+      })
+      .offset(firstResult)
+      .limit(perPage)
+      .orderBy(`problem.${sort}`, direction)
+      .getMany()
+      .catch((err) => {
+        console.error(err);
+        throw createError(500, 'Database operation failed.');
+      });
+
+  } else {
+
+    searchResult = await getRepository(Problem)
+      .createQueryBuilder('problem')
+      .leftJoinAndSelect('problem.group', 'problemGroup')
+      .leftJoin('problemGroup.member', 'problemGroupMember')
+      .leftJoin('problemGroupMember.user', 'problemGroupMemberUser', 'problemGroupMemberUser.id = :userId')
+      .leftJoinAndSelect('problem.owner', 'problemOwner')
+      .where('(problemOwner.id = :userId AND problem.ownerPrivilege & :operation <> 0)')
+      .orWhere('(problemGroupMemberUser.id = :userId AND problem.groupPrivilege & :operation <> 0)')
+      .orWhere('(problemOwner.id <> :userId AND problemGroupMemberUser.id IS NULL AND problem.worldPrivilege & :operation <> 0)')
+      .where('problem.title LIKE :keyword')
+      .orWhere('problem.description LIKE :keyword')
+      .setParameters({
+        userId: user.id,
+        operation: ProblemPrivilege.read,
+        keyword: `%${keyword}`,
+      })
+      .offset(firstResult)
+      .limit(perPage)
+      .orderBy(`problem.${sort}`, direction)
+      .getMany()
+      .catch((err) => {
+        console.error(err);
+        throw createError(500, 'Database operation failed.');
+      });
+
+  }
 
   return searchResult;
 
