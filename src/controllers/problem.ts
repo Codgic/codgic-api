@@ -15,7 +15,7 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve problem info.
-  const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemId);
+  const problemInfo = await ProblemModel.getProblemInfo(parseInt(ctx.params.problemId, 10), 'problemId');
 
   if (!problemInfo) {
     throw createError(404, 'Problem not found.');
@@ -50,18 +50,12 @@ export async function getProblemInfo(ctx: Context, next: () => Promise<any>) {
 
 export async function getProblemList(ctx: Context, next: () => Promise<any>) {
 
-  if (!ctx.state.user) {
-    ctx.state.user = {
-      id: undefined,
-    };
-  }
-
   const problemList = await ProblemModel.getProblemListWithFilter(
-    ctx.state.user.id,
+    ctx.state.user,
     ctx.query.sort,
     ctx.query.direction,
-    ctx.query.page,
-    ctx.query.per_page,
+    parseInt(ctx.query.page, 10),
+    parseInt(ctx.query.per_page, 10),
   );
 
   ctx.body = problemList;
@@ -73,20 +67,14 @@ export async function getProblemList(ctx: Context, next: () => Promise<any>) {
 
 export async function searchProblem(ctx: Context, next: () => Promise<any>) {
 
-  if (!ctx.state.user) {
-    ctx.state.user = {
-      id: undefined,
-    };
-  }
-
   const searchResult = await ProblemModel
     .searchProblemWithFilter(
-      ctx.state.user.id,
+      ctx.state.user,
       ctx.query.sort,
       ctx.query.direction,
       ctx.query.q,
-      ctx.query.page,
-      ctx.query.per_page,
+      parseInt(ctx.query.page, 10),
+      parseInt(ctx.query.per_page, 10),
     );
 
   ctx.body = searchResult;
@@ -105,13 +93,19 @@ export async function postProblem(ctx: Context, next: () => Promise<any>) {
 
   if (ctx.request.body.problemId) {
 
+    if (isNaN(ctx.request.body.problemId)) {
+      throw createError(400);
+    }
+
+    ctx.request.body.problemId = parseInt(ctx.request.body.problemId, 10);
+
     // UserPrivilege.editContent is needed to customize problemId.
     if (!await checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege)) {
       throw createError(403);
     }
 
     // Check if the problem id is already taken.
-    if (await ProblemModel.getProblemInfo(ctx.request.body.problemId)) {
+    if (await ProblemModel.getProblemInfo(ctx.request.body.problemId, 'problemId')) {
       throw createError('Problem id has been taken.');
     }
 
@@ -147,7 +141,7 @@ export async function updateProblem(ctx: Context, next: () => Promise<any>) {
   }
 
   // Retrieve problem info.
-  const problemInfo = await ProblemModel.getProblemInfo(ctx.params.problemId);
+  const problemInfo = await ProblemModel.getProblemInfo(parseInt(ctx.params.problemId, 10), 'problemId');
 
   if (!problemInfo) {
     throw createError(400, 'Problem does not exist.');
@@ -180,13 +174,13 @@ async function routePostProblem(ctx: Context) {
     let result;
 
     if (await checkPrivilege(UserPrivilege.editContent, ctx.state.user.privilege)) {
-      result = await ProblemModel.postProblem(ctx.request.body, ctx.state.user.id);
+      result = await ProblemModel.postProblem(ctx.request.body, ctx.state.user);
     } else {
       if (config.oj.policy.content.common_user_can_post) {
         if (config.oj.policy.content.common_user_post_need_confirmation) {
-          result = await ProblemModel.postProblemTemp(ctx.request.body, ctx.state.user.id);
+          result = await ProblemModel.postProblemTemp(ctx.request.body, ctx.state.user);
         } else {
-          result = await ProblemModel.postProblem(ctx.request.body, ctx.state.user.id);
+          result = await ProblemModel.postProblem(ctx.request.body, ctx.state.user);
         }
       } else {
         ctx.throw(403);

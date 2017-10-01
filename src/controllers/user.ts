@@ -34,8 +34,8 @@ export async function searchUser(ctx: Context, next: () => Promise<any>) {
       ctx.query.q,
       ctx.query.sort,
       ctx.query.direction,
-      ctx.query.page,
-      ctx.query.per_page,
+      parseInt(ctx.query.page, 10),
+      parseInt(ctx.query.per_page, 10),
     );
 
   ctx.body = userList;
