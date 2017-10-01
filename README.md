@@ -5,21 +5,21 @@
 [![GitHub license][license-image]][license-url]
 [![Gitter][gitter-image]][gitter-url]
 
-[david-image]: https://img.shields.io/david/codgician/codgic-api.svg?style=flat-square
-[david-url]: https://david-dm.org/codgician/codgic-api
+[david-image]: https://img.shields.io/david/Codgic/codgic-api.svg?style=flat-square
+[david-url]: https://david-dm.org/Codgic/codgic-api
 [gitter-image]: https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square
 [gitter-url]: https://gitter.im/Codgic/codgic-api
 [license-image]: https://img.shields.io/badge/license-LGPL-blue.svg?style=flat-square
-[license-url]: https://raw.githubusercontent.com/codgician/codgic-api/master/LICENSE
-[travis-image]: https://img.shields.io/travis/codgician/codgic-api/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/codgician/codgic-api
+[license-url]: https://raw.githubusercontent.com/Codgic/codgic-api/master/LICENSE
+[travis-image]: https://img.shields.io/travis/Codgic/codgic-api/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/Codgic/codgic-api
 
 API handler of Codgic Online Judge.
 
 **EARLY DEVELOPMENT STAGE.**  
 **Literally speaking nothing has been implemented.**
 
-If you have any ideas or suggestions, feel free to create issues at https://github.com/codgician/codgic-api/issues.
+If you have any ideas or suggestions, feel free to create issues at https://github.com/Codgic/codgic-api/issues.
 
 Recent changes will be pushed to [Codgic/codgic-api](https://github.com/codgic/codgic-api) soon after unit tests cover all existing functions. Pull requests will be highly appreciated by then.
 
