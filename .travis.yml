@@ -1,0 +1,33 @@
+language: node_js
+node_js:
+  - "node"
+    
+dist: trusty
+
+services:
+  - mysql
+
+before_install:
+  # Create databases.
+  - mysql -u root -e 'CREATE DATABASE codgic;'
+  - mysql -u root -e 'CREATE DATABASE codgic_test;'
+
+  # Create user 'codgic'.
+  - mysql -u root -e  "CREATE USER 'codgic'@'localhost' IDENTIFIED BY 'YOURPASSWORD';"
+
+  # Grant privileges on user 'codgic'.
+  - mysql -u root -e "GRANT ALL ON *.* TO 'codgic'@'localhost';"
+
+before_script:
+  # Install dependencies.
+  - yarn install
+
+script:
+  # Generate config.yml.
+  - gulp renameConfig
+
+  # Compile project.
+  - yarn run build
+
+  # Run tests.
+  - yarn run test

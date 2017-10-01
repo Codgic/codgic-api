@@ -1,0 +1,61 @@
+# Codgic-api Configuration
+# Version 0.0.0 - Unreleased!
+
+# OJ
+oj:
+  name: Codgic
+  timezone: Asia/Shanghai
+  policy:
+    access:
+      need_login: false
+    signup:
+      need_confirmation: false
+      # need_verify_email: false
+    profile:
+      nickname:
+        min_length:
+        max_length: 30
+      password:
+        min_length: 8
+        max_length:
+        # uppercase:
+        # lowercase:
+        # special:
+        # digit:
+      username:
+        min_length:
+        max_length: 30
+    content:
+      common_user_can_post: true
+      common_user_post_need_confirmation: false
+  default:
+    page:
+      contest: 50
+      group: 20
+      group_member: 20
+      problem: 50
+      user: 20
+    contest:
+      # duration: 7200
+    problem:
+      first_problem_id: 1000
+      memory_limit: 256 # MB
+      time_limit: 1000 # ms
+    
+# API
+api:
+  port: 8080
+  jwt:
+    debug: false
+    expire_time: 1h
+    secret: FuckZh@ngKeW@terQueen
+
+# Database
+database:
+  host: localhost
+  port: 3306
+  database: codgic
+  username: codgic
+  password: YOURPASSWORD
+  type: mysql
+  logging: true
